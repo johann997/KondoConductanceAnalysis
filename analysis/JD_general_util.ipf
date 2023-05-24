@@ -300,14 +300,11 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 
 	wave /c temp_fft
 	duplicate/c/o temp_fft fftfactor // fftfactor is the wave to multiple temp_fft by to zero our certain frequencies
-//	fftfactor = 1 - exp(-(x - freq)^2 / (freq / Q)^2)
 	
 	// Accessing freq conversion for wav
 	int wavenum = getfirstnum(wav_name)
-//	variable freqfactor = 1/(fd_getmeasfreq(wavenum) * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
-	variable freqfactor = 1/(2538 * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
-
-//	variable freq = 1 / (fd_getmeasfreq(wavenum) * dimdelta(wav, 0) / Hz)
+	variable freqfactor = 1/(fd_getmeasfreq(wavenum) * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
+//	variable freqfactor = 1/(2538 * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
 
 	fftfactor=1
 	variable freq, Q, i
@@ -327,7 +324,6 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 	redimension/N=(num_rows, -1) temp_ifft
 	copyscales wav, temp_ifft
 	duplicate /o temp_ifft $notch_name
-
 	
 end
 
@@ -359,71 +355,6 @@ end
 
 
 
-
-///// DEPRECATED ///// 
-//function remove_noise(wave wav)
-//	//argument/variable Declaration
-//	String wavestring=nameOfWave(wav)
-//	wave wav1,wav2,wav3
-//	string name=wavestring+"_nf"
-//	string wn,wn1,wn2,wn3
-//	int wavenum=getfirstnum(wavestring)
-//
-////notch_filter(wave wav, variable Hz, int wavenum)
-//	notch_filter(wav,60);
-//	notch_filter($name,180)
-//	name=wavestring+"_nf_nf";notch_filter($name,300)
-//
-//
-//	//assigning variables
-//	wn=wavestring
-//	wn1=wavestring+"_nf" // the notchfiltered wave
-//	wn2=wavestring+"_nf_nf" // the notchfiltered wave
-//	wn3=wavestring+"_nf_nf_nf" // the notchfiltered wave
-//
-//	wave wav1=$wn1; 	wave wav2=$wn2; 	wave wav3=$wn3
-//	wav1=wav3;
-//	killwaves wav3,wav2
-//	wave slice
-//	rowslice(wav,0); duplicate/o slice slice1; 
-//	rowslice(wav1,0); duplicate/o slice slice2; 
-//	
-//	rowslice(wav,30); duplicate/o slice slice3; 
-//	rowslice(wav1,30); duplicate/o slice slice4; 
-//	
-//	rowslice(wav,60); duplicate/o slice slice5; 
-//	rowslice(wav1,60); duplicate/o slice slice6; 
-//	
-//	//print "run noise_check to check the result"
-//
-//end
-
-
-
-Window Noise_check() : Graph
-	PauseUpdate; Silent 1		// building window...
-	Display /W=(35,53,1478,1119) slice1,slice2,slice3,slice4,slice5,slice6
-	ModifyGraph rgb(slice1)=(13107,13107,13107),rgb(slice2)=(65535,62414,0),rgb(slice3)=(13107,13107,13107)
-	ModifyGraph rgb(slice4)=(0,65535,47661),rgb(slice5)=(13107,13107,13107),rgb(slice6)=(32767,0,65535)
-	ModifyGraph offset(slice3)={400,0},offset(slice4)={400,0},offset(slice5)={-400,0}
-	ModifyGraph offset(slice6)={-400,0}
-	Legend/C/N=text0/J "\\s(slice1) slice1\r\\s(slice2) slice2\r\\s(slice3) slice3\r\\s(slice4) slice4\r\\s(slice5) slice5\r\\s(slice6) slice6"
-EndMacro
-
-
-//function scfd_postFilterNumpts(raw_numpts, measureFreq)  // TODO: Rename to NumptsAfterFilter
-//    // Returns number of points that will exist after applying lowpass filter specified in ScanController_Fastdac
-//    variable raw_numpts, measureFreq
-//	
-//	nvar boxChecked = sc_ResampleFreqCheckFadc
-//	nvar targetFreq = sc_ResampleFreqFadc
-//	if (boxChecked)
-//	  	RatioFromNumber (targetFreq / measureFreq)
-//	  	return round(raw_numpts*(V_numerator)/(V_denominator))  // TODO: Is this actually how many points are returned?
-//	else
-//		return raw_numpts
-//	endif
-//end
 
 function /s avg_wav(wave wav) // /WAVE lets your return a wave
 
@@ -975,3 +906,6 @@ end
 //	copyscales waved new2dwave
 //	new2dwave=interp2d(waved,(x+fit_params[q][3]),(y)) // column 3 is the center fit parameter
 //end
+
+
+
