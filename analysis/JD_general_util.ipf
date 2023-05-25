@@ -262,8 +262,6 @@ end
 
 
 
-
-//  NEED2FIX :: fd_getmeasfrew
 function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 	// wav is the wave to be filtered.  notch_name, if specified, is the name of the wave after notch filtering.
 	// If not specified the filtered wave will have the original name plus '_nf' 
@@ -304,7 +302,6 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 	// Accessing freq conversion for wav
 	int wavenum = getfirstnum(wav_name)
 	variable freqfactor = 1/(fd_getmeasfreq(wavenum) * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
-//	variable freqfactor = 1/(2538 * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
 
 	fftfactor=1
 	variable freq, Q, i
@@ -328,8 +325,10 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 end
 
 
-function spectrum_analyzer(wave data, variable samp_freq)
+function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave])
 	// Built in powerspectrum function
+	create_new_wave = paramisdefault(create_new_wave) ? 1 : create_new_wave
+
 	duplicate/o data spectrum
 	SetScale/P x 0,1/samp_freq,"", spectrum
 	variable nr=dimsize(spectrum,0);  // number of points in x-direction
@@ -349,7 +348,15 @@ function spectrum_analyzer(wave data, variable samp_freq)
 		i=i+1
 	while(i<dimsize(spectrum,1))
 	powerspec[0]=nan
-	display powerspec; // SetAxis bottom 0,500
+	
+	if (create_new_wave == 1)
+		String wav_name = nameOfWave(data)+"_powerspec"
+		duplicate/o powerspec, $wav_name
+		display $wav_name; // SetAxis bottom 0,500
+	
+	else
+		display powerspec; // SetAxis bottom 0,500
+	endif
 
 end
 
