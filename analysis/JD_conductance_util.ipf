@@ -13,7 +13,7 @@ function dotcond_avg(wave wav, int refit,string kenner_out)
 		//stopalltimers()
 	refnum=startmstimer
 
-	closeallGraphs()
+//	closeallGraphs()
 
 	string datasetname =nameofwave(wav)
 	string kenner=getsuffix(datasetname) //  cscurrent in the above case
@@ -49,8 +49,11 @@ function dotcond_avg(wave wav, int refit,string kenner_out)
 	calc_avg_cond($pos_avg,$neg_avg,avg) // condxxxxavg
 	dotfigs(wavenum,N,kenner, kenner_out)
 //ctrans_avg(wavenum, 1,dotcondcentering=1)
+//	ModifyGraph log=0 // make y-axis linear
+	ModifyGraph mode=2
+	ModifyGraph lsize=4
 	ms=stopmstimer(refnum)
-	print ms/1e6
+	print "time taken = " + num2str(ms/1e6) + "s"
 end
 
 
@@ -500,7 +503,7 @@ function dotfigs(variable wavenum,variable N,string kenner, string kenner_out)
 	string pos_avg=split_pos+"_avg"
 	string neg_avg=split_neg+"_avg"
 	string fit_params_name = kenner_out+num2str(wavenum)+"fit_params" 
-	closeallgraphs()
+//	closeallgraphs()
 
 	/////////////////// thetas  //////////////////////////////////////
 

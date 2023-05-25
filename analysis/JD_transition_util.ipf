@@ -12,7 +12,6 @@ function ctrans_avg(wave wav, int refit,int dotcondcentering, string kenner_out,
 
 	variable refnum, ms
 	//	option to limit fit to indexes [minx,maxx]
-
 		if (paramisdefault(minx))
 			minx=0
 		endif
@@ -20,10 +19,7 @@ function ctrans_avg(wave wav, int refit,int dotcondcentering, string kenner_out,
 		if (paramisdefault(maxx))
 			maxx=dimsize(wav,0)-1
 		endif
-	
 
-	
-	//		stopalltimers() // run this line if timer returns nan
 
 	refnum=startmstimer
 
@@ -41,14 +37,9 @@ function ctrans_avg(wave wav, int refit,int dotcondcentering, string kenner_out,
 	
 
 	variable N=20; // how many sdevs are acceptable?
-
-
 	wave W_coef
 	wave badthetasx
 	wave badgammasx
-
-	//remove_noise($datasetname);
-
 
 	//resampleWave($datasetname,600);
 	string quickavg=avg_wav($datasetname) // averages datasetname and returns the name of the averaged wave
@@ -56,15 +47,14 @@ function ctrans_avg(wave wav, int refit,int dotcondcentering, string kenner_out,
 	if (refit==1)
 		//get_initial_params($quickavg);// print W_coef
 		fit_transition($quickavg,minx,maxx);// print W_coef
-		
-		get_fit_params($datasetname,fit_params_name,minx,maxx) //
+		get_fit_params($datasetname,fit_params_name,minx,maxx) 
 	endif
-closeallGraphs()
+//	closeallGraphs()
 
 	if (dotcondcentering==0)
-	find_plot_thetas(wavenum,N,fit_params_name)
-
+		find_plot_thetas(wavenum,N,fit_params_name)
 		duplicate/o/r=[][3] $fit_params_name mids
+		
 		centering($datasetname,centered,mids) // centred plot and average plot
 		cleaning($centered,badthetasx)
 
@@ -79,7 +69,6 @@ closeallGraphs()
 		centering($datasetname,centered,mids)
 		cleaning($centered,badgammasx)
 
-
 	endif
 
 	avg_wav($cleaned) // quick average plot
@@ -88,7 +77,7 @@ closeallGraphs()
 	prepfigs(wavenum,N,kenner,kenner_out,minx,maxx)
 
 	ms=stopmstimer(refnum)
-	print ms/1e6
+	print "time taken = " + num2str(ms/1e6) + "s"
 end
 
 

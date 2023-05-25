@@ -5,17 +5,83 @@
 Menu "Graph"
 	"Close All Graphs/9", CloseAllGraphs()
 End
-Function CloseAllGraphs()
+
+Function CloseAllGraphs([string no_close_graphs])
+	no_close_graphs = selectString(paramisdefault(no_close_graphs), no_close_graphs, "")
 	String name
+	
+	variable num_open_graph = ItemsInList(no_close_graphs, ";")
+	variable i
+	string no_close_graph
+	variable count_no_close = 0
+	variable to_close = 1
+	variable num_graphs = num_open_graphs()
+	
+	
 	do
+		to_close = 1
 		name = WinName(0,1) // name of the front graph
-		if (strlen(name) == 0)
+		
+		for (i=0;i<num_open_graph;i+=1)
+			no_close_graph = stringfromlist(i, no_close_graphs)
+			if (CmpStr(no_close_graph, name) == 0)
+				DoWindow/B $name
+				count_no_close += 1
+				to_close = 0
+				continue
+			endif
+		endfor 
+		
+		if (strlen(name) == 0 || num_graphs <= num_open_graph || count_no_close >= num_open_graph)
 			break // all done
 		endif
-		DoWindow/K $name // Close the graph
+		if (to_close == 1)
+			DoWindow/K $name // Close the graph
+		endif
 	while(1)
 End
 
+
+
+function num_open_graphs()
+	variable i
+	string start_graph_name, name
+	
+	start_graph_name = WinName(0,1)
+	variable count = 1
+	DoWindow/B $start_graph_name
+	
+	do
+		name = WinName(0,1)
+		
+		if (cmpstr(name, start_graph_name) == 0)
+			return count
+			break
+		endif
+		count += 1
+		
+		DoWindow/B $name
+		
+	while(1)
+
+end
+
+
+function print_graph_names()
+	variable i
+	string name
+	
+	variable num_graphs = num_open_graphs()
+	
+	for (i=0;i<num_graphs;i+=1)
+		name = WinName(0,1)
+		
+		print name
+		DoWindow/B $name
+	
+	endfor
+
+end
 
 
 Function AddLegend(wav,param)
