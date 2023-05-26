@@ -10,73 +10,6 @@
 
 
 
-//
-//
-//
-//function demodulate(datnum, harmonic, wave_kenner, [append2hdf, dat_kenner])
-//	variable datnum, harmonic
-//	string wave_kenner
-//	variable append2hdf
-//	string dat_kenner
-//	dat_kenner = selectString(paramisdefault(dat_kenner), dat_kenner, "")
-//	variable nofcycles, period, cols, rows
-//	string wn="dat" + num2str(datnum) + wave_kenner;
-//	wave wav=$wn
-//	struct AWGVars AWGLI
-//	fd_getoldAWG(AWGLI, datnum)
-//
-//	print AWGLI
-//
-//	cols=dimsize(wav,0); print cols
-//	rows=dimsize(wav,1); print rows
-//	nofcycles=AWGLI.numCycles;
-//	period=AWGLI.waveLen;
-//	print "AWG num cycles  = " + num2str(nofcycles)
-//	print "AWG wave len = " + num2str(period)
-//	
-////	//Original Measurement Wave
-//	make /o/n=(cols) sine1d
-//	sine1d=sin(2*pi*(harmonic*p/period)) // create 1d sine wave with same frequency as AWG wave and specified harmonic
-//
-//	matrixop /o sinewave=colrepeat(sine1d, rows)
-//	matrixop /o temp=wav * sinewave
-//	copyscales wav, temp
-//	temp=temp*pi/2;
-//	
-//	
-////	display
-////	appendimage temp
-//
-////	display
-////	appendimage sinewave
-//
-////	Duplicate /o sine1d, wave0x
-////	wave0x = x
-////
-////	display wav vs wave0x
-////	appendtoGraph sine1d
-////
-//
-//	
-//	print "cols = " + num2str(cols)
-//	print "rows = " + num2str(rows)
-//	print "(cols/period/nofcycles) = " + num2str(cols/period/nofcycles)
-//	ReduceMatrixSize(temp, 0, -1, (cols/period/nofcycles), 0,-1, rows, 1, "demod")
-//	
-////	display 
-//////	display wav
-////	appendimage temp
-////	display temp
-////wn="demod"
-////	if (append2hdf)
-////		variable fileid
-////		fileid=get_hdfid(datnum) //opens the file
-////		HDF5SaveData/o /IGOR=-1 /TRAN=1 /WRIT=1 /Z $wn, fileid
-////		HDF5CloseFile/a fileid
-////	endif
-//
-//end
-
 function center_dSdN(int wavenum, string kenner)
 //wav is input wave, for example demod
 //centered is output name
@@ -116,149 +49,14 @@ wave condfit_params = $condfit_params_name
 			i=i+1
 		while (i<nr)
 	endif
-//		WaveTransform zapnans $cleaned_avg
-//		WaveTransform zapnans $centeravg
 
 
 	avg_wav($cleaned)
 	avg_wav($centered)
 	display $cleaned_avg, $centeravg
 	makecolorful()
-//	wave center=$centeravg
-//	Extract/o/indx center,newx, (numtype(center[p])==0)
-//	wavestats center
-//	DeletePoints 0, 43, center 
-
-	
-
-	
 	
 end
-
-
-//
-//
-//function demodulate2(datnum,harmonic,kenner,[append2hdf, axis])
-////if axis=0: demodulation in r
-////if axis=1: demodulation in x
-////if axis=2: demodulation in y
-//	variable datnum,harmonic
-//	string kenner
-//	variable append2hdf, axis
-//	axis = paramisdefault(axis) ? 0 : axis
-//	variable nofcycles, period, cols, rows
-//	string wn="dat"+num2str(datnum)+kenner;
-//	string wn_x="temp_x"
-//	string wn_y="temp_y"
-//	wave wav=$wn
-//	wave wav_x=$wn_x
-//	wave wav_y=$wn_y
-//	struct AWGVars AWGLI
-//	fd_getoldAWG(AWGLI,datnum)
-//	make /o demod2
-//	
-//	
-//	print AWGLI
-//	
-//	//Demodulate in x?
-//	if ((axis==0)||(axis==1))
-//	duplicate /o wav, wav_xx
-//	cols=dimsize(wav,0); print cols
-//	rows=dimsize(wav,1); print rows
-//	nofcycles=AWGLI.numCycles;
-//	period=AWGLI.waveLen;
-//	//Original Measurement Wave
-//	make /o/n=(cols) sine1d
-//	sine1d=sin(2*pi*(harmonic*p/period))
-//	matrixop /o sinewave=colrepeat(sine1d,rows)
-//	matrixop /o temp=wav_xx*sinewave
-//	copyscales wav_xx, temp
-//	temp=temp*pi/2;
-//	ReduceMatrixSize(temp, 0, -1, (cols/period/nofcycles), 0,-1, rows, 1,"demod_x")
-//	wn_x="demod_x"
-//	wave wav_x=$wn_x
-//	endif
-//	
-//	//Demodulate in y?
-//	if ((axis==0)||(axis==2))
-//	duplicate /o wav, wav_yy
-//	cols=dimsize(wav,0); print cols
-//	rows=dimsize(wav,1); print rows
-//	nofcycles=AWGLI.numCycles;
-//	period=AWGLI.waveLen;
-//	//Original Measurement Wave
-//	make /o/n=(cols) sine1d
-//	sine1d=cos(2*pi*(harmonic*p/period))
-//	matrixop /o sinewave=colrepeat(sine1d,rows)
-//	matrixop /o temp=wav_yy*sinewave
-//	copyscales wav_yy, temp
-//	temp=temp*pi/2;
-//	ReduceMatrixSize(temp, 0, -1, (cols/period/nofcycles), 0,-1, rows, 1,"demod_y")
-//	wn_y="demod_y"
-//	wave wav_y=$wn_y
-//	endif
-//	
-//	//Given wav_x and wav_y now refer to their respective demodulations, 
-//	//associate the correct set with the output based on r/x/y 
-//	
-//	//wn="demod"
-//	
-//	if (axis==0)
-//	demod2 =( (wav_x)^2 + (wav_y)^2 ) ^ (0.5)  //problematic line - operating on null wave?
-//	endif
-//	
-//	if (axis==1)
-//	demod2 = wav_x
-//	endif
-//	
-//	if (axis==2)
-//	demod2 = wav_y
-//	endif
-//	
-//	//Store demodulated wave w.r.t. correct axis
-//	//if (append2hdf)
-//	//	variable fileid
-//	//	fileid=get_hdfid(datnum) //opens the file
-//	//	HDF5SaveData/o /IGOR=-1 /TRAN=1 /WRIT=1 /Z $wn, fileid
-//	//	HDF5CloseFile/a fileid
-//	//endif
-//
-//end  
-//
-//
-//function resampleWave(wave wav,variable targetFreq )
-//	// resamples wave w from measureFreq
-//	// to targetFreq (which should be lower than measureFreq)	
-//	string wn=nameOfWave(wav)
-//	int wavenum=getfirstnum(wn)
-//	string temp_name="dat"+num2str(wavenum)+"x_array"
-//	
-//	variable measureFreq
-////	struct ScanVars S
-////	fd_getScanVars(S,wavenum)
-//struct AWGVars S
-//fd_getoldAWG(S,wavenum)
-//
-//	measureFreq=S.measureFreq
-//	variable N=measureFreq/targetFreq
-//
-//	
-//	RatioFromNumber (targetFreq / measureFreq)
-//	if (V_numerator > V_denominator)
-//		string cmd
-//		printf cmd "WARNING[scfd_resampleWaves]: Resampling will increase number of datapoints, not decrease! (ratio = %d/%d)\r", V_numerator, V_denominator
-//	endif
-//	resample/UP=(V_numerator)/DOWN=(V_denominator)/N=201/E=3 wav
-//
-//	//DeletePoints/M=1 25,370, wav
-//	
-//
-//
-//	// TODO: Need to test N more (simple testing suggests we may need >200 in some cases!)
-//	// TODO: Need to decide what to do with end effect. Possibly /E=2 (set edges to 0) and then turn those zeros to NaNs? 
-//	// TODO: Or maybe /E=3 is safest (repeat edges). The default /E=0 (bounce) is awful.
-//end
-
 
 
 
@@ -325,6 +123,7 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 end
 
 
+
 function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave])
 	// Built in powerspectrum function
 	create_new_wave = paramisdefault(create_new_wave) ? 1 : create_new_wave
@@ -367,12 +166,10 @@ function /s avg_wav(wave wav) // /WAVE lets your return a wave
 
 	//  averaging any wave over columns (in y direction)
 	// wave returned is avg_name
-	string wn=nameofwave(wav)
-	string avg_name=wn+"_avg";
+	string wn = nameofwave(wav)
+	string avg_name = wn + "_avg";
 	int nc
 	int nr
-
-//	wn="dat"+num2str(wavenum)+dataset //current 2d array
 
 	nr = dimsize($wn,0) //number of rows (sweep length)
 	nc = dimsize($wn,1) //number of columns (repeats)
@@ -381,13 +178,14 @@ function /s avg_wav(wave wav) // /WAVE lets your return a wave
 	return avg_name
 end
 
+
 function stopalltimers()
-variable i
-i=0
-do
-print stopMSTimer(i)
-i=i+1
-while(i<9)
+	variable i
+	i=0
+	do
+		print stopMSTimer(i)
+		i=i+1
+	while(i<9)
 end
 
 	
@@ -487,40 +285,33 @@ function ud()
 	print numloaded, "waves uploaded"
 end
 
+
+
 macro plot2d(num,dataset,disp)
-variable num
-string dataset
-variable disp
+	variable num
+	string dataset
+	variable disp
 
 	string wvname
-			wvname="dat"+num2str(num)+dataset
-if (disp==1)
-	display; 
+	wvname="dat"+num2str(num)+dataset
+	
+	if (disp==1)
+		display; 
 	endif
+	
 	appendimage $wvname
 	wavestats/q $wvname
 	//ModifyImage $wvname ctab= {0.000,*,VioletOrangeYellow,0}
 	ModifyImage $wvname ctab= {*,*,VioletOrangeYellow,0}
-	
-
-
 	ColorScale/C/N=text0/F=0/A=RC/E width=20,image=$wvname
-	
 	TextBox/C/N=text1/F=0/A=MT/E wvname
-//ModifyImage $wvname minRGB=(0,65535,0),maxRGB=(4369,4369,4369)
-//Label bottom xlabel
-//Label left ylabel
 
-ModifyGraph fSize=24
-ModifyGraph gFont="Gill Sans Light"
-ModifyGraph grid=0
-ModifyGraph width={Aspect,1.62},height=300
-ModifyGraph width=0,height=0
+	ModifyGraph fSize=24
+	ModifyGraph gFont="Gill Sans Light"
+	ModifyGraph grid=0
+	ModifyGraph width={Aspect,1.62},height=300
+	ModifyGraph width=0,height=0
 
-	//Button logscale,proc=ButtonProc,title="log"//pos={647.00,11.00},size={50.00,20.00}
-	//Button lin,proc=ButtonProc_1,title="lin"//pos={647.00,45.00},size={50.00,20.00}
-	
-	
 	variable inc
 	inc=(V_max-V_min)/20
 	Button autoscale,pos={52.00,9.00},size={103.00,21.00},proc=ButtonProc_2,title="high contrast"
@@ -528,7 +319,7 @@ ModifyGraph width=0,height=0
 	Button linear,pos={163.00,9.00},size={50.00,20.00},proc=ButtonProc_6,title="linear"
 	
 end
-end
+
 
 
 
@@ -547,17 +338,15 @@ function mean_nan(wavenm)
 end
 
 
+
 function centerwave(wavenm)
 	string wavenm 
 	wave data
 	Duplicate/o $wavenm data
 	data=data/1.5
 
-	
 	variable centerpt, centerval
 	wave w_coef=w_coef 
-
-
 
 	variable l= dimsize(data, 0 )
 	WaveStats/Q/R=[l/2-100,l/2+100] data
@@ -571,46 +360,49 @@ function centerwave(wavenm)
 	display data
 end 
 	
-function subtract_bg(rs, bias, current,[identifier])
-variable rs, bias
-variable identifier
-wave current
-variable aspectrat=6.8/3.2;
-string wavenm=("cond"+num2str(identifier))
 
+	
+function subtract_bg(rs, bias, current, [identifier])
+	variable rs, bias
+	variable identifier
+	wave current
+	variable aspectrat=6.8/3.2;
+	string wavenm=("cond"+num2str(identifier))
+	
 	if (paramisdefault(identifier))
 		wavenm="cond"
 	endif
+	
     duplicate /o current  $wavenm
     wave cond=$wavenm
 	duplicate /o current  temp
-
-temp=bias/current-rs
-cond=1/temp *aspectrat // cond * geometry of sample =conductivity
-//display; appendimage cond
-
-
+	
+	temp=bias/current-rs
+	cond=1/temp *aspectrat // cond * geometry of sample =conductivity
 
 end	
 
+
+
 macro setparams_wide()
-ModifyGraph fSize=24
-ModifyGraph gFont="Gill Sans Light"
-ModifyGraph width={Aspect,1},height=400
-ModifyGraph grid=0
-ModifyGraph width=500,height=380
-ModifyGraph width=0,height=0
+	ModifyGraph fSize=24
+	ModifyGraph gFont="Gill Sans Light"
+	ModifyGraph width={Aspect,1},height=400
+	ModifyGraph grid=0
+	ModifyGraph width=500,height=380
+	ModifyGraph width=0,height=0
 endmacro
 
-macro setparams_square()
 
-Label bottom ""
-Label left ""
-	ModifyGraph fSize=24
-ModifyGraph gFont="Gill Sans Light"
-//ModifyGraph width=283.465,height={Aspect,1.62}
-ModifyGraph grid=2
-ModifyGraph width={Aspect,1},height=400
+
+macro setparams_square()
+	Label bottom ""
+	Label left ""
+		ModifyGraph fSize=24
+	ModifyGraph gFont="Gill Sans Light"
+	//ModifyGraph width=283.465,height={Aspect,1.62}
+	ModifyGraph grid=2
+	ModifyGraph width={Aspect,1},height=400
 
 endmacro
 
@@ -892,12 +684,13 @@ end
 
 
 
-function centering(wave waved,string centered, wave mids)
-	duplicate/o waved $centered
-	wave new2dwave=$centered
-	copyscales waved new2dwave
-	//new2dwave=interp2d(waved,(x+fit_params[q][3]),(y)) // column 3 is the center fit parameter
-	new2dwave=interp2d(waved,(x+mids[q]),(y)) // mids is the shift in x
+function centering(wave wave_not_centered, string centered_wave_name, wave mids)
+	// shift the wave 'wave_not_centered' by the 'mids' wave
+	// call the new wave 'centered_wave_name'
+	duplicate/o wave_not_centered $centered_wave_name
+	wave new2dwave=$centered_wave_name
+	copyscales wave_not_centered new2dwave
+	new2dwave=interp2d(wave_not_centered,(x+mids[q]),(y)) // mids is the shift in x
 end
 
 //function cst_centering(wave waved,string kenner_out)

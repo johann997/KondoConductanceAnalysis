@@ -32,7 +32,7 @@ Function CloseAllGraphs([string no_close_graphs])
 			endif
 		endfor 
 		
-		if (strlen(name) == 0 || num_graphs <= num_open_graph || count_no_close >= num_open_graph)
+		if (strlen(name) == 0 || num_graphs <= num_open_graph || count_no_close > num_open_graph)
 			break // all done
 		endif
 		if (to_close == 1)

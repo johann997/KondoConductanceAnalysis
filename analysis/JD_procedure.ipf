@@ -19,7 +19,7 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	string cs_data_name_nf_ps = cs_data_name_nf + "_powerspec"
 	string dot_data_name_nf_ps = dot_data_name_nf + "_powerspec"
 	
-	variable freq = fd_getmeasfreq(6079)
+	variable freq = fd_getmeasfreq(datnum)
 	
 	
 	///// Calculating spectrum & notch on CS and dot current /////
@@ -67,9 +67,9 @@ function centerandaverage(variable datnum, string cs_data_name, string dot_data_
 		dot_wave_name = dot_data_name
 	endif
 
-	string cleaned_dot_name = "dot"
-	dotcond_avg($dot_wave_name, 1, cleaned_dot_name)
-	ctrans_avg($cs_wave_name, 0, 1, "cst", condfit_prefix=cleaned_dot_name, minx=1580, maxx=3050)
+	string cleaned_dot_name = "dat"
+	master_cond_clean_average($dot_wave_name, 1, cleaned_dot_name)
+	master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name, minx=1580, maxx=3050)
 end
 
 
@@ -123,8 +123,8 @@ function run_procedure()
 		datnum = str2num(stringfromlist(i, datnums))
 		run_single_procedure(datnum, plot=1, notch_on=notch_on)
 		
-		cond_avg = "dot" + num2str(datnum) + "avg"
-		trans_avg = "cst" + num2str(datnum) + "cleaned_avg"
+		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
+		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
 		
 		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 		

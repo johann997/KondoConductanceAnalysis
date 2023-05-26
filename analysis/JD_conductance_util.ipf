@@ -3,130 +3,102 @@
 #pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 #include <Reduce Matrix Size>
 
-function dotcond_avg(wave wav, int refit,string kenner_out)
+function master_cond_clean_average(wave wav, int refit, string kenner_out)
 // wav is the wave containing original dotcurrent data
 	// refit tells whether to do new fits to each CT line
 	// kenner_out is the prefix to replace dat for this analysis
 	// kenner_out  can not contain a number otherwise getfirstnu will not work
 
 	variable refnum, ms
-		//stopalltimers()
 	refnum=startmstimer
 
 //	closeallGraphs()
 
-	string datasetname =nameofwave(wav)
-	string kenner=getsuffix(datasetname) //  cscurrent in the above case
-	int wavenum=getfirstnum(datasetname) // XXX in the above case
+	string datasetname = nameofwave(wav)
+	string kenner = getsuffix(datasetname) //  cscurrent in the above case
+	int wavenum = getfirstnum(datasetname) // XXX in the above case
 	
 	// these are the new wave names to be made
-	string avg = kenner_out + num2str(wavenum) + "avg"
-	string cond_centr=kenner_out+num2str(wavenum)+"centered"
-	string cleaned=kenner_out+num2str(wavenum)+"cleaned"
+	string centered_wave_name = kenner_out + num2str(wavenum) + "_dot_centered"
+	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_dot_cleaned"
+	string avg_wave_name = cleaned_wave_name + "_avg" // this name can be whatever, but keeping same standard as CT fitting. 
 
-	string split_pos=cleaned+"_pos"
-	string split_neg=cleaned+"_neg"
-	string pos_avg=split_pos+"_avg"
-	string neg_avg=split_neg+"_avg"
-	string fit_params_name = kenner_out+num2str(wavenum)+"fit_params"
+	string split_pos = cleaned_wave_name + "_pos"
+	string split_neg = cleaned_wave_name + "_neg"
+	string pos_avg = split_pos + "_avg"
+	string neg_avg = split_neg + "_avg"
+	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params"
 	variable N
 	N=40// how many sdevs in thetas are acceptable?
 
 
-
 	if (refit==1)
-		cond_fit_params($datasetname,kenner_out)// finds fit_params
-		find_plot_gammas(fit_params_name,N) //need to do this to refind good and bad gammas
+		get_cond_fit_params($datasetname,kenner_out)// finds fit_params
+		plot_gammas(fit_params_name, N) //need to do this to refind good and bad gammas
 		duplicate/o/r=[][2] $fit_params_name mids
-		centering($datasetname,cond_centr,mids)// only need to center after redoing fits, centred plot; returns cond_centr
-		dotcleaned($cond_centr,kenner_out) // only need to clean after redoing fits; returns cond_centr
+		centering($datasetname, centered_wave_name, mids)// only need to center after redoing fits, centred plot; returns centered_wave_name
+		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
 	endif
 
 
-	split_wave( $cleaned,  0) //makes condxxxxcentered
+	split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
 	avg_wav($split_pos) // pos average
 	avg_wav($split_neg) // neg average
-	calc_avg_cond($pos_avg,$neg_avg,avg) // condxxxxavg
-	dotfigs(wavenum,N,kenner, kenner_out)
-//ctrans_avg(wavenum, 1,dotcondcentering=1)
-//	ModifyGraph log=0 // make y-axis linear
-	ModifyGraph mode=2
-	ModifyGraph lsize=4
+	get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
+	
+	plot_cond_figs(wavenum, N, kenner, kenner_out)
+
 	ms=stopmstimer(refnum)
-	print "time taken = " + num2str(ms/1e6) + "s"
+	print "Cond: time taken = " + num2str(ms/1e6) + "s"
 end
 
 
+
 function/wave split_wave(wave wav, variable flag)
+	// split the wave into positive and negative waves
 	wave kenner
 	redimension/n=-1 kenner
-	Duplicate/o kenner,idx
+	string base_wave_name = nameofwave(wav)
+
+	// create _pos wave
+	Duplicate/o kenner, idx
 	idx = kenner[p] > flag ? p : NaN
 	WaveTransform zapnans idx
-
-	string wn=nameofwave(wav)
-	string newname =wn+"_pos"
-	variable	nr = dimsize(wav,0) //number of rows (sweep length)
-
-	duplicate/o wav $newname
-	wave out_wav = $newname
+	
+	string pos_wave_name = base_wave_name + "_pos"
+	duplicate/o wav $pos_wave_name
+	wave out_wav = $pos_wave_name
 	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav
 
 	variable i=0
 	do
 		out_wav[][i]=wav[p][idx[i]]
-
 		i=i+1
-
 	while(i<dimsize(idx,0))
 
 
-	//now look for negative values
+	// create _neg wave
 	Duplicate/o kenner,idx
 	idx = kenner[p][q] < flag ? p : NaN
 	WaveTransform zapnans idx
 
-	string newname1 =wn+"_neg"
-	duplicate/o wav $newname1
-	wave out_wav1 = $newname1
+	string neg_wave_name = base_wave_name + "_neg"
+	duplicate/o wav $neg_wave_name
+	wave out_wav1 = $neg_wave_name
 	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav1
 
 	i=0
-	wave out_wav1 = $newname1
 	do
 		out_wav1[][i]=wav[p][idx[i]]
 		i=i+1
 	while(i<dimsize(idx,0))
+	
 end
 
 
-//what does this mean in Igor pro: [p][q] > flag ? p : NaN
-//In Igor Pro, the expression "[p][q] > flag ? p : NaN" is a conditional statement that checks if the value of the two-dimensional array element located at [p][q] is greater than the value of the variable "flag".
-//If the condition is true, the statement returns the value of "p". If the condition is false, the statement returns "NaN", which stands for "Not a Number" and is used to represent undefined or unrepresentable numerical values.
 
 
-//function /wave avg_wav(wave wav) // /WAVE lets your return a wave
-//
-//	//  averaging any wave over columns (in y direction)
-//	// wave returned is avg_name
-//	string wn=nameofwave(wav)
-//	string avg_name=wn+"_avg";
-//	int nc
-//	int nr
-//
-////	wn="dat"+num2str(wavenum)+dataset //current 2d array
-//
-//	nr = dimsize($wn,0) //number of rows (sweep length)
-//	nc = dimsize($wn,1) //number of columns (repeats)
-//	ReduceMatrixSize(wav, 0, -1, nr, 0,-1, 1,1, avg_name)
-//	redimension/n=-1 $avg_name
-//end
-
-
-
-
-
-function find_plot_gammas(string fit_params_name, variable N)
+function plot_gammas(string fit_params_name, variable N)
 
 	int wavenum =getfirstnum(fit_params_name)
 	variable gammamean
@@ -134,13 +106,11 @@ function find_plot_gammas(string fit_params_name, variable N)
 	variable i
 	int nr
 
-
 	wave fit_params = $fit_params_name
 	nr = dimsize(fit_params,0)
 
 	duplicate /O/R =[0,nr][3] fit_params gammas
 	duplicate /O/R =[0,nr][1] fit_params amp
-
 
 	gammamean = mean(gammas)
 	gammastd = sqrt(variance(gammas))
@@ -153,14 +123,9 @@ function find_plot_gammas(string fit_params_name, variable N)
 	make /o/n = 0 badgammas
 	make /o/n = 0 badgammasx
 
-
 	meanwave = gammamean
 	stdwave = gammamean - N * gammastd
 	stdwave2 = gammamean + N * gammastd
-
-
-	//display gammas, meanwave, stdwave, stdwave2
-
 
 	for (i=0; i < nr ; i+=1)
 
@@ -189,7 +154,6 @@ function find_plot_gammas(string fit_params_name, variable N)
 
 	ModifyGraph fSize=24
 	ModifyGraph gFont="Gill Sans Light"
-	//	ModifyGraph width={Aspect,1.62},height=300
 	ModifyGraph lstyle(meanwave)=3,rgb(meanwave)=(17476,17476,17476)
 	ModifyGraph lstyle(stdwave)=3,rgb(stdwave)=(52428,1,1)
 	ModifyGraph lstyle(stdwave2)=3,rgb(stdwave2)=(52428,1,1)
@@ -198,75 +162,44 @@ function find_plot_gammas(string fit_params_name, variable N)
 	Legend/C/N=text0/J/A=RT "\\s(meanwave) mean\r\\s(stdwave) 2*std\r\\s(goodgammas) good\r\\s(badgammas) outliers"
 	TextBox/C/N=text1/A=MT/E=2 "\\Z14\\Z16 gammas of dat" + num2str(wavenum)
 
-
-
 	Label bottom "repeat"
 	Label left "gamma values"
 
-
-
-
 end
  
+ 
+ 
 function plot_badgammas(wave wav)
-
 	int i
 	int nr
 	wave badgammasx
-	string w2d
 	string dataset=nameOfWave(wav)
 
-
-
 	nr = dimsize(badgammasx,0)
-
 	display
-if(nr>0)
-	for(i=0; i < nr; i +=1)
-		appendtograph wav[][badgammasx[i]]
-
-	endfor
-
-makecolorful()
-	ModifyGraph fSize=24
-	ModifyGraph gFont="Gill Sans Light"
-	//    ModifyGraph width={Aspect,1.62},height=300
-	Label bottom "voltage"
-	Label left dataset
-	TextBox/C/N=text1/A=MT/E=2 "bad gammas of "+dataset
-endif
+	
+	if(nr>0)
+		for(i=0; i < nr; i +=1)
+			appendtograph wav[][badgammasx[i]]
+		endfor
+	
+		makecolorful()
+		ModifyGraph fSize=24
+		ModifyGraph gFont="Gill Sans Light"
+		Label bottom "voltage"
+		Label left dataset
+		TextBox/C/N=text1/A=MT/E=2 "bad gammas of "+dataset
+	endif
 end
 
 
-
-
-
-//function dotcentering(wave waved)
-//	string w2d=nameofwave(waved)
-//	int wavenum=getfirstnum(w2d)
-//	string fit_params_name = "cond"+num2str(wavenum)+"fit_params"
-//	string centered = "cond"+num2str(wavenum)+"centered"
-//	wave fit_params = $fit_params_name
-//
-//	wave new2dwave=$centered
-//	copyscales waved new2dwave
-//	new2dwave=interp2d(waved,(x+fit_params[q][2]),(y)) // column 3 is the center fit parameter
-//end
-
-
-end
-
-
-function /wave dotcleaned(wave center,string kenner_out)
+function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
+	// takes a wave 'center' and 'cleans' it based on 'badgammasx'
+	// any row with a 'badgammax' will be removed from the 2d wave center
 	wave badgammasx
-	string w2d=nameofwave(center)
-	int wavenum=getfirstnum(w2d)
-	string cleaned=kenner_out+num2str(wavenum)+"cleaned"
-	duplicate/o center $cleaned
+	duplicate/o center $cleaned_wave_name
 
-
-	// removing lines with bad thetas;
-
+	// removing lines with bad gammas;
 	variable i, idx
 	int nc
 	int nr
@@ -275,187 +208,50 @@ function /wave dotcleaned(wave center,string kenner_out)
 	if (nr>0)
 		do
 			idx=badgammasx[i]-i //when deleting, I need the -i because if deleting in the loop the indeces of center change continously as points are deleted
-			DeletePoints/M=1 idx,1, $cleaned
-			//idx=badgammasx[i];center[][idx]=nan
+			DeletePoints/M=1 idx,1, $cleaned_wave_name
 			i=i+1
 		while (i<nr)
 	endif
 
-
 	return center
 
-
-
 end
 
 
 
-function/wave calc_avg_cond(wave pos, wave neg, string newname)
+function/wave get_conductance_from_current(wave pos, wave neg, string newname)
+	// using the positive and negative bias data gievn in current
+	// calculate the 2d array in units of conductance
+	// CHECK: bias and inline resistance is hard coded
 	duplicate/o pos, $newname
-	wave temp=$newname;
-	temp=(pos-neg)
-	variable bias=(514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
-	//bias=fd_getbiasV(wavenum)/1000; print bias
-	//interlaced_channels	:	OHV*9950
-	//interlaced_setpoints	:	514.950,495.050
+	wave temp = $newname;
+	temp = (pos-neg)
+	variable bias = (514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
 	duplicate/o temp cond
-	temp=(bias/temp)*1e9-21150;
-	temp=1/temp/7.7483e-05
-
-	//21150 Ohms of inline R
-	// Go=2e2/h=7.7483e-05
+	temp = (bias/temp)*1e9-21150;
+	temp = 1/temp/7.7483e-05
 end
 
-function /wave fit_peak(wave current_array)
-	//	// fits the current_array, If condition is 0 it will get initial params, If 1:
-	//	// define a variable named W_coef_guess = {} with the correct number of arguments
+
+
+function /wave fit_single_peak(wave current_array)
+	// fits the 1D current_array by taking the absolute value of the data
+	// CHECK: Not ideal when the current is negative
 	redimension/n=-1 current_array
 	duplicate/o current_array temp
 	temp=abs(current_array)
 	make/o/n=4 W_coef
 	wavestats/q temp
 	CurveFit/q lor current_array[round(V_maxrowloc-V_npnts/20),round(V_maxrowloc+V_npnts/20)] /D
-	
-	
 end
 
 
 
-//function chargetransition_procedure2m(int wavenum, int condition)
-//
-//	chargetransition_procedure2(wavenum, condition)
-//	MultiGraphLayout(WinList("*", ";", "WIN:1"), 3, 20, "AllGraphLayout")
-//
-//end
 
-
-//from: https://www.wavemetrics.com/forum/igor-pro-wish-list/automatically-color-traces-multi-trace-graph
-
-//Function QuickColorSpectrum2()                            // colors traces with 12 different colors
-//	String Traces    = TraceNameList("",";",1)               // get all the traces from the graph
-//	Variable Items   = ItemsInList(Traces)                   // count the traces
-//	Make/FREE/N=(11,3) colors = {{65280,0,0}, {65280,43520,0}, {0,65280,0}, {0,52224,0}, {0,65280,65280}, {0,43520,65280}, {0,15872,65280}, {65280,16384,55552}, {36864,14592,58880}, {0,0,0},{26112,26112,26112}}
-//	Variable i
-//	for (i = 0; i <DimSize(colors,1); i += 1)
-//		ModifyGraph rgb($StringFromList(i,Traces))=(colors[0][i],colors[1][i],colors[2][i])      // set new color offset
-//	endfor
-//End
-
-////from:
-//// https://www.wavemetrics.com/code-snippet/stacked-plots-multiple-plots-layout
-//
-//function MultiGraphLayout(GraphList, nCols, spacing, layoutName)
-//	string GraphList        // semicolon separated list of graphs to be appended to layout
-//	variable nCols      // number of graph columns
-//	string layoutName   // name of the layout
-//	variable spacing        // spacing between graphs in points!
-//
-//	// how many graphs are there and how many rows are required
-//	variable nGraphs = ItemsInList(GraphList)
-//	variable nRows = ceil(nGraphs / nCols)
-//	variable LayoutWidth, LayoutHeight
-//	variable gWidth, gHeight
-//	variable maxWidth = 0, maxHeight = 0
-//	variable left, top
-//	variable i, j, n = 0
-//
-//	string ThisGraph
-//
-//	// detect total layout size from individual graph sizes; get maximum graph size as column/row size
-//	for(i=0; i<nGraphs; i+=1)
-//
-//		ThisGraph = StringFromList(i, GraphList)
-//		GetWindow $ThisGraph gsize
-//		gWidth = (V_right - V_left)
-//		gHeight = (V_bottom - V_top)
-//
-//		// update maximum
-//		maxWidth = gWidth > maxWidth ? gWidth : maxWidth
-//		maxHeight = gHeight > maxHeight ? gHeight : maxHeight
-//	endfor
-//
-//	// calculate layout size
-//	LayoutWidth = maxWidth * nCols + ((nCols + 1) * spacing)
-//	LayoutHeight = maxHeight * nRows + ((nRows +1) * spacing)
-//
-//	// make layout; kill if it exists
-//	DoWindow $layoutName
-//	if(V_flag)
-//		KillWindow $layoutName
-//	endif
-//
-//	NewLayout/N=$layoutName/K=1/W=(517,55,1451,800)
-//	LayoutPageAction size=(LayoutWidth, LayoutHeight), margins=(0,0,0,0)
-//	ModifyLayout mag=0.75
-//
-//	//append graphs
-//	top = spacing
-//	for(i=0; i<nRows; i+=1)
-//
-//		// reset vertical position for each column
-//		left = spacing
-//
-//		for (j=0; j<    nCols; j+=1)
-//
-//			ThisGraph = StringFromList(n, GraphList)
-//			if(strlen(ThisGraph) == 0)
-//				return 0
-//			endif
-//
-//			GetWindow $ThisGraph gsize
-//			gWidth = (V_right - V_left)
-//			gHeight = (V_bottom - V_top)
-//
-//			AppendLayoutObject/F=0 /D=1 /R=(left, top, (left + gWidth), (top + gHeight)) graph $ThisGraph
-//
-//			// shift next starting positions to the right
-//			left += maxWidth + spacing
-//
-//			// increase plot counter
-//			n += 1
-//		endfor
-//
-//		// shift next starting positions dwon
-//		top += maxHeight + spacing
-//	endfor
-//
-//	return 1
-//end
-//
-//
-//
-//// https://www.wavemetrics.com/code-snippet/stacked-plots-multiple-plots-graph
-
-
-
-
-
-
-
-
-/////// Dealing Interlacing ////////
-
-
-
-// improvements on this function
-//			let it take an argument of names for all the waves created
-
-
-//     		an option or a new function all together that seperates the waves by grouping
-//									i.e grouping x number of rows in a m by n matrix creating
-//                                      a total of m/x waves, also takes an argument for naming?
-//          it could group based on amount of splits e.g split 2D wave into 4
-//          it could group based on number of rows indicated.
-
-
-
-
-
-function /wave cond_fit_params(wave wav, string kenner_out)
-	string w2d=nameofwave(wav)
-	int wavenum=getfirstnum(w2d)
-	string fit_params_name = kenner_out+num2str(wavenum)+"fit_params" //new array
-
+function /wave get_cond_fit_params(wave wav, string kenner_out)
+	string w2d = nameofwave(wav)
+	int wavenum = getfirstnum(w2d)
+	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params" //new array
 
 	variable i
 	string wavg
@@ -469,87 +265,110 @@ function /wave cond_fit_params(wave wav, string kenner_out)
 	nc = dimsize(wav,1) //number of columns (data points)
 	make/o /N=(nr) temp_wave
 	CopyScales wav, temp_wave
-	//setscale/I x new_x[0] , new_x[dimsize(new_x,0) - 1], "", temp_wave
 
 	make/o /N= (nc , 8) /o $fit_params_name
 	wave fit_params = $fit_params_name
 
-
 	for (i=0; i < nc ; i+=1) //nc
 		temp_wave = wav[p][i]	;	redimension/n=-1 temp_wave
 
-		fit_peak(temp_wave)
+		fit_single_peak(temp_wave)
 		fit_params[i][0,3] = W_coef[q]
 		fit_params[i][4] = W_sigma[0]
 		fit_params[i][5] = W_sigma[1]
 		fit_params[i][6] = W_sigma[2]
 		fit_params[i][7] = W_sigma[3]
 
-
 	endfor
 
 	return fit_params
-
 end
 
-function dotfigs(variable wavenum,variable N,string kenner, string kenner_out)	
-	string dataset="dat"+num2str(wavenum)+kenner
-	string avg = kenner_out + num2str(wavenum) + "avg"
-	string cond_centr=kenner_out+num2str(wavenum)+"centered"
-	string cleaned=kenner_out+num2str(wavenum)+"cleaned"
 
-	string split_pos=cleaned+"_pos"
-	string split_neg=cleaned+"_neg"
-	string pos_avg=split_pos+"_avg"
-	string neg_avg=split_neg+"_avg"
-	string fit_params_name = kenner_out+num2str(wavenum)+"fit_params" 
+
+function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out)	
+	string dataset = "dat" + num2str(wavenum) + kenner
+	string centered_wave_name = kenner_out + num2str(wavenum) + "_dot_centered"
+	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_dot_cleaned"
+	string avg_wave_name = cleaned_wave_name + "_avg"
+
+	string split_pos = cleaned_wave_name + "_pos"
+	string split_neg = cleaned_wave_name + "_neg"
+	string pos_avg = split_pos + "_avg"
+	string neg_avg = split_neg + "_avg"
+	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params" 
 //	closeallgraphs()
 
 	/////////////////// thetas  //////////////////////////////////////
 
+	plot2d_heatmap($dataset); // raw data
+	
+	plot2d_heatmap($split_pos) // positive bias
+	plot2d_heatmap($split_neg) // negative bias
+	
+	plot2d_heatmap($centered_wave_name) // plot centered traces
+	
+	plot_gammas(fit_params_name,N)	// plot gamma values (FWHM)
+	plot_badgammas($centered_wave_name) // plot traces with 'bad gammas'
+	 
+	plot2d_heatmap($cleaned_wave_name) // plot 2d with removed 'bad gamma' traces
+	
+	
+	/////////////////// plot avg fit  //////////////////////////////////////
+	
+	display $avg_wave_name;
 
-	find_plot_gammas(fit_params_name,N)
-	plot2d_heatmap($split_pos);	plot2d_heatmap($split_neg)
-	plot2d_heatmap($dataset);	plot2d_heatmap($cond_centr);plot2d_heatmap($cleaned)
-	plot_badgammas($cond_centr)
-	fit_peak($avg)
-
-
-	//display $pos_avg, $neg_avg;
-	display $avg;
-	Label left "cond (2e^2/h)";DelayUpdate
-	ModifyGraph log(left)=1,loglinear(left)=1
+	string fit_name = "fit_" + avg_wave_name
+	fit_single_peak($avg_wave_name) // getting fit parameters of final averaged trace
+	
 	Label bottom "gate (V)"
+	Label left "cond (2e^2/h)"; // DelayUpdate
+	ModifyGraph fSize=24
+	ModifyGraph gFont="Gill Sans Light"
+	ModifyGraph mode($fit_name)=0, lsize($fit_name)=1, rgb($fit_name)=(65535,0,0)
+	ModifyGraph mode($avg_wave_name)=2, lsize($avg_wave_name)=2, rgb($avg_wave_name)=(0,0,0)
+	Legend
+	Legend/C/N=text0/J/A=LB/X=59.50/Y=53.03
+
+	ModifyGraph log(left)=1,loglinear(left)=1
 
 	TileWindows/O=1/C/P
 
 end
 
 
-function CBpeak(A,G,Vo,V)
-	variable A,G,Vo,V
-	variable cond
-
-	cond=A*G/((V-Vo)^2+(G/2)^2);
-	return cond
-end
-
-Function CBpeak_fit(w,V) : FitFunc
-	Wave w
-	Variable V
-
-	//CurveFitDialog/ These comments were created by the Curve Fitting dialog. Altering them will
-	//CurveFitDialog/ make the function less convenient to work with in the Curve Fitting dialog.
-	//CurveFitDialog/ Equation:
-	//CurveFitDialog/ f(V) = CBpeak(A,G,Vo,V)
-	//CurveFitDialog/ End of Equation
-	//CurveFitDialog/ Independent Variables 1
-	//CurveFitDialog/ V
-	//CurveFitDialog/ Coefficients 3
-	//CurveFitDialog/ w[0] = A
-	//CurveFitDialog/ w[1] = G
-	//CurveFitDialog/ w[2] = Vo
-
-	return CBpeak(w[0],w[1],w[2],V)
-End
+	
+//////////////////////
+///// DEPRECATED /////
+//////////////////////
+/////////////////////////////////////////////////////////
+///// Using fit_single_peak() in favour of the below/////
+/////////////////////////////////////////////////////////
+//function fit_function_lorentzian(A, G, Vo, V)
+//	variable A,G,Vo,V
+//	variable cond
+//
+//	cond=A*G/((V-Vo)^2+(G/2)^2);
+//	return cond
+//end
+//
+//
+//
+//Function CBpeak_fit(w, V) : FitFunc
+//	Wave w
+//	Variable V
+//	//CurveFitDialog/ These comments were created by the Curve Fitting dialog. Altering them will
+//	//CurveFitDialog/ make the function less convenient to work with in the Curve Fitting dialog.
+//	//CurveFitDialog/ Equation:
+//	//CurveFitDialog/ f(V) = CBpeak(A,G,Vo,V)
+//	//CurveFitDialog/ End of Equation
+//	//CurveFitDialog/ Independent Variables 1
+//	//CurveFitDialog/ V
+//	//CurveFitDialog/ Coefficients 3
+//	//CurveFitDialog/ w[0] = A
+//	//CurveFitDialog/ w[1] = G
+//	//CurveFitDialog/ w[2] = Vo
+//
+//	return fit_function_lorentzian(w[0],w[1],w[2],V)
+//End
 
