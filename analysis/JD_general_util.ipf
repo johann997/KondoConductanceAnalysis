@@ -11,21 +11,21 @@
 
 
 function center_dSdN(int wavenum, string kenner)
-//wav is input wave, for example demod
-//centered is output name
-wave demod
-string centered=kenner+num2str(wavenum)+"centered"
-string centeravg=kenner+num2str(wavenum)+"centered_avg"
-string cleaned=kenner+num2str(wavenum)+"cleaned"
-string cleaned_avg=kenner+num2str(wavenum)+"cleaned_avg"
-
-
-//duplicate/o demod centered
-wave badthetasx
-
-string condfit_prefix="cst"; //this can become an input if needed
-string condfit_params_name=condfit_prefix+num2str(wavenum)+"fit_params"
-wave condfit_params = $condfit_params_name
+	//wav is input wave, for example demod
+	//centered is output name
+	wave demod
+	string centered=kenner+num2str(wavenum)+"centered"
+	string centeravg=kenner+num2str(wavenum)+"centered_avg"
+	string cleaned=kenner+num2str(wavenum)+"cleaned"
+	string cleaned_avg=kenner+num2str(wavenum)+"cleaned_avg"
+	
+	
+	//duplicate/o demod centered
+	wave badthetasx
+	
+	string condfit_prefix="cst"; //this can become an input if needed
+	string condfit_params_name=condfit_prefix+num2str(wavenum)+"fit_params"
+	wave condfit_params = $condfit_params_name
 
 	duplicate/o/r=[][3] condfit_params mids
 
@@ -287,102 +287,6 @@ end
 
 
 
-macro plot2d(num,dataset,disp)
-	variable num
-	string dataset
-	variable disp
-
-	string wvname
-	wvname="dat"+num2str(num)+dataset
-	
-	if (disp==1)
-		display; 
-	endif
-	
-	appendimage $wvname
-	wavestats/q $wvname
-	//ModifyImage $wvname ctab= {0.000,*,VioletOrangeYellow,0}
-	ModifyImage $wvname ctab= {*,*,VioletOrangeYellow,0}
-	ColorScale/C/N=text0/F=0/A=RC/E width=20,image=$wvname
-	TextBox/C/N=text1/F=0/A=MT/E wvname
-
-	ModifyGraph fSize=24
-	ModifyGraph gFont="Gill Sans Light"
-	ModifyGraph grid=0
-	ModifyGraph width={Aspect,1.62},height=300
-	ModifyGraph width=0,height=0
-
-	variable inc
-	inc=(V_max-V_min)/20
-	Button autoscale,pos={52.00,9.00},size={103.00,21.00},proc=ButtonProc_2,title="high contrast"
-	Button use_lookup,pos={49.00,35.00},size={105.00,23.00},proc=ButtonProc_5,title="use lookup"
-	Button linear,pos={163.00,9.00},size={50.00,20.00},proc=ButtonProc_6,title="linear"
-	
-end
-
-
-
-
-function mean_nan(wavenm)
-	wave wavenm
-	
-	variable i=0, sumwv=0, numpts=dimsize(wavenm,0), numvals=0
-	do
-		if (abs(wavenm[i])>0)
-			sumwv += wavenm[i]
-			numvals+=1
-		endif
-		i+=1
-	while(i<numpts)
-	return (sumwv/numvals)
-end
-
-
-
-function centerwave(wavenm)
-	string wavenm 
-	wave data
-	Duplicate/o $wavenm data
-	data=data/1.5
-
-	variable centerpt, centerval
-	wave w_coef=w_coef 
-
-	variable l= dimsize(data, 0 )
-	WaveStats/Q/R=[l/2-100,l/2+100] data
-	//wavestats /q data
-	centerpt = v_maxrowloc
-	
-	
-	CurveFit/q/NTHR=0 lor  data[(centerpt-20),(centerpt+20)] 
-	centerval=w_coef[2]
-	SetScale/P x (dimoffset(data,0)-centerval),dimdelta(data,0),"", data
-	display data
-end 
-	
-
-	
-function subtract_bg(rs, bias, current, [identifier])
-	variable rs, bias
-	variable identifier
-	wave current
-	variable aspectrat=6.8/3.2;
-	string wavenm=("cond"+num2str(identifier))
-	
-	if (paramisdefault(identifier))
-		wavenm="cond"
-	endif
-	
-    duplicate /o current  $wavenm
-    wave cond=$wavenm
-	duplicate /o current  temp
-	
-	temp=bias/current-rs
-	cond=1/temp *aspectrat // cond * geometry of sample =conductivity
-
-end	
-
-
 
 macro setparams_wide()
 	ModifyGraph fSize=24
@@ -408,161 +312,6 @@ endmacro
 
 
 
-
-
-
-
-	
-
-
-
-
-Function Setmaxi(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-	nvar maxi, mini
-
-	switch( sva.eventCode )
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-		
-			 maxi = sva.dval
-			String sval = sva.sval
-	ModifyImage ''#0 ctab= {mini,maxi,VioletOrangeYellow,0}
-break
-		case -1: // control being killed
-			break
-	endswitch
-
-	return maxi
-End
-
-Function Setmini(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-	nvar maxi, mini
-
-	switch( sva.eventCode )
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-		
-			 mini = sva.dval
-			String sval = sva.sval
-	ModifyImage ''#0 ctab= {mini,maxi,VioletOrangeYellow,0}
-
-break
-		case -1: // control being killed
-			break
-	endswitch
-
-	return mini
-End
-
-
-
-
-
-
-
-
-Function save_specwave(waveno)
-	variable waveno
-	
-	Variable index = 0
-	do
-		Wave/Z w = WaveRefIndexedDFR(:, index)
-		if (!WaveExists(w))
-			break
-		endif
-		
-		String fileName = NameOfWave(w)
-		string compare2="dat"+num2str(waveno)
-		variable slen
-		slen= strlen(compare2)
-
-		if(stringmatch(fileName[0,slen-1], compare2))
-		Save/C/O/P=data w as fileName
-      print filename
-		endif
-		index += 1
-	while(1)
-	
-	
-End
-
-function save_waves(Anfang,Ende)
-	variable Anfang, Ende
-	variable index=Anfang
-	do
-		save_specwave(index)
-		index += 1
-	while(index<Ende)
-end
-
-
-
-Function renamewave(oldprefix,newprefix)
-   string oldprefix, newprefix
- 
-   string theList, theOne, theName
-   variable ic, nt
- 
-   theList = WaveList("*",";","")
-   nt = ItemsInList(theList)
-   for (ic=0;ic<nt;ic+=1)
-     theOne = StringFromList(ic,theList)
-     theName = ReplaceString(oldprefix,theOne,newprefix)
-     rename $theOne $theName
-   endfor
-   return 0
-end
-
-
-
-
-
-
-function int_PSD(tim)
-	string tim
-//	wave ref
-	string inwave="spectrum_2020-10-09_"+tim+"fftADC0"
-	string outwave="spectrum_2020-10-09_"+tim+"_int"
-	wave nw=$inwave
-	//execute("graph()")
-	wavestats/q nw
-	if (V_min<-140)
-	DeletePoints 0,1, nw
-	endif
-	
-	appendtoGraph/l $inwave; 
-
-	duplicate/o $inwave $outwave
-	wave nw_int=$outwave
-	duplicate/o nw temp
-	temp= 10^(nw/10);
-
-	Integrate temp/D=nw_int
-	appendtoGraph/r nw_int; 
-	makecolorful(); 
-	
-//	matrixop/o diff=ref-nw
-//	display diff
-//	SetScale/I x 0,1269,"", diff
-
-
-end
-
-macro testLI()
-closeallGraphs()
-sc_openInstrConnections(0)
-setFdacAWGSquareWave(fd, 100, -100, 0.001, 0.001, 0)
-setupAWG(fd, AWs="0", DACs="0", numCycles=1, verbose=1)
-ScanFastDAC(fd, 0, 1, "3", sweeprate=1,  use_awg=1,nosave = 0, repeats = 5)
-
-//lock_in_main_2d(wave0_2d,1)
-//demodulate(filenum,1,"wa,[append2hdf])
-//display average
-endmacro
 
 
 //from:
@@ -646,6 +395,7 @@ function MultiGraphLayout(GraphList, nCols, spacing, layoutName)
 	return 1
 end
 
+
 function getfirstnum(numstr)
     string numstr
     
@@ -655,6 +405,7 @@ function getfirstnum(numstr)
     return number
 end
 
+
 function /s getprefix(numstr)
     string numstr
     
@@ -663,6 +414,7 @@ function /s getprefix(numstr)
     sscanf numstr, "%[^0123456789]%d", junk, number
     return junk
 end
+
 
 function /s getsuffix(numstr)
     string numstr
@@ -692,20 +444,4 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 	copyscales wave_not_centered new2dwave
 	new2dwave=interp2d(wave_not_centered,(x+mids[q]),(y)) // mids is the shift in x
 end
-
-//function cst_centering(wave waved,string kenner_out)
-//	string w2d=nameofwave(waved)
-//	int wavenum=getfirstnum(w2d)
-//	string centered=kenner_out+num2str(wavenum)+"centered"
-//	string fit_params_name = kenner_out+num2str(wavenum)+"fit_params"
-//	wave fit_params = $fit_params_name
-//	
-//	//	duplicate /o /r = [][0] waved wavex;redimension/N=(nr) wavex; wavex = x
-//	duplicate/o waved $centered
-//	wave new2dwave=$centered
-//	copyscales waved new2dwave
-//	new2dwave=interp2d(waved,(x+fit_params[q][3]),(y)) // column 3 is the center fit parameter
-//end
-
-
 

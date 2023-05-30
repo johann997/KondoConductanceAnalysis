@@ -3,16 +3,11 @@
 #pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 #include <Global Fit 2>
 
-#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3				// Use modern global access method and strict wave access
-#pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
-#include <Global Fit 2>
-
 
 /////////////////////////////////////////////////////////
 ///// 1 TIME RUN TO CREATE INTERPOLATED NRG DATASET /////
 /////////////////////////////////////////////////////////
-macro nrgprocess()
+macro master_build_nrg_data()
 	// load in the nrg data.  Each 2D wave has energies (mu) on the x axis and gamma on the y axis,
 	// but the mus are different for different gammas.  We assume fixed T for this processing.
 	// The output is three different 2D waves, g_nrg, occ_nrg, and dndt_nrg, with ln(G/T) on the y axis and mu on the x-axis, assuming fixed Gamma
@@ -54,7 +49,7 @@ macro nrgprocess()
 	g_n_wide = ln(g_n_wide)
 	
 	// Load the nrg data, interpolated, into the waves made above.
-	interp_nrg()
+	interpolate_nrg()
 	imageinterpolate/dest=g_nrg/resl={100000,500} spline cond_n;copyscales cond_n g_nrg
 	imageinterpolate/dest=occ_nrg/resl={100000,500} spline occ_n;copyscales occ_n occ_nrg
 	imageinterpolate/dest=dndt_nrg/resl={100000,500} spline dndt_n;copyscales dndt_n dndt_nrg
@@ -67,13 +62,16 @@ function build_GFinputs_struct(GFin, data)
 	STRUCT GFinputs &GFin
 	STRUCT g_occdata &data
 	
-	variable counter=0, numcoefs, i, j, numwvs=dimsize(data.temps,0), numlinks, numunlinked, whichcoef
+	variable counter = 0, numcoefs, i, j, numwvs = dimsize(data.temps, 0), numlinks, numunlinked, whichcoef
 	wave data.temps
 	
-	// List of fit functions
+	
+	////////////////////////////
+	///// ADDING FIT FUNCS /////
+	////////////////////////////
 	make /t/o/n=1 fitfuncs
 	wave /t GFin.fitfuncs
-	GFin.fitfuncs[0]="nrgcondAAO"
+	GFin.fitfuncs[0] = "fitfunc_nrgcondAAO"
 	// coef[0]: lnG/T for Tbase -- linked
 	// coef[1]: x-scaling -- linked
 	// coef[2]: x-offset
@@ -84,79 +82,92 @@ function build_GFinputs_struct(GFin, data)
 	links={1,1,0,0,0}
 	numlinks = sum(links)
 	
-	// List of waves for global fit
+	
+	/////////////////////////////
+	///// ADDING DATA WAVES /////
+	/////////////////////////////
 	if (stringmatch(data.g_maskwvlist,""))
-		make /t/o/n=(numwvs,2) fitdata
+		make /t/o/n=(numwvs, 2) fitdata
 	else
-		make /t/o/n=(numwvs,3) fitdata
+		make /t/o/n=(numwvs, 3) fitdata
 		SetDimLabel 1, 2, Masks, fitdata
 	endif
 	wave /t GFin.fitdata
 	for(i=0;i<numwvs;i++)
-		GFin.fitdata[i][0]=stringfromlist(i,data.g_wvlist)
-		GFin.fitdata[i][1]="_calculated_"
-		if (!stringmatch(data.g_maskwvlist,""))
-			GFin.fitdata[i][2]=stringfromlist(i,data.g_maskwvlist)
+		GFin.fitdata[i][0] = stringfromlist(i, data.g_wvlist)
+		GFin.fitdata[i][1] = "_calculated_"
+		if (!stringmatch(data.g_maskwvlist, ""))
+			GFin.fitdata[i][2] = stringfromlist(i, data.g_maskwvlist)
 		endif
 	endfor
 	
-	// Coefficient-linking instructions
+	
+	//////////////////////////////////////
+	///// ADDING COEFFICIENT LINKING /////
+	//////////////////////////////////////
 	make /o/n=(numwvs,(numcoefs+4)) linking
 	wave GFin.linking
-	GFin.linking[][0]=0 // column 0 is the index in fitfuncnames of the fit function to be used
-	counter=0
-	for(i=0;i<numwvs;i++) // columns 1 and 2 are the start and end indices of each input wave when concatenated into one long wave
-		GFin.linking[i][1]=counter
-		counter += (dimsize($(fitdata[i]),0)-1)
-		GFin.linking[i][2]=counter
+	GFin.linking[][0] = 0 // column 0 is the index in fitfuncnames of the fit function to be used
+	counter = 0
+	for(i=0; i<numwvs; i++) // columns 1 and 2 are the start and end indices of each input wave when concatenated into one long wave
+		GFin.linking[i][1] = counter
+		counter += (dimsize($(fitdata[i]), 0) - 1)
+		GFin.linking[i][2] = counter
 		counter += 1
 	endfor
-	GFin.linking[][3]=numcoefs // column 3 is the number of fit coefs in the fit function for each wave
+	GFin.linking[][3] = numcoefs // column 3 is the number of fit coefs in the fit function for each wave
 	// The GF will use a total number of fit coefficients numlinks+numunlinked:
 	// The number of linked (global) coefs is numlinks
 	// The number of other (unlinked) coefs is (numcoefs-numlinks)*numwvs
 	// Preplinks is the wave that will correlate fit coefs for individual waves with the coef wave index for the global fit
 	make /o/n=(numwvs, numcoefs) preplinks  
-	preplinks=-1
-	whichcoef=0
-	for(i=0;i<numcoefs;i++)
-		if(links[i]==1)
-			preplinks[][i]=whichcoef
-			whichcoef+=1
+	preplinks = -1
+	whichcoef = 0
+	for(i=0; i<numcoefs; i++)
+		if(links[i] == 1)
+			preplinks[][i] = whichcoef
+			whichcoef += 1
 		endif
 	endfor
-	numunlinked=numwvs*(numcoefs-numlinks)
-	for(i=0;i<numwvs;i++)
-		for(j=0;j<numcoefs;j++)
-			if(preplinks[i][j]==-1)
-				preplinks[i][j]=whichcoef
-				whichcoef+=1
+	numunlinked = numwvs * (numcoefs - numlinks)
+	for(i=0; i<numwvs; i++)
+		for(j=0; j<numcoefs; j++)
+			if(preplinks[i][j] == -1)
+				preplinks[i][j] = whichcoef
+				whichcoef += 1
 			endif
 		endfor
 	endfor
 	// columns 4 through numcoefs+3 in 'linking' are the values from prelinks
-	GFin.linking[][4,(numcoefs+3)]=preplinks[p][q-4]
+	GFin.linking[][4, (numcoefs+3)] = preplinks[p][q-4]
 		
-	// Initial guesses of coefficients
+		
+	////////////////////////////////////////////////
+	///// ADDING INITIAL GUESS OF COEFFICIENTS /////
+	////////////////////////////////////////////////
 	make /o/n=(whichcoef,2) coefwave
 	SetDimLabel 1, 1, Hold, coefwave
 	wave GFin.coefwave
-	coefwave=0
-	// For nrgcondAAO with N input waves these are:
-	coefwave[0][0] = 1.5 // lnG/T for Tbase (linked)
+	coefwave = 0
+	// For fitfunc_nrgcondAAO with N input waves these are:
+	coefwave[0][0] = 3 // lnG/T for Tbase (linked)
 	coefwave[1][0] = 0.01 // x scaling (linked)
-	for(i=0;i<numwvs;i++)
-		coefwave[2+i*(numcoefs-numlinks)][0]=0 // x offset
-		coefwave[3+i*(numcoefs-numlinks)][0]=ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
-		coefwave[3+i*(numcoefs-numlinks)][1]=1 // hold the lnG/T offsets
-		coefwave[4+i*(numcoefs-numlinks)][0]=wavemax($(GFin.fitdata[i][0])) // peak height
+	for(i=0; i<numwvs; i++)
+		coefwave[2 + i*(numcoefs-numlinks)][0] = 0 // x offset
+		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
+//		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[i]/data.temps[0]) // lnG/T offest for various T's
+		coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnG/T offsets
+		coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 	endfor
 	
-	// Constraints
+	
+	//////////////////////////////
+	///// ADDING CONSTRAINTS /////
+	//////////////////////////////
 	make /t/o/n=2 constraintwave
 	wave /t GFin.constraintwave
-	GFin.constraintwave[0]="K0<4"
-	GFin.constraintwave[1]="K0>1"
+	GFin.constraintwave[0] = "K0<4"
+	GFin.constraintwave[1] = "K0>1"
 end
 
 
@@ -164,7 +175,7 @@ end
 function build_g_occdata_struct(datnums, data)
 	string datnums
 	STRUCT g_occdata &data	
-	string strnm, runlabel="highG"
+	string strnm, runlabel = "highG"
 	string g_wvlist = "", g_maskwvlist = ""
 	string occ_wvlist = "", occ_maskwvlist = ""
 	
@@ -175,9 +186,9 @@ function build_g_occdata_struct(datnums, data)
 		datnum = stringfromlist(i, datnums)
 
 		g_wvlist = g_wvlist + "dat" + datnum + "_dot_cleaned_avg;"
-		occ_wvlist = occ_wvlist + "dat" + datnum + "_ct_cleaned_avg;"
+		occ_wvlist = occ_wvlist + "dat" + datnum + "_cs_cleaned_avg;"
 		g_maskwvlist = g_maskwvlist + "dat" + datnum + "_dot_cleaned_avg_mask;"
-		occ_maskwvlist = occ_maskwvlist + "dat" + datnum + "_ct_cleaned_avg_mask;"
+		occ_maskwvlist = occ_maskwvlist + "dat" + datnum + "_cs_cleaned_avg_mask;"
 		
 	endfor
 	 
@@ -201,10 +212,10 @@ end
 
 
 
-function create_mask_waves(string datnums)
+function build_mask_waves(string datnums)
 
 	string dot_wave_name, dot_mask_wave_name
-	string ct_wave_name, ct_mask_wave_name
+	string cs_wave_name, cs_mask_wave_name
 	
 	variable num_dats = ItemsInList(datnums, ";")
 	variable i
@@ -212,19 +223,98 @@ function create_mask_waves(string datnums)
 	
 	for (i=0;i<num_dats;i+=1)
 		datnum = stringfromlist(i, datnums)
-
-		dot_wave_name = "dat" + datnum + "_dot_cleaned_avg"
-		dot_mask_wave_name = "dat" + datnum + "_dot_cleaned_avg_mask"
-		make /o/N=(dimsize($dot_wave_name, 0)) $dot_mask_wave_name = 1
-						
-		ct_wave_name = "dat" + datnum + "_ct_cleaned_avg;"
-		ct_mask_wave_name = "dat" + datnum + "_ct_cleaned_avg_mask;"
-		make /o/N=(dimsize($ct_wave_name, 0)) $ct_mask_wave_name = 1
-
+		info_mask_waves(datnum)
 	endfor
 
 end
 
+
+
+
+function info_mask_waves(string datnum)
+	// create the masks for each individual datnum seperately
+
+	string dot_wave_name, dot_mask_wave_name
+	string cs_wave_name, cs_mask_wave_name
+	dot_wave_name = "dat" + datnum + "_dot_cleaned_avg"
+	dot_mask_wave_name = "dat" + datnum + "_dot_cleaned_avg_mask"
+	cs_wave_name = "dat" + datnum + "_cs_cleaned_avg"
+	cs_mask_wave_name = "dat" + datnum + "_cs_cleaned_avg_mask"
+	
+	variable dot_min_val = -inf, dot_max_val = inf, cs_min_val = -inf, cs_max_val = inf
+	variable dot_min_index = -inf, dot_max_index = inf, cs_min_index = -inf, cs_max_index = inf
+	variable datnum_declared = 1
+	string mask_type = "linear"
+	
+
+	if (cmpstr(datnum, "6079") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 1074
+	
+	elseif (cmpstr(datnum, "6088") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 2000
+	
+	elseif (cmpstr(datnum, "6085") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 2000
+	
+	elseif (cmpstr(datnum, "6082") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 2000
+	
+	else
+		datnum_declared = 0
+	endif
+	
+//	make /o/N=(dimsize($dot_wave_name, 0)) $dot_mask_wave_name = 1
+//	make /o/N=(dimsize($cs_wave_name, 0)) $cs_mask_wave_name = 1
+	duplicate /o $dot_wave_name $dot_mask_wave_name
+	duplicate /o $cs_wave_name $cs_mask_wave_name
+	
+	wave dot_mask_wave = $dot_mask_wave_name
+	wave cs_mask_wave = $cs_mask_wave_name
+	
+	dot_mask_wave = 1; cs_mask_wave = 1
+	
+	if (datnum_declared == 1)
+
+		///// CALCULATING MIN AND MAX INDEX /////
+		dot_min_index = x2pnt($dot_wave_name, dot_min_val)
+		if (dot_min_index < 0)
+			dot_min_index = 0
+		endif
+		
+		dot_max_index = x2pnt($dot_wave_name, dot_max_val)
+		if (dot_max_index >= dimsize($dot_wave_name, 0))
+			dot_max_index = dimsize($dot_wave_name, 0)
+		endif
+		
+		dot_mask_wave[0, dot_min_index] = 0
+		dot_mask_wave[dot_max_index, dimsize($dot_wave_name, 0) - 1] = 0
+		
+		
+		///// CALCULATING MIN AND MAX INDEX /////
+		cs_min_index = x2pnt($cs_wave_name, cs_min_val)
+		if (cs_min_index < 0)
+			cs_min_index = 0
+		endif
+		
+		cs_max_index = x2pnt($cs_wave_name, cs_max_val)
+		if (cs_max_index >= dimsize($cs_wave_name, 0))
+			cs_max_index = dimsize($cs_wave_name, 0)
+		endif
+		
+		cs_mask_wave[0, cs_min_index] = 0
+		cs_mask_wave[cs_max_index, dimsize($cs_wave_name, 0) - 1] = 0
+		
+	else
+		print "Dat" + datnum + "no range info specified: mask = 1"
+//		make /o/N=(dimsize($dot_wave_name, 0)) $dot_mask_wave_name = 1
+//		make /o/N=(dimsize($cs_wave_name, 0)) $cs_mask_wave_name = 1
+	endif
+	
+end
 
 
 
@@ -236,7 +326,7 @@ function run_global_fit(variable baset, string datnums)
 	build_g_occdata_struct(datnums, data)
 	
 	// build mask waves
-	create_mask_waves(datnums)
+	build_mask_waves(datnums)
 	
 	
 	variable i, numcoefs, counter, numwvs, options, nrgline
@@ -266,44 +356,56 @@ function run_global_fit(variable baset, string datnums)
 	variable /g GF_chisq
 	print "Chisqr is",GF_chisq
 	
-//	// Use coefficients determined from conductance fit to fit occupation data
-//	display
-//	for(i=0;i<numwvs;i++)
-//		string occ_coef="coef_"+stringfromlist(i,data.occ_wvlist)
-//		make/o /n=8 $occ_coef=0 // Make coefficient wave for occupation fits
-//		wave curr_coef=$("coef_"+stringfromlist(i,data.g_wvlist))
-//		wave new_coef=$occ_coef
-//		wave currwv=$(stringfromlist(i,data.occ_wvlist))
-//		appendtograph currwv
-//		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[7]=(v_min-v_max) //
-//		FuncFit/Q/H="11010000" nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-//		FuncFit/Q/H="11010000" nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
-//	endfor
+	// Use coefficients determined from conductance fit to fit occupation data
+	string current_data_name, current_fit_name
+	display
+	for(i=0;i<numwvs;i++)
+		string occ_coef="coef_"+stringfromlist(i,data.occ_wvlist)
+		make/o /n=8 $occ_coef=0 // Make coefficient wave for occupation fits
+		wave curr_coef=$("coef_"+stringfromlist(i,data.g_wvlist))
+		wave new_coef=$occ_coef
+		
+		current_data_name = stringfromlist(i,data.occ_wvlist)
+		wave currwv=$(stringfromlist(i,data.occ_wvlist))
+		appendtograph currwv
+		ModifyGraph mode($current_data_name)=2, lsize($current_data_name)=2, rgb($current_data_name)=(0,0,0)
+		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[7]=(v_min-v_max) //
+		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+		
+		current_data_name = "fit_" + current_data_name
+		ModifyGraph mode($current_data_name)=0, lsize($current_data_name)=2, rgb($current_data_name)=(65535,0,0)
+	endfor
 	
-//	// Use coefficients determined from occupations fit to find occupation(Vgate)
-//	display
-//	for(i=0;i<numwvs;i++)
-//		wavenm="nrgocc_"+stringfromlist(i,data.g_wvlist)
-//		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
-//		wave nrg_occ=$wavenm
-//		wavenm="coef_"+stringfromlist(i,data.occ_wvlist)
-//		nrgocc($wavenm,nrg_occ)
-//		appendtograph $(stringfromlist(i,data.g_wvlist)) vs nrg_occ
-//	endfor
-//	
-//	// Add NRG data on top
-//	for(i=0;i<numwvs;i++)
-//		wavenm="coef_"+stringfromlist(i,data.g_wvlist)
-//		wave g_coefs=$wavenm
-//		wave g_nrg
-//		wave occ_nrg
-//		nrgline = scaletoindex(g_nrg,(g_coefs[0]+g_coefs[3]),1)
-//		wavenm = "g"+num2str(nrgline)
-//		matrixop /o $wavenm=col(g_nrg,nrgline)
-//		wave gnrg = $wavenm
-//		gnrg *= g_coefs[4]
-//		appendtograph gnrg vs occ_nrg[][nrgline]
-//	endfor
+	// Use coefficients determined from occupations fit to find occupation(Vgate)
+	string cond_vs_occ_wave_name
+	display
+	for(i=0;i<numwvs;i++)
+		wavenm="nrgocc_"+stringfromlist(i,data.g_wvlist)
+		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
+		
+		wave nrg_occ=$wavenm
+		wavenm="coef_"+stringfromlist(i,data.occ_wvlist)
+		fitfunc_nrgocc($wavenm, nrg_occ)
+		cond_vs_occ_wave_name = (stringfromlist(i,data.g_wvlist))
+		appendtograph $cond_vs_occ_wave_name vs nrg_occ
+		ModifyGraph mode($cond_vs_occ_wave_name)=2, lsize($cond_vs_occ_wave_name)=2, rgb($cond_vs_occ_wave_name)=(0,0,0)
+	endfor
+	
+	// Add NRG data on top
+//	string cond_vs_occ_wave_name
+	for(i=0;i<numwvs;i++)
+		wavenm="coef_"+stringfromlist(i,data.g_wvlist)
+		wave g_coefs=$wavenm
+		wave g_nrg
+		wave occ_nrg
+		nrgline = scaletoindex(g_nrg,(g_coefs[0]+g_coefs[3]),1)
+		wavenm = "g"+num2str(nrgline)
+		matrixop /o $wavenm=col(g_nrg,nrgline)
+		wave gnrg = $wavenm
+		gnrg *= g_coefs[4]
+		appendtograph gnrg vs occ_nrg[][nrgline]
+	endfor
 	
 end
 
@@ -323,7 +425,7 @@ end
 //	strnm = runlabel+"g_wvlist"
 //	string /g $strnm=data.g_wvlist
 //
-//	data.occ_wvlist="dat6079_ct_cleaned_avg;dat6088_ct_cleaned_avg;dat6085_ct_cleaned_avg;dat6082_ct_cleaned_avg"
+//	data.occ_wvlist="dat6079_cs_cleaned_avg;dat6088_cs_cleaned_avg;dat6085_cs_cleaned_avg;dat6082_cs_cleaned_avg"
 //	strnm = runlabel+"occ_wvlist"
 //	string /g $strnm=data.occ_wvlist
 //
@@ -331,7 +433,7 @@ end
 //	strnm = runlabel+"g_maskwvlist"
 //	string /g $strnm=data.g_maskwvlist
 //
-//	data.occ_maskwvlist="dat6079_ct_cleaned_avg_mask;dat6088_ct_cleaned_avg_mask;dat6085_ct_cleaned_avg_mask;dat6082_ct_cleaned_avg_mask"
+//	data.occ_maskwvlist="dat6079_cs_cleaned_avg_mask;dat6088_cs_cleaned_avg_mask;dat6085_cs_cleaned_avg_mask;dat6082_cs_cleaned_avg_mask"
 //	strnm = runlabel+"occ_maskwvlist"
 //	string /g $strnm=data.occ_maskwvlist
 //
@@ -369,8 +471,8 @@ end
 //		wave currwv=$(stringfromlist(i,data.occ_wvlist))
 //		appendtograph currwv
 //		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[7]=(v_min-v_max) //
-//		FuncFit/Q/H="11010000" nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-//		FuncFit/Q/H="11010000" nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+//		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+//		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
 //	endfor
 //	
 //	// Use coefficients determined from occupations fit to find occupation(Vgate)
@@ -402,7 +504,7 @@ end
 
 
 
-function interp_nrg()
+function interpolate_nrg()
 	wave gammas=g_n_wide
 	wave dndt=dndt_n
 	wave cond=cond_n
@@ -429,10 +531,12 @@ function interp_nrg()
 		datx[]=mus[p][i]
 		daty[]=dndt_i[p][i]
 		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
+		
 		dndt[][i]=interpwv[p]
 		daty[]=cond_i[p][i]
 		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
 		wavestats /q interpwv
+		
 		cond[][i]=interpwv[p]/v_max
 		daty[]=occ_i[p][i]
 		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
@@ -470,7 +574,7 @@ Endstructure
 ////////////////////////////////////
 ///// FIT FUNCTION DEFINITIONS /////
 ////////////////////////////////////
-Function nrgcond(w,x) : FitFunc
+Function fitfunc_nrgcond(w,x) : FitFunc
 	Wave w
 	Variable x
 	wave nrg=m_interpolatedimage
@@ -479,7 +583,7 @@ Function nrgcond(w,x) : FitFunc
 End
 
 
-Function nrgcondAAO(pw, yw, xw) : FitFunc
+Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc
 	WAVE pw, yw, xw
 	wave nrg=g_nrg
 	
@@ -487,7 +591,7 @@ Function nrgcondAAO(pw, yw, xw) : FitFunc
 end
 
 
-Function nrgctAAO(pw, yw, xw) : FitFunc
+Function fitfunc_nrgctAAO(pw, yw, xw) : FitFunc
 	WAVE pw, yw, xw
 	wave nrg=occ_nrg
 	
@@ -495,7 +599,7 @@ Function nrgctAAO(pw, yw, xw) : FitFunc
 end
 
 
-Function nrgocc(pw, yw) : FitFunc
+Function fitfunc_nrgocc(pw, yw) : FitFunc
 	WAVE pw, yw
 	wave nrg=occ_nrg
 	

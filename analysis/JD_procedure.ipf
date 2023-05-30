@@ -3,7 +3,10 @@
 #pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 #include <Global Fit 2>
 
-
+/////  This .ipf contains some high level functions that help stitch multiple steps into one function
+///// The general procedure of going from RAW data to global fit with NRG data is:
+///// run_clean_average_procedure()
+///// run_nrg_procedure()
 
 function denoise(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on]) 
 
@@ -16,6 +19,7 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	
 	string cs_data_name_ps = cs_data_name + "_powerspec"
 	string dot_data_name_ps = dot_data_name + "_powerspec"
+	
 	string cs_data_name_nf_ps = cs_data_name_nf + "_powerspec"
 	string dot_data_name_nf_ps = dot_data_name_nf + "_powerspec"
 	
@@ -36,8 +40,9 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	endif
 	
 //	closeallGraphs()
-	
-	display $cs_data_name_ps; 
+
+	display 
+	AppendToGraph $cs_data_name_ps; 
 	AppendToGraph $dot_data_name_ps;
 	ModifyGraph lstyle($dot_data_name_ps)=1;
 	
@@ -100,7 +105,6 @@ end
 function run_clean_average_procedure()
 
 	string datnums = "6079;6082;6085;6088"
-//	string datnums = "6079"
 	variable notch_on = 1
 	
 	variable num_dats = ItemsInList(datnums, ";")
@@ -135,41 +139,41 @@ function run_clean_average_procedure()
 
 end
 
-
-function run_nrg_procedure()
-
-	string datnums = "6079;6082;6085;6088"
-//	string datnums = "6079"
-	variable notch_on = 1
-	
-	variable num_dats = ItemsInList(datnums, ";")
-	variable plot = 0
-	if (num_dats<2)
-		plot = 1
-	endif
-	
-	string window_name
-	Display 
-	DoWindow/C conductance_vs_sweep 
-	
-	Display 
-	window_name = WinName(0,1)
-	DoWindow/C transition_vs_sweep
-	
-	string cond_avg, trans_avg
-	variable i, datnum
-	for (i=0;i<num_dats;i+=1)
-		datnum = str2num(stringfromlist(i, datnums))
-		run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on)
-		
-		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
-		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
-		
-		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
-		
-		// append to graphs 
-		AppendToGraph /W=conductance_vs_sweep $cond_avg;
-		AppendToGraph /W=transition_vs_sweep $trans_avg;
-	endfor
-
-end
+//
+//function run_nrg_procedure()
+//
+//	string datnums = "6079;6082;6085;6088"
+////	string datnums = "6079"
+//	variable notch_on = 1
+//	
+//	variable num_dats = ItemsInList(datnums, ";")
+//	variable plot = 0
+//	if (num_dats<2)
+//		plot = 1
+//	endif
+//	
+//	string window_name
+//	Display 
+//	DoWindow/C conductance_vs_sweep 
+//	
+//	Display 
+//	window_name = WinName(0,1)
+//	DoWindow/C transition_vs_sweep
+//	
+//	string cond_avg, trans_avg
+//	variable i, datnum
+//	for (i=0;i<num_dats;i+=1)
+//		datnum = str2num(stringfromlist(i, datnums))
+//		run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on)
+//		
+//		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
+//		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
+//		
+//		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
+//		
+//		// append to graphs 
+//		AppendToGraph /W=conductance_vs_sweep $cond_avg;
+//		AppendToGraph /W=transition_vs_sweep $trans_avg;
+//	endfor
+//
+//end
