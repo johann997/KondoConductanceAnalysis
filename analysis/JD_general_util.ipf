@@ -190,13 +190,15 @@ end
 
 	
 	
-function udh5([dat_num, dat_list, dat_min_max])
+function udh5([dat_num, dat_list, dat_min_max, exclude_name])
 	// Loads HDF files back into Igor, if no optional paramters specified loads all dat in file path into IGOR
 	// NOTE: Assumes 'data' has been specified
-	string dat_num,dat_list, dat_min_max
+	string dat_num,dat_list, dat_min_max, exclude_name
 	dat_num = selectString(paramisdefault(dat_num), dat_num, "") // e.g. "302"
 	dat_list = selectString(paramisdefault(dat_list), dat_list, "") // e.g. "302,303,304,305,401"
 	dat_min_max = selectString(paramisdefault(dat_min_max), dat_min_max, "") // e.g. "302,310"
+	exclude_name = selectString(paramisdefault(exclude_name), exclude_name, "") // e.g. "RAW"
+	string strmatch_exclude_name = "*" + exclude_name + "*"
 	
 	string infile = wavelist("*",";","") // get wave list
 	string hdflist = indexedfile(data,-1,".h5") // get list of .h5 files
@@ -239,10 +241,15 @@ function udh5([dat_num, dat_list, dat_min_max])
 	variable numHDF = itemsinlist(hdflist, ";"), fileid = 0, numWN = 0, wnExists = 0
 	variable j = 0, numloaded = 0
 
-
 	for(i = 0; i < numHDF; i += 1) // loop over h5 filelist
 
 		currentHDF = StringFromList(i, hdflist, ";")
+		
+		if (cmpstr(strmatch_exclude_name, "**") == 1 && stringmatch(currentHDF, strmatch_exclude_name) == 1) // if exclude name set and within file name 
+			continue
+		endif
+		
+
 
 		HDF5OpenFile/P=data /R fileID as currentHDF
 		HDF5ListGroup /TYPE=2 /R=1 fileID, "/" // list datasets in root group
