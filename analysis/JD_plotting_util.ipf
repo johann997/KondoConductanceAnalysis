@@ -289,3 +289,31 @@ function setcolorscale2d(percent)
 	ModifyImage '' ctab= {V_min,percent*V_max,PlanetEarth,0}
 	//killwaves mywave
 end
+
+
+function twosubplot(graphID, wave2name,[labelx, labely])
+//creates a subplot with an existing wave and GraphID with wave2
+//wave2 will appear on top
+	string graphID, wave2name, labelx, labely
+	variable logy,logx
+	wave wave2 = $wave2name
+	
+	labelx = selectString(paramIsDefault(labelx), labelx, "")
+	labely = selectString(paramIsDefault(labely), labely, "")
+	//variable minwave2 = wavemin(wave2)
+	
+	ModifyGraph /W = $graphID axisEnab(left)={0.525, 1.0} //graphID wont work
+	AppendToGraph /W = $graphID /L=l2/B=b2 wave2 // vs something
+	label b2 labelx
+	label l2 labely
+	
+
+	
+	ModifyGraph /W = $graphID axisEnab(l2)={0.0, 0.475}
+	
+	ModifyGraph /W = $graphID noLabel(b2)=2
+	ModifyGraph /W = $graphID freePos(l2)=0
+//	//ModifyGraph /W = $graphID freePos(b2)={minwave2,l2}
+	ModifyGraph /W = $graphID freePos(b2)={0,left}
+
+end

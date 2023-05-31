@@ -102,9 +102,11 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 end
 
 
-function run_clean_average_procedure()
+function run_clean_average_procedure([string datnums])
+	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102"
+	
+	datnums = selectString(paramisdefault(datnums), datnums, default_datnums) // e.g. "RAW"
 
-	string datnums = "6079;6082;6085;6088"
 	variable notch_on = 1
 	
 	variable num_dats = ItemsInList(datnums, ";")
@@ -125,7 +127,12 @@ function run_clean_average_procedure()
 	variable i, datnum
 	for (i=0;i<num_dats;i+=1)
 		datnum = str2num(stringfromlist(i, datnums))
-		run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on)
+		
+		try
+			run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on)
+		catch
+			print "FAILED CLEAN AND AVERAGE :: DAT " + num2str(datnum)
+		endtry 
 		
 		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"

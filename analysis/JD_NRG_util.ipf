@@ -356,6 +356,10 @@ function run_global_fit(variable baset, string datnums)
 	variable /g GF_chisq
 	print "Chisqr is",GF_chisq
 	
+	
+	////////////////////////////////////////////////
+	///// Fitting and Plotting Occupation Data /////
+	////////////////////////////////////////////////
 	// Use coefficients determined from conductance fit to fit occupation data
 	string current_data_name, current_fit_name
 	display
@@ -369,42 +373,65 @@ function run_global_fit(variable baset, string datnums)
 		wave currwv=$(stringfromlist(i,data.occ_wvlist))
 		appendtograph currwv
 		ModifyGraph mode($current_data_name)=2, lsize($current_data_name)=2, rgb($current_data_name)=(0,0,0)
-		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[7]=(v_min-v_max) //
-		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[6]=0; new_coef[7]=(v_min-v_max); //
+		FuncFit/Q/H="11010010" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+		FuncFit/Q/H="11010010" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
 		
 		current_data_name = "fit_" + current_data_name
 		ModifyGraph mode($current_data_name)=0, lsize($current_data_name)=2, rgb($current_data_name)=(65535,0,0)
 	endfor
 	
+	
+	
+	////////////////////////////////////////////////////
+	///// Plotting Conductance vs. Occupation Data /////
+	////////////////////////////////////////////////////
 	// Use coefficients determined from occupations fit to find occupation(Vgate)
-	string cond_vs_occ_wave_name
+	string cond_vs_occ_data_wave_name
 	display
 	for(i=0;i<numwvs;i++)
-		wavenm="nrgocc_"+stringfromlist(i,data.g_wvlist)
-		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
+		wavenm="nrgocc_" + stringfromlist(i,data.g_wvlist)
+		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist) + "condocc_data"
 		
+		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
+
 		wave nrg_occ=$wavenm
-		wavenm="coef_"+stringfromlist(i,data.occ_wvlist)
+		wavenm="coef_" + stringfromlist(i,data.occ_wvlist)
 		fitfunc_nrgocc($wavenm, nrg_occ)
-		cond_vs_occ_wave_name = (stringfromlist(i,data.g_wvlist))
-		appendtograph $cond_vs_occ_wave_name vs nrg_occ
-		ModifyGraph mode($cond_vs_occ_wave_name)=2, lsize($cond_vs_occ_wave_name)=2, rgb($cond_vs_occ_wave_name)=(0,0,0)
+		wave cond_vs_occ_ydata_wave_name = $(stringfromlist(i,data.g_wvlist))
+		
+		duplicate /o nrg_occ $cond_vs_occ_data_wave_name
+		wave cond_vs_occ_wave_data = $cond_vs_occ_data_wave_name
+		cond_vs_occ_wave_data = cond_vs_occ_ydata_wave_name
+		
+		
+		appendtograph $cond_vs_occ_data_wave_name vs nrg_occ
+		ModifyGraph mode($cond_vs_occ_data_wave_name)=2, lsize($cond_vs_occ_data_wave_name)=2, rgb($cond_vs_occ_data_wave_name)=(0,0,0)
 	endfor
-	
+		
+		
 	// Add NRG data on top
-//	string cond_vs_occ_wave_name
+	string cond_vs_occ_nrg_wave_name
 	for(i=0;i<numwvs;i++)
-		wavenm="coef_"+stringfromlist(i,data.g_wvlist)
+		wavenm="coef_" + stringfromlist(i,data.g_wvlist)
+		cond_vs_occ_nrg_wave_name = stringfromlist(i,data.g_wvlist) + "condocc_nrg"
+		
 		wave g_coefs=$wavenm
 		wave g_nrg
 		wave occ_nrg
-		nrgline = scaletoindex(g_nrg,(g_coefs[0]+g_coefs[3]),1)
-		wavenm = "g"+num2str(nrgline)
-		matrixop /o $wavenm=col(g_nrg,nrgline)
+		nrgline = scaletoindex(g_nrg, (g_coefs[0] + g_coefs[3]), 1)
+		wavenm = "g" + num2str(nrgline)
+		matrixop /o $wavenm=col(g_nrg, nrgline)
 		wave gnrg = $wavenm
 		gnrg *= g_coefs[4]
+		
+//		duplicate /o occ_nrg[:][nrgline], $cond_vs_occ_nrg_wave_name
+//		wave cond_vs_occ_wave_nrg = $cond_vs_occ_nrg_wave_name
+//		cond_vs_occ_wave_nrg = gnrg
+//		wave cond_vs_occ_nrg = $cond_vs_occ_nrg_wave_name
+		
 		appendtograph gnrg vs occ_nrg[][nrgline]
+//		appendtograph cond_vs_occ_wave_nrg
 	endfor
 	
 end
@@ -579,11 +606,11 @@ Function fitfunc_nrgcond(w,x) : FitFunc
 	Variable x
 	wave nrg=m_interpolatedimage
 
-	return interp2d(nrg,(w[1]*(x+w[2])),(w[0]+w[3]))
+	return interp2d(nrg,(w[1]*(x-w[2])),(w[0]+w[3]))
 End
 
 
-Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc
+Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc // original negative
 	WAVE pw, yw, xw
 	wave nrg=g_nrg
 	
@@ -595,7 +622,7 @@ Function fitfunc_nrgctAAO(pw, yw, xw) : FitFunc
 	WAVE pw, yw, xw
 	wave nrg=occ_nrg
 	
-	yw = pw[7]*interp2d(nrg,(pw[1]*(xw+pw[2])),(pw[0]+pw[3]))+pw[4]+pw[5]*xw+pw[6]*xw^2
+	yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
 end
 
 
@@ -603,5 +630,5 @@ Function fitfunc_nrgocc(pw, yw) : FitFunc
 	WAVE pw, yw
 	wave nrg=occ_nrg
 	
-	yw = interp2d(nrg,(pw[1]*(x+pw[2])),(pw[0]+pw[3]))
+	yw = interp2d(nrg,(pw[1]*(x-pw[2])),(pw[0]+pw[3]))
 end
