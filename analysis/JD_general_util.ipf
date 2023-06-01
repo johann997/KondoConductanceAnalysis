@@ -137,12 +137,12 @@ function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_w
 
 	variable i=0
 	rowslice(spectrum,i)
-		DSPPeriodogram/R=[1,(le)] /DB/NODC=1/DEST=W_Periodogram slice
+		DSPPeriodogram/R=[0,(le-1)]/PARS/NODC=2/DEST=W_Periodogram slice 
 	duplicate/o w_Periodogram, powerspec
 	i=1
 	do
 		rowslice(spectrum,i)
-		DSPPeriodogram/R=[1,(le)]/DB/NODC=1/DEST=W_Periodogram slice
+		DSPPeriodogram/R=[0,(le-1)]/PARS/NODC=2/DEST=W_Periodogram slice 
 		powerspec=powerspec+W_periodogram
 		i=i+1
 	while(i<dimsize(spectrum,1))
@@ -156,6 +156,8 @@ function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_w
 	else
 		display powerspec; // SetAxis bottom 0,500
 	endif
+	
+	ModifyGraph log(left)=1
 
 end
 

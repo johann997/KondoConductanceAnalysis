@@ -58,9 +58,12 @@ end
 
 
 
-function build_GFinputs_struct(GFin, data)
+function build_GFinputs_struct(GFin, data, [gamma_over_temp_type])
 	STRUCT GFinputs &GFin
 	STRUCT g_occdata &data
+	string gamma_over_temp_type
+	
+	gamma_over_temp_type = selectString(paramisdefault(gamma_over_temp_type), gamma_over_temp_type, "high")
 	
 	variable counter = 0, numcoefs, i, j, numwvs = dimsize(data.temps, 0), numlinks, numunlinked, whichcoef
 	wave data.temps
@@ -150,8 +153,14 @@ function build_GFinputs_struct(GFin, data)
 	wave GFin.coefwave
 	coefwave = 0
 	// For fitfunc_nrgcondAAO with N input waves these are:
-	coefwave[0][0] = 3 // lnG/T for Tbase (linked)
-	coefwave[1][0] = 0.01 // x scaling (linked)
+	if (cmpstr(gamma_over_temp_type, "high") == 0)
+		coefwave[0][0] = 3 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.01 // x scaling (linked)
+	elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
+		coefwave[0][0] = 1.5 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.002 // x scaling (linked)
+	endif
+	
 	for(i=0; i<numwvs; i++)
 		coefwave[2 + i*(numcoefs-numlinks)][0] = 0 // x offset
 		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
@@ -246,23 +255,34 @@ function info_mask_waves(string datnum)
 	variable datnum_declared = 1
 	string mask_type = "linear"
 	
-
+	
+//////////////////////////////////////////////////////////////
 	if (cmpstr(datnum, "6079") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -2000; cs_max_val = 1074
-	
+		cs_min_val = -3000; cs_max_val = 1074
 	elseif (cmpstr(datnum, "6088") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -2000; cs_max_val = 2000
-	
+		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6085") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -2000; cs_max_val = 2000
-	
+		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6082") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -2000; cs_max_val = 2000
-	
+		cs_min_val = -3000; cs_max_val = 2000
+//////////////////////////////////////////////////////////////
+	elseif (cmpstr(datnum, "6080") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -1315; cs_max_val = 1490
+	elseif (cmpstr(datnum, "6089") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -1873; cs_max_val = 1117
+	elseif (cmpstr(datnum, "6086") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -3000; cs_max_val = 1495
+	elseif (cmpstr(datnum, "6083") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -1667; cs_max_val = 967
+//////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
 	endif
@@ -318,7 +338,7 @@ end
 
 
 
-function run_global_fit(variable baset, string datnums)
+function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(variable baset, string datnums, string gamma_over_temp_type)
 
 	// build struct giving information on wave names (keep information tidy when passing around)
 	STRUCT g_occdata data
@@ -330,7 +350,7 @@ function run_global_fit(variable baset, string datnums)
 	
 	
 	variable i, numcoefs, counter, numwvs, options, nrgline
-	string strnm, wavenm, runlabel = "highG"
+	string strnm, wavenm, runlabel = gamma_over_temp_type + "G"
 
 	make /o/n=4 temps
 	wave data.temps
@@ -347,14 +367,15 @@ function run_global_fit(variable baset, string datnums)
 		
 	// Define inputs for global fit to conductance data
 	// (check out help in Global Fit 2 Help -- not Global Fit Help without the 2!)
-	build_GFinputs_struct(GFin, data)
+	build_GFinputs_struct(GFin, data, gamma_over_temp_type=gamma_over_temp_type)
 	options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
 	// Perform global fit
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 
-	print "Gamma/T at",(data.temps[0]),"=",exp(GFin.CoefWave[0][0])
+//	print "Gamma/T at",(data.temps[0]),"=",exp(GFin.CoefWave[0][0])
 	variable /g GF_chisq
-	print "Chisqr is",GF_chisq
+//	print "Chisqr on conductance fit is",GF_chisq
+	cond_chisq = GF_chisq
 	
 	
 	////////////////////////////////////////////////
@@ -362,6 +383,7 @@ function run_global_fit(variable baset, string datnums)
 	////////////////////////////////////////////////
 	// Use coefficients determined from conductance fit to fit occupation data
 	string current_data_name, current_fit_name
+	variable total_occ_chisq
 	display
 	for(i=0;i<numwvs;i++)
 		string occ_coef="coef_"+stringfromlist(i,data.occ_wvlist)
@@ -373,13 +395,18 @@ function run_global_fit(variable baset, string datnums)
 		wave currwv=$(stringfromlist(i,data.occ_wvlist))
 		appendtograph currwv
 		ModifyGraph mode($current_data_name)=2, lsize($current_data_name)=2, rgb($current_data_name)=(0,0,0)
-		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[6]=0; new_coef[7]=(v_min-v_max); //
-		FuncFit/Q/H="11010010" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-		FuncFit/Q/H="11010010" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg;  new_coef[7]=(v_min-v_max); // new_coef[6]=0;
+		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+		
+		total_occ_chisq += V_chisq
 		
 		current_data_name = "fit_" + current_data_name
 		ModifyGraph mode($current_data_name)=0, lsize($current_data_name)=2, rgb($current_data_name)=(65535,0,0)
 	endfor
+	
+//	print "Chisqr on occupation fit is " + num2str(total_occ_chisq/4)
+	occ_chisq = total_occ_chisq/4
 	
 	
 	
@@ -414,7 +441,11 @@ function run_global_fit(variable baset, string datnums)
 	string cond_vs_occ_nrg_wave_name
 	for(i=0;i<numwvs;i++)
 		wavenm="coef_" + stringfromlist(i,data.g_wvlist)
-		cond_vs_occ_nrg_wave_name = stringfromlist(i,data.g_wvlist) + "condocc_nrg"
+		string cond_vs_occ_nrg_wave_name_x = stringfromlist(i,data.g_wvlist) + "condocc_nrg_x"
+		string cond_vs_occ_nrg_wave_name_y = stringfromlist(i,data.g_wvlist) + "condocc_nrg_y"
+		
+		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist) + "condocc_data"
+		wave cond_vs_occ_data_wave = $cond_vs_occ_data_wave_name
 		
 		wave g_coefs=$wavenm
 		wave g_nrg
@@ -424,16 +455,26 @@ function run_global_fit(variable baset, string datnums)
 		matrixop /o $wavenm=col(g_nrg, nrgline)
 		wave gnrg = $wavenm
 		gnrg *= g_coefs[4]
+
+		// save y-wave
+		duplicate /o gnrg, $cond_vs_occ_nrg_wave_name_y
 		
-//		duplicate /o occ_nrg[:][nrgline], $cond_vs_occ_nrg_wave_name
-//		wave cond_vs_occ_wave_nrg = $cond_vs_occ_nrg_wave_name
-//		cond_vs_occ_wave_nrg = gnrg
-//		wave cond_vs_occ_nrg = $cond_vs_occ_nrg_wave_name
+		// save x-wave
+		duplicate /RMD=[][nrgline] /o occ_nrg, $cond_vs_occ_nrg_wave_name_x
 		
-		appendtograph gnrg vs occ_nrg[][nrgline]
-//		appendtograph cond_vs_occ_wave_nrg
+		
+//		appendtograph gnrg vs occ_nrg[][nrgline]
+		appendtograph $cond_vs_occ_nrg_wave_name_y vs $cond_vs_occ_nrg_wave_name_x
+		wave cond_vs_occ_nrg_wave_y = $cond_vs_occ_nrg_wave_name_y
+		
+		duplicate /o cond_vs_occ_data_wave, cond_vs_occ_calc
+		wave cond_vs_occ_calc 
+		cond_vs_occ_calc = (cond_vs_occ_data_wave - cond_vs_occ_nrg_wave_y)^2
+		
+		condocc_chisq += sum(cond_vs_occ_calc)
 	endfor
 	
+	return [cond_chisq, occ_chisq, condocc_chisq/4]
 end
 
 

@@ -29,32 +29,39 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	///// Calculating spectrum & notch on CS and dot current /////
 	spectrum_analyzer($cs_data_name, freq)
 	if (notch_on == 1)
-		notch_filters($cs_data_name,Hzs="60;180;300;420", Qs="50;150;250;250")
+		notch_filters($cs_data_name,Hzs="60;180;300;420;541", Qs="50;150;250;250;540")
 		spectrum_analyzer($cs_data_name_nf, freq)
 	endif
 	
 	spectrum_analyzer($dot_data_name, freq)
 	if (notch_on == 1)
-		notch_filters($dot_data_name,Hzs="60;180;300;420", Qs="50;150;250;250")
+		notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
 		spectrum_analyzer($dot_data_name_nf, freq)
 	endif
 	
 //	closeallGraphs()
 
 	display 
-	AppendToGraph $cs_data_name_ps; 
+	AppendToGraph $cs_data_name_ps; ModifyGraph rgb($cs_data_name_ps)=(0,0,0)
 	AppendToGraph $dot_data_name_ps;
-	ModifyGraph lstyle($dot_data_name_ps)=1;
+
+	
+	string legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r\\s(" + dot_data_name_ps +  ")dot raw\r"
 	
 	if (notch_on == 1)
 		AppendToGraph $cs_data_name_nf_ps;
 		ModifyGraph rgb($cs_data_name_nf_ps)=(0,0,0)
+		ModifyGraph lstyle($cs_data_name_nf_ps)=1;
 	
 		AppendToGraph $dot_data_name_nf_ps;
-		ModifyGraph rgb($dot_data_name_nf_ps)=(0,0,0)
 		ModifyGraph lstyle($dot_data_name_nf_ps)=1;
+		
+		legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r\\s(" + dot_data_name_nf_ps +  ")dot notch\r"
 	endif
 	
+	
+	ModifyGraph log(left)=1
+	Legend /C/N=legend_figc/J/A=LT legend_text
 end
 
 
