@@ -161,9 +161,16 @@ function interpolate_nrg_narrow()
 	
 	variable musmax, musmin, gammamax, gammamin
 	
-	wavestats /q mus_narrow_interp
+	///// OLD /////
+//	wavestats /q mus_narrow_interp
+//	musmax = v_max
+//	musmin = v_min
+	///// NEW /////
+	wave mu_n_wide
+	wavestats /q mu_n_wide
 	musmax = v_max
 	musmin = v_min
+	///// /////
 	SetScale/I x musmin, musmax, "", cond_narrow_interp, dndt_narrow_interp, occ_narrow_interp
 	
 	wavestats /q gammas_narrow_interp
