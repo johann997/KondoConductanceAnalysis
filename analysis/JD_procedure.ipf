@@ -88,7 +88,6 @@ end
 function run_single_clean_average_procedure(variable datnum, [variable notch_on, variable plot])
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
 	plot = paramisdefault(plot) ? 1 : plot
-
 	
 	string cs_data_type = "cscurrent_2d"
 	string dot_data_type = "dotcurrent_2d"
@@ -99,6 +98,12 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 	
 	///// first denoise /////
 	denoise(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
+	
+	///// resample /////
+	if (datnum == 6084)
+		string dot_data_name_nf = dot_data_name + "_nf" 
+		resampleWave($dot_data_name_nf, 1000)
+	endif
 	
 	//// center the charge transitions and conductions data then average
 	centerandaverage(datnum, cs_data_name, dot_data_name, notch_on=notch_on)

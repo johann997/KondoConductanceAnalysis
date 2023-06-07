@@ -233,8 +233,8 @@ function figure_C_separate([variable baset])
 	baset = paramisdefault(baset) ? 15 : baset
 	
 //	string datnums = "6079;6088;6085;6082"; string gamma_over_temp_type = "high" // high gamma
-	string datnums = "6080;6089;6086;6083"; string gamma_over_temp_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; string gamma_over_temp_type = "low" // low gamma
+//	string datnums = "6080;6089;6086;6083"; string gamma_over_temp_type = "mid" // mid gamma
+	string datnums = "6081;6090;6087;6084"; string gamma_over_temp_type = "low" // low gamma
 	string e_temps = num2str(baset) + ";100;300;500"
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	string colour, e_temp

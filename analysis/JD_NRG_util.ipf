@@ -22,15 +22,24 @@ macro master_build_nrg_data()
 	
 	// Gammas become 1D waves listing the gammas for each row
 	matrixtranspose gammas; Redimension/N=-1 Gammas
-	matrixtranspose gammas_wide;Redimension/N=-1 Gammas_wide
+	matrixtranspose gammas_wide; Redimension/N=-1 Gammas_wide
 	
 	// Scale mu's by gamma's to make this appropriate for temperature dependence.
 	// The 2D resulting waves have the appropriate scaled mu at every x,y point.
 	duplicate mu_mat mu_n; duplicate mu_wide mu_n_wide // _n is short for "normalized", which signifies mu scaled by gamma
 	mu_n_wide /= gammas_wide[q]; mu_n /= gammas[q]
 	
-	// After this point working only with the _wide data
+	/////////////////////////////////////////////
+	///// NEW WAY OF INTERPOLATING NRG DATA /////
+	/////////////////////////////////////////////
 	
+	
+	
+	
+	/////////////////////////////////////////////
+	///// OLD WAY OF INTERPOLATING NRG DATA /////
+	/////////////////////////////////////////////
+	// After this point working only with the _wide data
 	// Set the first and last scaled mu's to be the max and min mu's so that the interpolation that is coming will not look outside the domain of existing data
 	variable maxval=wavemax(mu_n_wide), minval=wavemin(mu_n_wide)
 	mu_n_wide[0][]=maxval
@@ -159,12 +168,14 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type])
 	elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 		coefwave[0][0] = 1.5 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.002 // x scaling (linked)
+	elseif (cmpstr(gamma_over_temp_type, "low") == 0)
+		coefwave[0][0] = -2.3 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.01 // x scaling (linked)
 	endif
 	
 	for(i=0; i<numwvs; i++)
 		coefwave[2 + i*(numcoefs-numlinks)][0] = 0 // x offset
 		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
-//		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[i]/data.temps[0]) // lnG/T offest for various T's
 		coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnG/T offsets
 		coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 	endfor
@@ -176,7 +187,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type])
 	make /t/o/n=2 constraintwave
 	wave /t GFin.constraintwave
 	GFin.constraintwave[0] = "K0<4"
-	GFin.constraintwave[1] = "K0>1"
+//	GFin.constraintwave[1] = "K0>1" OLD JOSH LINE
+	GFin.constraintwave[1] = "K0>=-2.3026"
 end
 
 
@@ -256,7 +268,7 @@ function info_mask_waves(string datnum)
 	string mask_type = "linear"
 	
 	
-//////////////////////////////////////////////////////////////
+////////// high gamma ////////////////////////////////////////////////////
 	if (cmpstr(datnum, "6079") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 1074
@@ -269,7 +281,7 @@ function info_mask_waves(string datnum)
 	elseif (cmpstr(datnum, "6082") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 2000
-//////////////////////////////////////////////////////////////
+////////// mid gamma ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
 //		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -1315; cs_max_val = 1490
@@ -282,6 +294,19 @@ function info_mask_waves(string datnum)
 	elseif (cmpstr(datnum, "6083") == 0)
 //		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -1667; cs_max_val = 967
+////////// low gamma ////////////////////////////////////////////////////
+	elseif (cmpstr(datnum, "6081") == 0)
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "6090") == 0)
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "6087") == 0)
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "6084") == 0)
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -1000; cs_max_val = 1000
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
@@ -395,7 +420,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		wave currwv=$(stringfromlist(i,data.occ_wvlist))
 		appendtograph currwv
 		ModifyGraph mode($current_data_name)=2, lsize($current_data_name)=2, rgb($current_data_name)=(0,0,0)
-		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg;  new_coef[7]=(v_min-v_max); // new_coef[6]=0;
+		new_coef[0,3] = curr_coef[p]; wavestats /q currwv; new_coef[4]=v_avg;  new_coef[7]=(v_min-v_max); // new_coef[6]=0;
 		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
 		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
 		

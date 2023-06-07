@@ -123,6 +123,42 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 end
 
 
+function resampleWave(wave wav,variable targetFreq )
+	// resamples wave w from measureFreq
+	// to targetFreq (which should be lower than measureFreq)	
+	string wn=nameOfWave(wav)
+	int wavenum=getfirstnum(wn)
+	string temp_name="dat"+num2str(wavenum)+"x_array"
+	
+	variable measureFreq
+//	struct ScanVars S
+//	fd_getScanVars(S,wavenum)
+struct AWGVars S
+fd_getoldAWG(S,wavenum)
+
+	measureFreq=S.measureFreq
+	variable N=measureFreq/targetFreq
+
+	
+	RatioFromNumber (targetFreq / measureFreq)
+	if (V_numerator > V_denominator)
+		string cmd
+		printf cmd "WARNING[scfd_resampleWaves]: Resampling will increase number of datapoints, not decrease! (ratio = %d/%d)\r", V_numerator, V_denominator
+	endif
+	resample/UP=(V_numerator)/DOWN=(V_denominator)/N=201/E=3 wav
+
+	//DeletePoints/M=1 25,370, wav
+	
+
+
+	// TODO: Need to test N more (simple testing suggests we may need >200 in some cases!)
+	// TODO: Need to decide what to do with end effect. Possibly /E=2 (set edges to 0) and then turn those zeros to NaNs? 
+	// TODO: Or maybe /E=3 is safest (repeat edges). The default /E=0 (bounce) is awful.
+end
+
+
+
+
 
 function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave])
 	// Built in powerspectrum function

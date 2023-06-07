@@ -33,7 +33,7 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 
 
 	if (refit==1)
-		get_cond_fit_params($datasetname,kenner_out)// finds fit_params
+		get_cond_fit_params($datasetname, kenner_out)// finds fit_params
 		plot_gammas(fit_params_name, N) //need to do this to refind good and bad gammas
 		duplicate/o/r=[][2] $fit_params_name mids
 		centering($datasetname, centered_wave_name, mids)// only need to center after redoing fits, centred plot; returns centered_wave_name
@@ -60,7 +60,9 @@ function/wave split_wave(wave wav, variable flag)
 	redimension/n=-1 kenner
 	string base_wave_name = nameofwave(wav)
 
-	// create _pos wave
+	////////////////////////////
+	///// create _pos wave /////
+	////////////////////////////
 	Duplicate/o kenner, idx
 	idx = kenner[p] > flag ? p : NaN
 	WaveTransform zapnans idx
@@ -77,7 +79,9 @@ function/wave split_wave(wave wav, variable flag)
 	while(i<dimsize(idx,0))
 
 
-	// create _neg wave
+	////////////////////////////
+	///// create _neg wave /////
+	////////////////////////////
 	Duplicate/o kenner,idx
 	idx = kenner[p][q] < flag ? p : NaN
 	WaveTransform zapnans idx
@@ -199,19 +203,58 @@ function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
 	wave badgammasx
 	duplicate/o center $cleaned_wave_name
 
-	// removing lines with bad gammas;
+	//////////////////////////////////////////
+	///// removing lines with bad gammas /////
+	//////////////////////////////////////////
 	variable i, idx
 	int nc
 	int nr
-	nr = dimsize(badgammasx,0) //number of rows
+	nr = dimsize(badgammasx,0) // number of rows
 	i=0
 	if (nr>0)
 		do
-			idx=badgammasx[i]-i //when deleting, I need the -i because if deleting in the loop the indeces of center change continously as points are deleted
+			idx = badgammasx[i] - i // when deleting, I need the -i because if deleting in the loop the indeces of center change continously as points are deleted
 			DeletePoints/M=1 idx,1, $cleaned_wave_name
-			i=i+1
+			i += 1
 		while (i<nr)
 	endif
+	
+	
+	/////////////////////////////////////////////////
+	///// removing lines with more than X% NaNs /////
+	/////////////////////////////////////////////////
+//	variable nan_cutoff = 0.3 // remove line if more than 30% of points are NaNs
+//	variable num_columns = round(dimsize($cleaned_wave_name, 0)/2)
+//	variable delete_interlaced_flag
+//	
+//	for (i=0; i < num_columns; i++)
+//		delete_interlaced_flag = 0
+//		
+//		///// check if pos bias has NaNs /////
+//		duplicate /RMD=[][i*2] /o $cleaned_wave_name temp_interlace1
+//		WaveStats /q temp_interlace1
+//		
+//		if (V_numNans/V_npnts >= nan_cutoff)
+//			delete_interlaced_flag = 1
+//		endif
+//		
+//		///// check if neg bias has NaNs /////
+//		duplicate /RMD=[][i*2 + 1] /o $cleaned_wave_name temp_interlace2
+//		WaveStats /q temp_interlace2
+//		
+//		if (V_numNans/V_npnts >= nan_cutoff)
+//			delete_interlaced_flag = 1
+//		endif
+//		
+//		
+//		///// delete interlaced section if either row has NaNs /////
+//		if (delete_interlaced_flag == 1)
+//			DeletePoints/M=1 i*2, 1, $cleaned_wave_name
+//			DeletePoints/M=1 i*2, 1, $cleaned_wave_name
+//		endif
+//	
+//	endfor
+
 
 	return center
 
@@ -239,10 +282,48 @@ function /wave fit_single_peak(wave current_array)
 	// CHECK: Not ideal when the current is negative
 	redimension/n=-1 current_array
 	duplicate/o current_array temp
-	temp=abs(current_array)
-	make/o/n=4 W_coef
+	
+	//////////////////////
+	///// OLD METHOD /////
+	//////////////////////
+//	temp=abs(current_array)
+//	make/o/n=4 W_coef
+//	wavestats/q temp
+//	
+//	CurveFit/q lor current_array[round(V_maxrowloc-V_npnts/20), round(V_maxrowloc+V_npnts/20)] /D 
+//	
+	
+	//////////////////////
+	///// NEW METHOD /////
+	//////////////////////
+	// K0 = DC offset
+	// K1 = Amplitude
+	// K2 = x offset
+	// K3 = Gamma
+	variable K0, K1, K2, K3, K4
 	wavestats/q temp
-	CurveFit/q lor current_array[round(V_maxrowloc-V_npnts/20),round(V_maxrowloc+V_npnts/20)] /D
+	variable mean_of_wave = mean(temp, pnt2x(temp, V_npnts*0.4), pnt2x(temp, V_npnts*0.6))
+	if (mean_of_wave >= 0)
+		temp -= wavemin(temp)
+	else
+		temp -= wavemax(temp)
+		temp *= -1
+		temp -= wavemin(temp)
+	endif
+	
+	
+	wavestats/q temp
+	variable min_fit_index = round(V_maxrowloc - V_npnts*0.050)
+	if (min_fit_index < 0)
+		min_fit_index = 0
+	endif
+	
+	variable max_fit_index = round(V_maxrowloc + V_npnts*0.050)
+	if (max_fit_index > V_npnts)
+		max_fit_index = V_npnts - 1
+	endif
+	
+	CurveFit/q lor current_array[min_fit_index, max_fit_index] /D // fit with lor (Lorentzian) :: /q = quiet :: /D = destwaveName
 end
 
 
@@ -261,8 +342,8 @@ function /wave get_cond_fit_params(wave wav, string kenner_out)
 	wave W_coef
 	wave W_sigma
 
-	nr = dimsize(wav,0) //number of rows (total sweeps)
-	nc = dimsize(wav,1) //number of columns (data points)
+	nr = dimsize(wav,0) //number of rows (data points)
+	nc = dimsize(wav,1) //number of columns (total sweeps)
 	make/o /N=(nr) temp_wave
 	CopyScales wav, temp_wave
 
