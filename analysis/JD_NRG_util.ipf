@@ -25,13 +25,15 @@ function master_build_nrg_data()
 	// Gammas become 1D waves listing the gammas for each row
 //	Rename gammas, gammas_narrow; 
 //	Rename Conductance_mat, Conductance_narrow; Rename DNDT_mat, DNDT_narrow; Rename Mu_mat, Mu_narrow; Rename Occupation_mat, Occupation_narrow
+//	wave gammas_narrow, gammas_wide
 //	matrixtranspose gammas_narrow; Redimension/N=-1 Gammas_narrow
 //	matrixtranspose gammas_wide; Redimension/N=-1 Gammas_wide
 //	
 //	// Scale mu's by gamma's to make this appropriate for temperature dependence.
 //	// The 2D resulting waves have the appropriate scaled mu at every x,y point.
 //	// _n is short for "normalized", which signifies mu scaled by gamma
-//	duplicate /o mu_mat mu_n_narrow;  
+//	wave mu_narrow, mu_wide
+//	duplicate /o mu_narrow mu_n_narrow;  
 //	mu_n_narrow /= gammas_narrow[q]
 //	
 //	duplicate /o mu_wide mu_n_wide 
@@ -150,10 +152,12 @@ end
 
 function interpolate_nrg_narrow()
 	wave gammas_narrow_interp = g_n_narrow
+	wave mus_narrow_interp = mu_n_narrow
+	
 	wave dndt_narrow_interp = dndt_n_narrow
 	wave cond_narrow_interp = cond_n_narrow
 	wave occ_narrow_interp = occ_n_narrow
-	wave mus_narrow_interp = mu_n_narrow
+	
 	wave dndt_narrow_raw = dndt_narrow
 	wave cond_narrow_raw = conductance_narrow
 	wave occ_narrow_raw = occupation_narrow
@@ -204,10 +208,12 @@ end
 
 function interpolate_nrg_wide()
 	wave gammas_wide_interp = g_n_wide
+	wave mus_wide_interp = mu_n_wide
+	
 	wave dndt_wide_interp = dndt_n_wide
 	wave cond_wide_interp = cond_n_wide
 	wave occ_wide_interp = occ_n_wide
-	wave mus_wide_interp = mu_n_wide
+	
 	wave dndt_wide_raw = dndt_wide
 	wave cond_wide_raw = conductance_wide
 	wave occ_wide_raw = occupation_wide

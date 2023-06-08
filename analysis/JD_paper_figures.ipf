@@ -219,12 +219,12 @@ end
 function run_global_fit_wrapper(variable baset, string datnums, string gamma_over_temp_type)
 	variable cond_chisq, occ_chisq, condocc_chisq
 	
-//	run_clean_average_procedure(datnums=datnums)
-//	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type)
-	
-	print "Conduction chisq = " + num2str(cond_chisq)
-	print "Occupation chisq = " + num2str(occ_chisq)
+	run_clean_average_procedure(datnums=datnums)
+	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
+//	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type)
+//	
+//	print "Conduction chisq = " + num2str(cond_chisq)
+//	print "Occupation chisq = " + num2str(occ_chisq)
 end
 
 
