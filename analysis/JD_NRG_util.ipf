@@ -12,32 +12,51 @@ function master_build_nrg_data()
 	// but the mus are different for different gammas.  We assume fixed T for this processing.
 	// The output is three different 2D waves, g_nrg, occ_nrg, and dndt_nrg, with ln(G/T) on the y axis and mu on the x-axis, assuming fixed Gamma
 	
-//	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNewWide.mat"
-//	MLLoadWave /M=2/Y=4/T/Z/S=2/P=data "NRGResultsNewWide.mat"
-//
-//	Rename Conductance_mat,Conductance_wide; Rename DNDT_mat,DNDT_wide; Rename Gammas,Gammas_wide;
-//	Rename Mu_mat,Mu_wide; Rename Occupation_mat,Occupation_wide
-////	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNew.mat"
-//MLLoadWave /M=2/Y=4/T/Z/S=2/P=data  "NRGResultsNew.mat"
+	//	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNewWide.mat"
+	//	MLLoadWave /M=2/Y=4/T/Z/S=2/P=data "NRGResultsNewWide.mat"
+	//
+	//	Rename Conductance_mat,Conductance_wide; Rename DNDT_mat,DNDT_wide; Rename Gammas,Gammas_wide;
+	//	Rename Mu_mat,Mu_wide; Rename Occupation_mat,Occupation_wide
+	////	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNew.mat"
+	//MLLoadWave /M=2/Y=4/T/Z/S=2/P=data  "NRGResultsNew.mat"
+	
+	
+		///// If using .ibw only need the below /////	
+		// Gammas become 1D waves listing the gammas for each row
+	 
+	
+	///// OLD /////
+	//	Rename Conductance_mat, Conductance_narrow; Rename DNDT_mat, DNDT_narrow; Rename Mu_mat, Mu_narrow; Rename Occupation_mat, Occupation_narrow
+	//	Rename gammas, gammas_narrow;
+	//	wave gammas_narrow
+	//	matrixtranspose gammas_narrow; 
+	// Redimension/N=-1 Gammas_narrow 
 
+	///// NEW /////
+	variable gamma_start_index = 1, gamma_end_index = 9
+	wave Conductance_mat, DNDT_mat, Mu_mat, Occupation_mat
+	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] Conductance_mat Conductance_narrow
+	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] DNDT_mat DNDT_narrow
+	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] Mu_mat Mu_narrow 
+	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] Occupation_mat Occupation_narrow 
 
-	///// If using .ibw only need the below /////	
-	// Gammas become 1D waves listing the gammas for each row
-//	Rename gammas, gammas_narrow; 
-//	Rename Conductance_mat, Conductance_narrow; Rename DNDT_mat, DNDT_narrow; Rename Mu_mat, Mu_narrow; Rename Occupation_mat, Occupation_narrow
-//	wave gammas_narrow, gammas_wide
-//	matrixtranspose gammas_narrow; Redimension/N=-1 Gammas_narrow
+ 	wave gammas, gammas_narrow
+	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] gammas gammas_narrow
+	matrixtranspose gammas_narrow; Redimension/N=-1 Gammas_narrow 
+
+	///// CURRENT ///// 
+  	wave gammas_wide
 //	matrixtranspose gammas_wide; Redimension/N=-1 Gammas_wide
-//	
-//	// Scale mu's by gamma's to make this appropriate for temperature dependence.
-//	// The 2D resulting waves have the appropriate scaled mu at every x,y point.
-//	// _n is short for "normalized", which signifies mu scaled by gamma
-//	wave mu_narrow, mu_wide
-//	duplicate /o mu_narrow mu_n_narrow;  
-//	mu_n_narrow /= gammas_narrow[q]
-//	
-//	duplicate /o mu_wide mu_n_wide 
-//	mu_n_wide /= gammas_wide[q];
+	
+	// Scale mu's by gamma's to make this appropriate for temperature dependence.
+	// The 2D resulting waves have the appropriate scaled mu at every x,y point.
+	// _n is short for "normalized", which signifies mu scaled by gamma
+	wave mu_narrow, mu_wide
+	duplicate /o mu_narrow mu_n_narrow;  
+	mu_n_narrow /= gammas_narrow[q]
+	
+	duplicate /o mu_wide mu_n_wide 
+	mu_n_wide /= gammas_wide[q];
 	
 	
 	
@@ -69,9 +88,9 @@ function master_build_nrg_data()
 	g_n_wide = ln(g_n_wide)
 	
 	interpolate_nrg_wide()
-	imageinterpolate/dest=g_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline cond_n_wide; copyscales cond_n_wide g_nrg_wide
-	imageinterpolate/dest=occ_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline occ_n_wide; copyscales occ_n_wide occ_nrg_wide
-	imageinterpolate/dest=dndt_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_wide; copyscales dndt_n_wide dndt_nrg_wide
+//	imageinterpolate/dest=g_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline cond_n_wide; copyscales cond_n_wide g_nrg_wide
+//	imageinterpolate/dest=occ_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline occ_n_wide; copyscales occ_n_wide occ_nrg_wide
+//	imageinterpolate/dest=dndt_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_wide; copyscales dndt_n_wide dndt_nrg_wide
 	
 	
 	
@@ -84,7 +103,7 @@ function master_build_nrg_data()
 	mu_n_narrow[(dimsize(mu_n_narrow, 0) - 1)][] = minval
 	
 	// Make new waves to hold the NRG data, interpolated such that the x axis (the rescaled mu's) will be the same for each each row (each gamma)
-	make /o/n=(10000,40) dndt_n_narrow, cond_n_narrow, occ_n_narrow
+	make /o/n=(10000, gamma_end_index - gamma_start_index + 1) dndt_n_narrow, cond_n_narrow, occ_n_narrow
 	
 	// Make a new 2D wave g_n_wide to contain the value of gamma/T at every point in the NRG waves.
 	// With this done, {mu_n_wide, g_n_wide, conductance_wide} are {X,Y,Z} points associated with
@@ -97,28 +116,61 @@ function master_build_nrg_data()
 	g_n_narrow = ln(g_n_narrow)
 	
 	interpolate_nrg_narrow()
-	imageinterpolate/dest=g_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline cond_n_narrow; copyscales cond_n_narrow g_nrg_narrow
-	imageinterpolate/dest=occ_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline occ_n_narrow; copyscales occ_n_narrow occ_nrg_narrow
-	imageinterpolate/dest=dndt_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_narrow; copyscales dndt_n_narrow dndt_nrg_narrow
+//	imageinterpolate/dest=g_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline cond_n_narrow; copyscales cond_n_narrow g_nrg_narrow
+//	imageinterpolate/dest=occ_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline occ_n_narrow; copyscales occ_n_narrow occ_nrg_narrow
+//	imageinterpolate/dest=dndt_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_narrow; copyscales dndt_n_narrow dndt_nrg_narrow
+//	
 	
+	////////////////////////////////////////////
+	///// NEW ADDING THEN IMAGEINTERPOLATE /////
+	////////////////////////////////////////////
+	// narrow and wide have a different number of points in the x-direction. So I should first interpolate the narrow data to have the same number
+	// of points in the x-direction. Then add the wide and narrow data together. Then do a fine image interpolate across the full wave.
+	variable num_rows_wide = dimsize(cond_n_wide, 1)
+	variable num_rows_narrow_fine = dimsize(cond_n_narrow, 1)
+	variable num_cols_narrow_fine = dimsize(cond_n_wide, 0)
+	imageinterpolate/dest=cond_n_narrow_fine /resl={num_cols_narrow_fine, num_rows_narrow_fine} spline cond_n_narrow; copyscales cond_n_narrow cond_n_narrow_fine
+	imageinterpolate/dest=occ_n_narrow_fine /resl={num_cols_narrow_fine, num_rows_narrow_fine} spline occ_n_narrow; copyscales occ_n_narrow occ_n_narrow_fine
+	imageinterpolate/dest=dndt_n_narrow_fine /resl={num_cols_narrow_fine, num_rows_narrow_fine} spline dndt_n_narrow; copyscales dndt_n_narrow dndt_n_narrow_fine
 	
-	/////////////////////////////////////
-	///// COMBINING WIDE AND NARROW /////
-	/////////////////////////////////////
-	make /o/n=(num_points_interp_x, num_points_interp_y*2) g_nrg, occ_nrg, dndt_nrg
+	variable num_rows_combined = num_rows_narrow_fine + num_rows_wide
+	
+	make /o/n=(num_cols_narrow_fine, num_rows_combined) cond_n_combined, occ_n_combined, dndt_n_combined 
 	
 	variable i
-	for(i = 0; i < num_points_interp_y; i++)
-		g_nrg[][i] = g_nrg_wide[p][i]
-		occ_nrg[][i] = occ_nrg_wide[p][i]
-		dndt_nrg[][i] = dndt_nrg_wide[p][i]
+	for(i = 0; i < num_rows_narrow_fine; i++)
+		cond_n_combined[][i] = cond_n_narrow_fine[p][i]
+		occ_n_combined[][i] = occ_n_narrow_fine[p][i]
+		dndt_n_combined[][i] = dndt_n_narrow_fine[p][i]
 	endfor
 	
-	for(i = num_points_interp_y; i < 2*num_points_interp_y; i++)
-		g_nrg[][i] = g_nrg_narrow[p][i - num_points_interp_y]
-		occ_nrg[][i] = occ_nrg_narrow[p][i - num_points_interp_y]
-		dndt_nrg[][i] = dndt_nrg_narrow[p][i - num_points_interp_y]
+	for(i = num_rows_narrow_fine; i < num_rows_combined; i++)
+		cond_n_combined[][i] = cond_n_wide[p][i - num_rows_narrow_fine]
+		occ_n_combined[][i] = occ_n_wide[p][i - num_rows_narrow_fine]
+		dndt_n_combined[][i] = dndt_n_wide[p][i - num_rows_narrow_fine]
 	endfor
+	
+	imageinterpolate/dest=g_nrg /resl={num_points_interp_x, num_points_interp_y} spline cond_n_combined; copyscales cond_n_combined g_nrg
+	imageinterpolate/dest=occ_nrg /resl={num_points_interp_x, num_points_interp_y} spline occ_n_combined; copyscales occ_n_combined occ_nrg
+	imageinterpolate/dest=dndt_nrg /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_combined; copyscales dndt_n_combined dndt_nrg
+	
+	/////////////////////////////////////////
+	///// OLD COMBINING WIDE AND NARROW /////
+	/////////////////////////////////////////
+//	make /o/n=(num_points_interp_x, num_points_interp_y*2) g_nrg, occ_nrg, dndt_nrg
+//	
+//	variable i
+//	for(i = 0; i < num_points_interp_y; i++)
+//		g_nrg[][i] = g_nrg_narrow[p][i]
+//		occ_nrg[][i] = occ_nrg_narrow[p][i]
+//		dndt_nrg[][i] = dndt_nrg_narrow[p][i]
+//	endfor
+//	
+//	for(i = num_points_interp_y; i < 2*num_points_interp_y; i++)
+//		g_nrg[][i] = g_nrg_wide[p][i - num_points_interp_y]
+//		occ_nrg[][i] = occ_nrg_wide[p][i - num_points_interp_y]
+//		dndt_nrg[][i] = dndt_nrg_wide[p][i - num_points_interp_y]
+//	endfor
 
 //	/////////////////////////////////////////////
 //	///// OLD WAY OF INTERPOLATING NRG DATA /////
