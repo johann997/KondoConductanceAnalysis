@@ -7,32 +7,107 @@
 /////////////////////////////////////////////////////////
 ///// 1 TIME RUN TO CREATE INTERPOLATED NRG DATASET /////
 /////////////////////////////////////////////////////////
-function master_build_nrg_data()
+
+////////////////////
+///// JOSH OLD /////
+////////////////////
+macro nrgprocess()
 	// load in the nrg data.  Each 2D wave has energies (mu) on the x axis and gamma on the y axis,
 	// but the mus are different for different gammas.  We assume fixed T for this processing.
 	// The output is three different 2D waves, g_nrg, occ_nrg, and dndt_nrg, with ln(G/T) on the y axis and mu on the x-axis, assuming fixed Gamma
 	
-	//	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNewWide.mat"
-	//	MLLoadWave /M=2/Y=4/T/Z/S=2/P=data "NRGResultsNewWide.mat"
-	//
-	//	Rename Conductance_mat,Conductance_wide; Rename DNDT_mat,DNDT_wide; Rename Gammas,Gammas_wide;
-	//	Rename Mu_mat,Mu_wide; Rename Occupation_mat,Occupation_wide
-	////	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNew.mat"
-	//MLLoadWave /M=2/Y=4/T/Z/S=2/P=data  "NRGResultsNew.mat"
+//	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNewWide.mat"
+//	MLLoadWave /M=2/Y=4/T/Z/S=2/P=data "NRGResultsNewWide.mat"
+//
+//	Rename Conductance_mat,Conductance_wide; Rename DNDT_mat,DNDT_wide; Rename Gammas,Gammas_wide;
+//	Rename Mu_mat,Mu_wide; Rename Occupation_mat,Occupation_wide
+////	MLLoadWave /M=2/Y=4/T/Z/S=2 "Macintosh HD:Users:luescher:Dropbox:work:Matlab:one_ck_analysis:meir data:NRGResultsNew.mat"
+//MLLoadWave /M=2/Y=4/T/Z/S=2/P=data  "NRGResultsNew.mat"
 	
+	// Gammas become 1D waves listing the gammas for each row
+	matrixtranspose gammas; Redimension/N=-1 Gammas
+	matrixtranspose gammas_wide;Redimension/N=-1 Gammas_wide
 	
-		///// If using .ibw only need the below /////	
-		// Gammas become 1D waves listing the gammas for each row
-	 
+	// Scale mu's by gamma's to make this appropriate for temperature dependence.
+	// The 2D resulting waves have the appropriate scaled mu at every x,y point.
+	duplicate mu_mat mu_n; duplicate mu_wide mu_n_wide // _n is short for "normalized", which signifies mu scaled by gamma
+	mu_n_wide /= gammas_wide[q]; mu_n /= gammas[q]
 	
-	///// OLD /////
-	//	Rename Conductance_mat, Conductance_narrow; Rename DNDT_mat, DNDT_narrow; Rename Mu_mat, Mu_narrow; Rename Occupation_mat, Occupation_narrow
-	//	Rename gammas, gammas_narrow;
-	//	wave gammas_narrow
-	//	matrixtranspose gammas_narrow; 
-	// Redimension/N=-1 Gammas_narrow 
+	// After this point working only with the _wide data
+	
+	// Set the first and last scaled mu's to be the max and min mu's so that the interpolation that is coming will not look outside the domain of existing data
+	variable maxval=wavemax(mu_n_wide), minval=wavemin(mu_n_wide)
+	mu_n_wide[0][]=maxval
+	mu_n_wide[(dimsize(mu_n_wide,0)-1)][]=minval
+	
+	// Make new waves to hold the NRG data, interpolated such that the x axis (the rescaled mu's) will be the same for each each row (each gamma)
+	make /n=(10000,30) dndt_n, cond_n, occ_n
+	
+	// Make a new 2D wave g_n_wide to contain the value of gamma/T at every point in the NRG waves.
+	// With this done, {mu_n_wide, g_n_wide, conductance_wide} are {X,Y,Z} points associated with
+	// the NRG data where X and Y are rescales mu's and gamma/T's.
+	// However, since the gammas provided to us by NRG are log spaced, it makes sense to 
+	duplicate mu_n_wide g_n_wide
+	g_n_wide = gammas_wide[q]
+	g_n_wide /= 1E-4 // Uses T=1E-4 from the NRG data
+	g_n_wide = ln(g_n_wide)
+	
+	// Load the nrg data, interpolated, into the waves made above.
+	interp_nrg()
+	imageinterpolate/dest=g_nrg/resl={100000,500} spline cond_n;copyscales cond_n g_nrg
+	imageinterpolate/dest=occ_nrg/resl={100000,500} spline occ_n;copyscales occ_n occ_nrg
+	imageinterpolate/dest=dndt_nrg/resl={100000,500} spline dndt_n;copyscales dndt_n dndt_nrg
+end
 
-	///// NEW /////
+
+function interp_nrg()
+	wave gammas=g_n_wide
+	wave dndt=dndt_n
+	wave cond=cond_n
+	wave occ=occ_n
+	wave mus=mu_n_wide
+	wave dndt_i=dndt_wide
+	wave cond_i=conductance_wide
+	wave occ_i=occupation_wide
+
+	
+	variable i, musmax, musmin, gammamax, gammamin
+	make /o/n=(dimsize(mus,0)) datx, daty
+	make /o/n=(dimsize(dndt,0)) interpwv
+	wavestats /q mus
+	musmax=v_max
+	musmin=v_min
+	wavestats /q gammas
+	gammamax=v_max
+	gammamin=v_min
+	SetScale/I x musmin,musmax,"", cond,dndt,occ;DelayUpdate
+	SetScale/I y gammamin,gammamax,"", cond,dndt,occ
+	SetScale/I x musmin,musmax,"", interpwv
+	for(i=0;i<dimsize(mus,1);i++)
+		datx[]=mus[p][i]
+		daty[]=dndt_i[p][i]
+		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
+		dndt[][i]=interpwv[p]
+		daty[]=cond_i[p][i]
+		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
+		wavestats /q interpwv
+		cond[][i]=interpwv[p]/v_max
+		daty[]=occ_i[p][i]
+		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
+		occ[][i]=interpwv[p]
+	endfor
+end
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////
+///// JOHANN NEW /////
+//////////////////////
+function master_build_nrg_data()
+	// load in the nrg data.  Each 2D wave has energies (mu) on the x axis and gamma on the y axis,
+	// but the mus are different for different gammas.  We assume fixed T for this processing.
+	// The output is three different 2D waves, g_nrg, occ_nrg, and dndt_nrg, with ln(G/T) on the y axis and mu on the x-axis, assuming fixed Gamma
 	variable gamma_start_index = 1, gamma_end_index = 9
 	wave Conductance_mat, DNDT_mat, Mu_mat, Occupation_mat
 	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] Conductance_mat Conductance_narrow
@@ -44,7 +119,6 @@ function master_build_nrg_data()
 	duplicate /O/RMD=[][gamma_start_index, gamma_end_index] gammas gammas_narrow
 	matrixtranspose gammas_narrow; Redimension/N=-1 Gammas_narrow 
 
-	///// CURRENT ///// 
   	wave gammas_wide
 //	matrixtranspose gammas_wide; Redimension/N=-1 Gammas_wide
 	
@@ -58,12 +132,8 @@ function master_build_nrg_data()
 	duplicate /o mu_wide mu_n_wide 
 	mu_n_wide /= gammas_wide[q];
 	
-	
-	
-	/////////////////////////////////////////////
-	///// NEW WAY OF INTERPOLATING NRG DATA /////
-	/////////////////////////////////////////////
 	variable num_points_interp_x = 100000, num_points_interp_y = 500
+	
 	
 	////////////////
 	///// WIDE /////
@@ -88,16 +158,11 @@ function master_build_nrg_data()
 	g_n_wide = ln(g_n_wide)
 	
 	interpolate_nrg_wide()
-//	imageinterpolate/dest=g_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline cond_n_wide; copyscales cond_n_wide g_nrg_wide
-//	imageinterpolate/dest=occ_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline occ_n_wide; copyscales occ_n_wide occ_nrg_wide
-//	imageinterpolate/dest=dndt_nrg_wide /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_wide; copyscales dndt_n_wide dndt_nrg_wide
-	
-	
+
 	
 	//////////////////
 	///// NARROW /////
 	//////////////////
-//	variable maxval = wavemax(mu_n_narrow), minval = wavemin(mu_n_narrow)
 	wave mu_n_narrow
 	mu_n_narrow[0][] = maxval
 	mu_n_narrow[(dimsize(mu_n_narrow, 0) - 1)][] = minval
@@ -116,14 +181,11 @@ function master_build_nrg_data()
 	g_n_narrow = ln(g_n_narrow)
 	
 	interpolate_nrg_narrow()
-//	imageinterpolate/dest=g_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline cond_n_narrow; copyscales cond_n_narrow g_nrg_narrow
-//	imageinterpolate/dest=occ_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline occ_n_narrow; copyscales occ_n_narrow occ_nrg_narrow
-//	imageinterpolate/dest=dndt_nrg_narrow /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_narrow; copyscales dndt_n_narrow dndt_nrg_narrow
-//	
+
 	
-	////////////////////////////////////////////
-	///// NEW ADDING THEN IMAGEINTERPOLATE /////
-	////////////////////////////////////////////
+	/////////////////////////////////////////////////
+	///// COMBINING DATA THEN IMAGE INTERPOLATE /////
+	/////////////////////////////////////////////////
 	// narrow and wide have a different number of points in the x-direction. So I should first interpolate the narrow data to have the same number
 	// of points in the x-direction. Then add the wide and narrow data together. Then do a fine image interpolate across the full wave.
 	variable num_rows_wide = dimsize(cond_n_wide, 1)
@@ -154,50 +216,6 @@ function master_build_nrg_data()
 	imageinterpolate/dest=occ_nrg /resl={num_points_interp_x, num_points_interp_y} spline occ_n_combined; copyscales occ_n_combined occ_nrg
 	imageinterpolate/dest=dndt_nrg /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_combined; copyscales dndt_n_combined dndt_nrg
 	
-	/////////////////////////////////////////
-	///// OLD COMBINING WIDE AND NARROW /////
-	/////////////////////////////////////////
-//	make /o/n=(num_points_interp_x, num_points_interp_y*2) g_nrg, occ_nrg, dndt_nrg
-//	
-//	variable i
-//	for(i = 0; i < num_points_interp_y; i++)
-//		g_nrg[][i] = g_nrg_narrow[p][i]
-//		occ_nrg[][i] = occ_nrg_narrow[p][i]
-//		dndt_nrg[][i] = dndt_nrg_narrow[p][i]
-//	endfor
-//	
-//	for(i = num_points_interp_y; i < 2*num_points_interp_y; i++)
-//		g_nrg[][i] = g_nrg_wide[p][i - num_points_interp_y]
-//		occ_nrg[][i] = occ_nrg_wide[p][i - num_points_interp_y]
-//		dndt_nrg[][i] = dndt_nrg_wide[p][i - num_points_interp_y]
-//	endfor
-
-//	/////////////////////////////////////////////
-//	///// OLD WAY OF INTERPOLATING NRG DATA /////
-//	/////////////////////////////////////////////
-//	// After this point working only with the _wide data
-//	// Set the first and last scaled mu's to be the max and min mu's so that the interpolation that is coming will not look outside the domain of existing data
-////	variable maxval=wavemax(mu_n_wide), minval=wavemin(mu_n_wide)
-////	mu_n_wide[0][]=maxval
-////	mu_n_wide[(dimsize(mu_n_wide,0)-1)][]=minval
-////	
-////	// Make new waves to hold the NRG data, interpolated such that the x axis (the rescaled mu's) will be the same for each each row (each gamma)
-////	make /n=(10000,30) dndt_n, cond_n, occ_n
-////	
-////	// Make a new 2D wave g_n_wide to contain the value of gamma/T at every point in the NRG waves.
-////	// With this done, {mu_n_wide, g_n_wide, conductance_wide} are {X,Y,Z} points associated with
-////	// the NRG data where X and Y are rescales mu's and gamma/T's.
-////	// However, since the gammas provided to us by NRG are log spaced, it makes sense to 
-////	duplicate mu_n_wide g_n_wide
-////	g_n_wide = gammas_wide[q]
-////	g_n_wide /= 1E-4 // Uses T=1E-4 from the NRG data
-////	g_n_wide = ln(g_n_wide)
-//	
-//	// Load the nrg data, interpolated, into the waves made above.
-//	interpolate_nrg_wide()
-//	imageinterpolate/dest=g_nrg/resl={100000,500} spline cond_n; copyscales cond_n g_nrg
-//	imageinterpolate/dest=occ_nrg/resl={100000,500} spline occ_n; copyscales occ_n occ_nrg
-//	imageinterpolate/dest=dndt_nrg/resl={100000,500} spline dndt_n; copyscales dndt_n dndt_nrg
 end
 
 
@@ -221,6 +239,7 @@ function interpolate_nrg_narrow()
 //	wavestats /q mus_narrow_interp
 //	musmax = v_max
 //	musmin = v_min
+
 	///// NEW /////
 	wave mu_n_wide
 	wavestats /q mu_n_wide
@@ -427,8 +446,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type])
 	make /t/o/n=2 constraintwave
 	wave /t GFin.constraintwave
 	GFin.constraintwave[0] = "K0<4"
-//	GFin.constraintwave[1] = "K0>1" OLD JOSH LINE
-	GFin.constraintwave[1] = "K0>=-2.3026"
+	GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
 end
 
 
