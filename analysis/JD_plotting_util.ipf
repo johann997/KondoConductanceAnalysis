@@ -116,7 +116,76 @@ End
 	string wvname;wvname=stringfromlist(0,imagenamelist("",";"));TextBox/C/N=text1/F=0/A=MT/E wvname
 
 
-function displayplot2D(start, endnum,whichdat,[delta,xnum, shiftx, shifty])
+
+function/wave DiffWave(w, [numpts])
+	wave w
+	variable numpts
+	
+	numpts = paramisdefault(numpts) ? 150 : numpts
+	
+	duplicate/o w, tempwave
+	print dimsize(w, 0)
+	print ceil(dimsize(w,0)/numpts)
+	resample/DIM=0 /down=(ceil(dimsize(w,0)/numpts)) tempwave
+	differentiate/DIM=0 tempwave	
+	return tempwave
+end
+
+
+
+function DisplayMultiple(datnums, name_of_wave, [diff, x_label, y_label])
+// Plots data from each dat on same axes... Will differentiate first if diff = 1
+	wave datnums
+	string name_of_wave, x_label, y_label
+	variable diff
+
+	if (paramisDefault(x_label))
+		struct ScanVars S
+		scv_getLastScanVars(S)   
+		x_label = S.x_label
+	endif
+	if (paramisDefault(y_label))
+		struct ScanVars S2
+		scv_getLastScanVars(S2)   
+		y_label = S2.y_label
+	endif
+
+//	x_label = selectstring(paramisdefault(x_label), x_label, "")
+//	y_label = selectstring(paramisdefault(y_label), y_label, "")
+
+	string window_name = "test"
+	sprintf window_name, "Dats%dto%d", datnums[0], datnums[numpnts(datnums)-1]
+	dowindow/k $window_name
+	display/N=$window_name
+	TextBox/W=$window_name/C/N=textid/A=LT/X=1.00/Y=1.00/E=2 window_name	
+	
+	
+	variable i = 0, datnum
+	string wn
+	string tempwn
+	for(i=0; i < numpnts(datnums); i++)
+		datnum = datnums[i]
+		sprintf wn, "dat%d%s", datnum, name_of_wave
+		sprintf tempwn, "tempwave_%s", wn
+		duplicate/o $wn, $tempwn
+		if (diff == 1)
+			wave tempwave = diffwave($tempwn)
+			duplicate /o tempwave $tempwn
+			wave tempwave = $tempwn
+
+		else 
+			wave tempwave = $tempwn
+		endif
+		appendimage/W=$window_name tempwave
+		ModifyImage/W=$window_name $tempwn ctab= {*,*,VioletOrangeYellow,0}
+	endfor
+	Label left, y_label
+	Label bottom, x_label
+
+end
+
+
+function displayplot2D(start, endnum, whichdat,[delta,xnum, shiftx, shifty])
 	variable start, endnum
 	string whichdat
 	variable delta, xnum, shiftx, shifty
@@ -234,6 +303,8 @@ function makecolorful([rev, nlines])
 	while(index<=num)
 
 end
+
+
 Function QuickColorSpectrum2()                            // colors traces with 12 different colors
 	String Traces    = TraceNameList("",";",1)               // get all the traces from the graph
 	Variable Items   = ItemsInList(Traces)                   // count the traces
@@ -244,34 +315,34 @@ Function QuickColorSpectrum2()                            // colors traces with 
 	endfor
 End
 
-function plot2d_heatmap(wave wav)
 
+function plot2d_heatmap(wav, [x_label, y_label])
 	//plots the repeats against the sweeps for dataset cscurrent_2d
+	wave wav
+
+	string x_label, y_label
+	
+	x_label = selectstring(paramisdefault(x_label), x_label, "Gate (mV)")
+	y_label = selectstring(paramisdefault(y_label), y_label, "Gate (mV)")
 
 	variable num
-	string dataset
-	string wvname
+	string wave_name
 
-	wvname=nameOfWave(wav)
+	wave_name = nameOfWave(wav)
+	wave wav = $wave_name
 
-	wave wav = $wvname
-
-
-
-	display; //start with empty graph
+	display //start with empty graph
 	appendimage wav //append image of data
-	ModifyImage $wvname ctab= {*,*,Turbo,0} //setting color (idk why it prefers the pointer)
+	ModifyImage $wave_name ctab= {*, *, Turbo,0} //setting color (idk why it prefers the pointer)
 	ColorScale /A=RC /E width=20 //puts it on the right centre, /E places it outside
 
-	Label bottom "gate(V)"
-	Label left "repeats"
+	Label bottom x_label
+	Label left y_label
 
 	ModifyGraph fSize=24
 	ModifyGraph gFont="Gill Sans Light"
-	//    ModifyGraph width={Aspect,1.62},height=300
-	//	TextBox/C/N=text1/A=MT/E=2 "raw 2D plot of dat" + num2str(num)
-
 end
+
 
 function setcolorscale2d(percent)
 	variable percent

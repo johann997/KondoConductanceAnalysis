@@ -160,43 +160,97 @@ end
 
 
 
+//function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave])
+//	// Built in powerspectrum function
+//	create_new_wave = paramisdefault(create_new_wave) ? 1 : create_new_wave
+//
+//	duplicate/o data spectrum
+//	SetScale/P x 0,1/samp_freq,"", spectrum
+//	variable nr=dimsize(spectrum,0);  // number of points in x-direction
+//	variable le=2^(floor(log(nr)/log(2))); // max factor of 2 less than total num points
+//	wave slice;
+//	wave w_Periodogram
+//
+//	variable i=0
+//	rowslice(spectrum,i)
+//		DSPPeriodogram/R=[0,(le-1)]/PARS/NODC=2/DEST=W_Periodogram slice 
+//	duplicate/o w_Periodogram, powerspec
+//	i=1
+//	do
+//		rowslice(spectrum,i)
+//		DSPPeriodogram/R=[0,(le-1)]/PARS/NODC=2/DEST=W_Periodogram slice 
+//		powerspec=powerspec+W_periodogram
+//		i=i+1
+//	while(i<dimsize(spectrum,1))
+//	powerspec[0]=nan
+//	
+//	if (create_new_wave == 1)
+//		String wav_name = nameOfWave(data)+"_powerspec"
+//		duplicate/o powerspec, $wav_name
+//		display $wav_name; // SetAxis bottom 0,500
+//	
+//	else
+//		display powerspec; // SetAxis bottom 0,500
+//	endif
+//	
+//	ModifyGraph log(left)=1
+//
+//end
+
+
+
 function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave])
 	// Built in powerspectrum function
+	
 	create_new_wave = paramisdefault(create_new_wave) ? 1 : create_new_wave
-
+	
 	duplicate/o data spectrum
 	SetScale/P x 0,1/samp_freq,"", spectrum
-	variable nr=dimsize(spectrum,0);  // number of points in x-direction
-	variable le=2^(floor(log(nr)/log(2))); // max factor of 2 less than total num points
+	variable numptsx = dimsize(spectrum,0);  // number of points in x-direction
+	variable new_numptsx = 2^(floor(log(numptsx)/log(2))); // max factor of 2 less than total num points
 	wave slice;
 	wave w_Periodogram
 
 	variable i=0
 	rowslice(spectrum,i)
-		DSPPeriodogram/R=[0,(le-1)]/PARS/NODC=2/DEST=W_Periodogram slice 
+	DSPPeriodogram/R=[1,(new_numptsx)] /PARS/NODC=2/DEST=W_Periodogram slice
 	duplicate/o w_Periodogram, powerspec
 	i=1
 	do
 		rowslice(spectrum,i)
-		DSPPeriodogram/R=[0,(le-1)]/PARS/NODC=2/DEST=W_Periodogram slice 
-		powerspec=powerspec+W_periodogram
+		DSPPeriodogram/R=[1, (new_numptsx)] /PARS/NODC=2/DEST=W_Periodogram slice
+		powerspec = powerspec + W_periodogram
 		i=i+1
 	while(i<dimsize(spectrum,1))
-	powerspec[0]=nan
-	
+//	powerspec[0]=nan
+
+
 	if (create_new_wave == 1)
-		String wav_name = nameOfWave(data)+"_powerspec"
+		String wav_name = nameOfWave(data) + "_powerspec"
 		duplicate/o powerspec, $wav_name
 		display $wav_name; // SetAxis bottom 0,500
 	
+		String wav_name_int = nameOfWave(data) + "_powerspec_int"
+		duplicate /o powerspec $wav_name_int
+		wave powerspec_int = $wav_name_int
 	else
 		display powerspec; // SetAxis bottom 0,500
+		duplicate /o powerspec powerspec_int
+		wave powerspec_int
 	endif
-	
+
+
+	integrate powerspec_int
+	appendtoGraph /r=l2 powerspec_int
+	ModifyGraph freePos(l2)={inf,bottom}
+	ModifyGraph rgb(powerspec_int)=(0,0,0)
 	ModifyGraph log(left)=1
+	
+	Label left "nA^2/Hz"
+	Label l2 "integrated nA^2/Hz"
+	
 
 end
-
 
 
 
@@ -215,6 +269,33 @@ function /s avg_wav(wave wav) // /WAVE lets your return a wave
 	redimension/n=-1 $avg_name
 	return avg_name
 end
+
+
+function create_y_wave(wave_2d)
+	// create global "y_wave" given a 2d array
+	wave wave_2d
+	
+	string wave_2d_name = nameofwave(wave_2d)
+	
+	duplicate /o /RMD=[0][] $wave_2d_name y_wave
+	y_wave = y
+	redimension /n=(dimsize(y_wave, 1)) y_wave
+end
+
+
+function create_x_wave(wave_2d)
+	// create global "x_wave" given a 2d array
+	wave wave_2d
+	
+	string wave_2d_name = nameofwave(wave_2d)
+	
+	duplicate /o /RMD=[][0] $wave_2d_name x_wave
+	x_wave = x
+end
+
+
+
+
 
 
 function stopalltimers()
