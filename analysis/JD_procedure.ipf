@@ -8,6 +8,32 @@
 ///// run_clean_average_procedure()
 ///// run_nrg_procedure()
 
+
+// Start by copying the IGOR waves into the experiment
+// •Data/Load Wave/Load IGOR Binary
+
+// Create the Interpolated NRG
+//
+
+
+// Upload the relevant dat files
+// •udh5(dat_min_max="6079,6102")
+
+
+// Run the cleaning procedure
+
+
+// Run the fitting anfd plotting procedure
+// figure_C_separate
+
+////////////////////// FUNCTION DATABASE //////////////////////////////
+// denoise 
+// centerandaverage
+// run_single_clean_average_procedure
+// run_clean_average_procedure
+///////////////////////////////////////////////////////////////////////
+
+
 function denoise(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on]) 
 
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
