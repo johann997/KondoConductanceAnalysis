@@ -130,59 +130,59 @@ function/wave DiffWave(w, [numpts])
 	differentiate/DIM=0 tempwave	
 	return tempwave
 end
-
-
-
-function DisplayMultiple(datnums, name_of_wave, [diff, x_label, y_label])
-// Plots data from each dat on same axes... Will differentiate first if diff = 1
-	wave datnums
-	string name_of_wave, x_label, y_label
-	variable diff
-
-	if (paramisDefault(x_label))
-		struct ScanVars S
-		scv_getLastScanVars(S)   
-		x_label = S.x_label
-	endif
-	if (paramisDefault(y_label))
-		struct ScanVars S2
-		scv_getLastScanVars(S2)   
-		y_label = S2.y_label
-	endif
-
-//	x_label = selectstring(paramisdefault(x_label), x_label, "")
-//	y_label = selectstring(paramisdefault(y_label), y_label, "")
-
-	string window_name = "test"
-	sprintf window_name, "Dats%dto%d", datnums[0], datnums[numpnts(datnums)-1]
-	dowindow/k $window_name
-	display/N=$window_name
-	TextBox/W=$window_name/C/N=textid/A=LT/X=1.00/Y=1.00/E=2 window_name	
-	
-	
-	variable i = 0, datnum
-	string wn
-	string tempwn
-	for(i=0; i < numpnts(datnums); i++)
-		datnum = datnums[i]
-		sprintf wn, "dat%d%s", datnum, name_of_wave
-		sprintf tempwn, "tempwave_%s", wn
-		duplicate/o $wn, $tempwn
-		if (diff == 1)
-			wave tempwave = diffwave($tempwn)
-			duplicate /o tempwave $tempwn
-			wave tempwave = $tempwn
-
-		else 
-			wave tempwave = $tempwn
-		endif
-		appendimage/W=$window_name tempwave
-		ModifyImage/W=$window_name $tempwn ctab= {*,*,VioletOrangeYellow,0}
-	endfor
-	Label left, y_label
-	Label bottom, x_label
-
-end
+//
+//
+//
+//function DisplayMultiple(datnums, name_of_wave, [diff, x_label, y_label])
+//// Plots data from each dat on same axes... Will differentiate first if diff = 1
+//	wave datnums
+//	string name_of_wave, x_label, y_label
+//	variable diff
+//
+//	if (paramisDefault(x_label))
+//		struct ScanVars S
+//		scv_getLastScanVars(S)   
+//		x_label = S.x_label
+//	endif
+//	if (paramisDefault(y_label))
+//		struct ScanVars S2
+//		scv_getLastScanVars(S2)   
+//		y_label = S2.y_label
+//	endif
+//
+////	x_label = selectstring(paramisdefault(x_label), x_label, "")
+////	y_label = selectstring(paramisdefault(y_label), y_label, "")
+//
+//	string window_name = "test"
+//	sprintf window_name, "Dats%dto%d", datnums[0], datnums[numpnts(datnums)-1]
+//	dowindow/k $window_name
+//	display/N=$window_name
+//	TextBox/W=$window_name/C/N=textid/A=LT/X=1.00/Y=1.00/E=2 window_name	
+//	
+//	
+//	variable i = 0, datnum
+//	string wn
+//	string tempwn
+//	for(i=0; i < numpnts(datnums); i++)
+//		datnum = datnums[i]
+//		sprintf wn, "dat%d%s", datnum, name_of_wave
+//		sprintf tempwn, "tempwave_%s", wn
+//		duplicate/o $wn, $tempwn
+//		if (diff == 1)
+//			wave tempwave = diffwave($tempwn)
+//			duplicate /o tempwave $tempwn
+//			wave tempwave = $tempwn
+//
+//		else 
+//			wave tempwave = $tempwn
+//		endif
+//		appendimage/W=$window_name tempwave
+//		ModifyImage/W=$window_name $tempwn ctab= {*,*,VioletOrangeYellow,0}
+//	endfor
+//	Label left, y_label
+//	Label bottom, x_label
+//
+//end
 
 
 function displayplot2D(start, endnum, whichdat,[delta,xnum, shiftx, shifty])
