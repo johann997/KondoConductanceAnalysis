@@ -628,8 +628,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type])
 		coefwave[0][0] = 3 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.01 // x scaling (linked)
 	elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
-		coefwave[0][0] = 1.5 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.002 // x scaling (linked)
+		coefwave[0][0] = 1.0 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.02 // x scaling (linked)
 	elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 		coefwave[0][0] = -2.3 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.01 // x scaling (linked)
@@ -744,16 +744,16 @@ function info_mask_waves(string datnum)
 		cs_min_val = -3000; cs_max_val = 2000
 ////////// mid gamma ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -1315; cs_max_val = 1490
+		dot_min_val = -500; dot_max_val = 500
+		cs_min_val = -1315; cs_max_val = 936
 	elseif (cmpstr(datnum, "6089") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -1873; cs_max_val = 1117
+		dot_min_val = -500; dot_max_val = 500
+		cs_min_val = -1873; cs_max_val = 980
 	elseif (cmpstr(datnum, "6086") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -3000; cs_max_val = 1495
+		dot_min_val = -500; dot_max_val = 500
+		cs_min_val = -3000; cs_max_val = 1286
 	elseif (cmpstr(datnum, "6083") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
+		dot_min_val = -500; dot_max_val = 500
 		cs_min_val = -1667; cs_max_val = 967
 ////////// low gamma ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6081") == 0)
@@ -908,7 +908,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		
 		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
 
-		wave nrg_occ=$wavenm
+		wave nrg_occ = $wavenm
 		wavenm="coef_" + stringfromlist(i,data.occ_wvlist)
 		fitfunc_nrgocc($wavenm, nrg_occ)
 		wave cond_vs_occ_ydata_wave_name = $(stringfromlist(i,data.g_wvlist))
@@ -917,7 +917,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		wave cond_vs_occ_wave_data = $cond_vs_occ_data_wave_name
 		cond_vs_occ_wave_data = cond_vs_occ_ydata_wave_name
 		
-		
+		prune_waves($cond_vs_occ_data_wave_name, nrg_occ)
 		appendtograph $cond_vs_occ_data_wave_name vs nrg_occ
 		ModifyGraph mode($cond_vs_occ_data_wave_name)=2, lsize($cond_vs_occ_data_wave_name)=2, rgb($cond_vs_occ_data_wave_name)=(0,0,0)
 	endfor

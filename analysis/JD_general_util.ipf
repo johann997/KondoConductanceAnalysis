@@ -582,3 +582,44 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 	new2dwave=interp2d(wave_not_centered,(x+mids[q]),(y)) // mids is the shift in x
 end
 
+
+
+function prune_waves(wave1, wave2)
+	// this function points from both waves if there is a NaN in either wave
+	// assumes each wave has the same length
+	wave wave1, wave2
+	
+	string wave1_name = nameofwave(wave1)
+	string wave2_name = nameofwave(wave2)
+
+	wave wave1_ref = $wave1_name
+	wave wave2_ref = $wave2_name
+	
+	variable num_rows_wave1 = dimsize(wave1_ref, 0)
+
+	int num_bad_rows = 0	
+	int i 
+	for (i = 0; i < num_rows_wave1; i++)
+
+		if (numtype(wave1_ref[i - num_bad_rows]) == 2) // checking if its a NaN
+			DeletePoints (i - num_bad_rows), 1, wave1_ref // delete row
+			DeletePoints(i - num_bad_rows), 1, wave2_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+	
+	
+	variable num_rows_wave2 = dimsize(wave2_ref, 0)
+
+	num_bad_rows = 0	
+	for (i = 0; i < num_rows_wave2; i++)
+	
+		if (numtype(wave2_ref[i - num_bad_rows]) == 2)
+			DeletePoints/M=0 (i - num_bad_rows), 1, wave1_ref // delete row
+			DeletePoints/M=0 (i - num_bad_rows), 1, wave2_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+	
+	
+end

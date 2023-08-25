@@ -232,8 +232,8 @@ end
 function figure_C_separate([variable baset])
 	baset = paramisdefault(baset) ? 15 : baset
 	
-	string datnums = "6079;6088;6085;6082"; string gamma_over_temp_type = "high" // high gamma
-//	string datnums = "6080;6089;6086;6083"; string gamma_over_temp_type = "mid" // mid gamma
+//	string datnums = "6079;6088;6085;6082"; string gamma_over_temp_type = "high" // high gamma
+	string datnums = "6080;6089;6086;6083"; string gamma_over_temp_type = "mid" // mid gamma
 //	string datnums = "6081;6090;6087;6084"; string gamma_over_temp_type = "low" // low gamma
 	string e_temps = num2str(baset) + ";100;300;500"
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
@@ -243,7 +243,7 @@ function figure_C_separate([variable baset])
 //	run_clean_average_procedure(datnums=datnums)
 	variable cond_chisq, occ_chisq, condocc_chisq
 	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type)
-	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
+//	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 	
 	variable num_dats = ItemsInList(datnums, ";")
 	
@@ -421,13 +421,13 @@ function figure_C_separate([variable baset])
 	///// setting  axis labels /////
 	// y - axis labels
 	Label /W=figure_ca left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
-	Label /W=figure_cb1 left "Current (nA)"
+	Label /W=figure_cb1 left "Occupation (.arb)"
 	Label /W=figure_cb2 left "Current (nA)"
 	Label /W=figure_cc left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
 	
 	// x - axis labels
 	Label /W=figure_ca bottom "Sweep Gate (mV)"
-	Label /W=figure_cb1 bottom "Occupation (.arb)"
+	Label /W=figure_cb1 bottom "Sweep Gate (mV)"
 	Label /W=figure_cb2 bottom "Sweep Gate (mV)"
 	Label /W=figure_cc bottom "Occupation (.arb)"
 	
