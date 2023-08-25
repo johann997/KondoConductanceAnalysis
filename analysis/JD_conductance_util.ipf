@@ -4,7 +4,7 @@
 #include <Reduce Matrix Size>
 
 function master_cond_clean_average(wave wav, int refit, string kenner_out)
-// wav is the wave containing original dotcurrent data
+	// wav is the wave containing original dotcurrent data
 	// refit tells whether to do new fits to each CT line
 	// kenner_out is the prefix to replace dat for this analysis
 	// kenner_out  can not contain a number otherwise getfirstnu will not work
@@ -29,7 +29,7 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 	string neg_avg = split_neg + "_avg"
 	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params"
 	variable N
-	N=40// how many sdevs in thetas are acceptable?
+	N=40  // how many sdevs in thetas are acceptable?
 
 
 	if (refit==1)
@@ -40,10 +40,14 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
 	endif
 
-
 	split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
+	
+	zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
+	zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
+	
 	avg_wav($split_pos) // pos average
 	avg_wav($split_neg) // neg average
+	
 	get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
 	
 	plot_cond_figs(wavenum, N, kenner, kenner_out)
@@ -52,6 +56,55 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 	print "Cond: time taken = " + num2str(ms/1e6) + "s"
 end
 
+
+function zap_NaN_rows(wave_2d, [overwrite, percentage_cutoff_inf])
+	// removes any row from wave_2d where the number of NaNs is greater than the cutoff specified in percentage_cutoff_inf
+	// wave_2d: 2d wave to remove rows from
+	// overwrite: Default is overwrite = 0. overwrite = 1 will overwrite input wave and params wave.
+	// percentage_cutoff_inf: Default is percentage_cutoff_inf = 0.15 :: 15%
+	wave wave_2d
+	int overwrite
+	variable percentage_cutoff_inf
+	
+	percentage_cutoff_inf = paramisdefault(percentage_cutoff_inf) ? 0.15 : percentage_cutoff_inf // remove row with more than 15% NaN default
+
+
+	// Duplicating 2d wave
+	if (overwrite == 0)
+		string wave_2d_name = nameofwave(wave_2d)
+		string wave_2d_name_new = wave_2d_name + "_zap"
+		duplicate /o wave_2d $wave_2d_name_new
+		wave wave_2d_new = $wave_2d_name_new 
+	endif
+	
+	
+	create_x_wave(wave_2d)
+	wave x_wave
+	
+	create_y_wave(wave_2d)
+	wave y_wave
+	
+	variable num_rows = dimsize(wave_2d, 1)
+	variable num_bad_rows = 0
+	
+	variable i 
+	for (i = 0; i < num_rows; i++)
+		duplicate /o /RMD=[][i - num_bad_rows] wave_2d data_slice
+		wavestats /Q data_slice
+		
+		if (V_numNans / (V_npnts + V_numNans + V_numINFs) >= percentage_cutoff_inf)
+		
+			if (overwrite == 0)
+				DeletePoints/M=1 (i - num_bad_rows), 1, wave_2d_new // delete row
+			else
+				DeletePoints/M=1 (i - num_bad_rows), 1, wave_2d // delete row
+			endif
+			
+			num_bad_rows += 1
+		endif
+		
+	endfor
+end
 
 
 function/wave split_wave(wave wav, variable flag)
@@ -202,6 +255,10 @@ function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
 	// any row with a 'badgammax' will be removed from the 2d wave center
 	wave badgammasx
 	duplicate/o center $cleaned_wave_name
+	
+	//////////////////////////////////////////
+	///// removing lines with bad gammas /////
+	//////////////////////////////////////////
 
 	//////////////////////////////////////////
 	///// removing lines with bad gammas /////

@@ -200,10 +200,11 @@ end
 
 
 
-function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave])
+function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_wave, int plot_on])
 	// Built in powerspectrum function
 	
 	create_new_wave = paramisdefault(create_new_wave) ? 1 : create_new_wave
+	plot_on = paramisdefault(plot_on) ? 1 : plot_on
 	
 	duplicate/o data spectrum
 	SetScale/P x 0,1/samp_freq,"", spectrum
@@ -229,26 +230,31 @@ function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_w
 	if (create_new_wave == 1)
 		String wav_name = nameOfWave(data) + "_powerspec"
 		duplicate/o powerspec, $wav_name
-		display $wav_name; // SetAxis bottom 0,500
-	
+		if (plot_on == 1)
+			display $wav_name; // SetAxis bottom 0,500
+		endif
 		String wav_name_int = nameOfWave(data) + "_powerspec_int"
 		duplicate /o powerspec $wav_name_int
 		wave powerspec_int = $wav_name_int
 	else
-		display powerspec; // SetAxis bottom 0,500
+		if (plot_on == 1)
+			display powerspec; // SetAxis bottom 0,500
+		endif
 		duplicate /o powerspec powerspec_int
 		wave powerspec_int
 	endif
 
 
 	integrate powerspec_int
-	appendtoGraph /r=l2 powerspec_int
-	ModifyGraph freePos(l2)={inf,bottom}
-	ModifyGraph rgb(powerspec_int)=(0,0,0)
-	ModifyGraph log(left)=1
-	
-	Label left "nA^2/Hz"
-	Label l2 "integrated nA^2/Hz"
+	if (plot_on == 1)
+		appendtoGraph /r=l2 powerspec_int
+		ModifyGraph freePos(l2)={inf,bottom}
+		ModifyGraph rgb(powerspec_int)=(0,0,0)
+		ModifyGraph log(left)=1
+		
+		Label left "nA^2/Hz"
+		Label l2 "integrated nA^2/Hz"
+	endif
 	
 
 end
@@ -266,7 +272,11 @@ function /s avg_wav(wave wav) // /WAVE lets your return a wave
 
 	nr = dimsize($wn,0) //number of rows (sweep length)
 	nc = dimsize($wn,1) //number of columns (repeats)
-	ReduceMatrixSize(wav, 0, -1, nr, 0,-1, 1,1, avg_name)
+	try
+		ReduceMatrixSize(wav, 0, -1, nr, 0,-1, 1,1, avg_name)
+	catch
+		print "FAILED to average " + wn
+	endtry
 	redimension/n=-1 $avg_name
 	return avg_name
 end

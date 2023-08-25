@@ -64,13 +64,13 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	spectrum_analyzer($cs_data_name, freq)
 	if (notch_on == 1)
 		notch_filters($cs_data_name,Hzs="60;180;300;420;541", Qs="50;150;250;250;540")
-		spectrum_analyzer($cs_data_name_nf, freq)
+		spectrum_analyzer($cs_data_name_nf, freq, plot_on = 0)
 	endif
 	
 	spectrum_analyzer($dot_data_name, freq)
 	if (notch_on == 1)
 		notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
-		spectrum_analyzer($dot_data_name_nf, freq)
+		spectrum_analyzer($dot_data_name_nf, freq, plot_on = 0)
 	endif
 	
 //	closeallGraphs()
@@ -134,10 +134,10 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 	denoise(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
 	
 	///// resample /////
-	if (datnum == 6084)
-		string dot_data_name_nf = dot_data_name + "_nf" 
-		resampleWave($dot_data_name_nf, 1000)
-	endif
+//	if (datnum == 6084)
+//		string dot_data_name_nf = dot_data_name + "_nf" 
+//		resampleWave($dot_data_name_nf, 1000)
+//	endif
 	
 	//// center the charge transitions and conductions data then average
 	centerandaverage(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
@@ -162,12 +162,13 @@ function run_clean_average_procedure([string datnums])
 	endif
 	
 	string window_name
-	Display 
-	DoWindow/C conductance_vs_sweep 
+	Display; KillWindow /Z conductance_vs_sweep; DoWindow/C/O conductance_vs_sweep 
+//	DoWindow/C conductance_vs_sweep 
 	
-	Display 
-	window_name = WinName(0,1)
-	DoWindow/C transition_vs_sweep
+//	Display 
+//	window_name = WinName(0,1)
+	Display; KillWindow /Z transition_vs_sweep; DoWindow/C/O transition_vs_sweep 
+//	DoWindow/C transition_vs_sweep
 	
 	string cond_avg, trans_avg
 	variable i, datnum

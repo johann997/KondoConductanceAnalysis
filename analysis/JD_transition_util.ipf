@@ -106,6 +106,7 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 
 		centering($datasetname, centered_wave_name, mids)
 		remove_bad_thetas($centered_wave_name, badgammasx, cleaned_wave_name)
+		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
 	endif
 
 	if(average==1)
@@ -271,6 +272,7 @@ function zap_bad_params(wave_2d, params, num_params, [overwrite, zap_bad_mids, z
 	// overwrite: Default is overwrite = 0. overwrite = 1 will overwrite input wave and params wave.
 	// zap_bad_mids: Removes rows where the mid is bad. If mid value is greater than hard coded 'mid_percentage_within' variable from centre of scan.
 	// zap_bad_thetas: Removes rows where the theta is bad. Hard coded if absolute value of theta is > 600.
+	// repeats_on: Is the dataset a repeats only or is a gate ramped on y-axis. 
 	wave wave_2d, params
 	variable num_params
 	int overwrite, zap_bad_mids, zap_bad_thetas
