@@ -452,3 +452,157 @@ function figure_C_separate([variable baset])
 //	Legend/W=figure_cc/C/N=legend_figc/J/A=LT legend_text
 //	print legend_text
 end
+
+
+function plot_NRG_conductance_occupation_aligned_unaligned()
+	// assumes NRG waves g_nrg and occ_nrg have been created
+	// assumes
+	// black (0,0,0)
+	// green (94,135,93)
+	// yellow (205,132,48)
+	// red (186,0,8)
+	
+	// creating x and y g_wave
+	wave g_nrg
+	create_x_wave(g_nrg)
+	wave x_wave
+//	duplicate /o x_wave g_nrg_x
+	
+	create_y_wave(g_nrg)
+	wave y_wave
+	duplicate /o y_wave g_nrg_y
+	
+	wave g_nrg_y
+	duplicate /o g_nrg_y gammas
+	wave gammas
+	gammas = exp(g_nrg_y)
+	
+	
+//	// creating x and y g_wave
+	wave occ_nrg
+	
+	
+
+	make /o /N=4 gamma_over_t_wave = {0.1, 1, 5, 7}
+	variable gamma_over_t
+	int gamma_index
+	variable mu_centre_index
+	
+	make /o /N=(dimsize(x_wave, 0), dimsize(gamma_over_t_wave, 0)) g_nrg_pick
+	make /o /N=(dimsize(x_wave, 0), dimsize(gamma_over_t_wave, 0)) occ_nrg_pick
+	make /o /N=(dimsize(x_wave, 0), dimsize(gamma_over_t_wave, 0)) mu_nrg_align_pick
+	make /o /N=(dimsize(x_wave, 0), dimsize(gamma_over_t_wave, 0)) mu_nrg_unalign_pick
+	make /o /N=(dimsize(x_wave, 0)) occ_nrg_1d_dummy_pick
+	
+	
+	int i
+	for (i=0; i<4; i++)
+	
+		gamma_over_t = gamma_over_t_wave[i]
+		
+		FindLevel /Q /P gammas, gamma_over_t
+		gamma_index = V_LevelX
+		
+		g_nrg_pick[][i] = g_nrg[p][gamma_index]
+		occ_nrg_pick[][i] = occ_nrg[p][gamma_index]
+		
+		occ_nrg_1d_dummy_pick[] = occ_nrg[p][gamma_index]
+	
+	
+		FindLevel /Q /P occ_nrg_1d_dummy_pick, 0.5
+		mu_centre_index = V_LevelX
+		
+		mu_nrg_align_pick[][i] = (x_wave[p] - x_wave[mu_centre_index]) * gamma_over_t_wave[i] / 1E-4
+		mu_nrg_unalign_pick[][i] = (x_wave[p]) * gamma_over_t_wave[i] / 1E-4
+		
+	endfor
+	
+	// make windows
+	Display; KillWindow /Z figure_nrg_g_unaligned; DoWindow/C/O figure_nrg_g_unaligned 
+	Display; KillWindow /Z figure_nrg_occ_unaligned; DoWindow/C/O figure_nrg_occ_unaligned 
+	
+	Display; KillWindow /Z figure_nrg_g_aligned; DoWindow/C/O figure_nrg_g_aligned 
+	Display; KillWindow /Z figure_nrg_occ_aligned; DoWindow/C/O figure_nrg_occ_aligned 
+	
+	///////////////////////////////////////////////////////
+	///////////////// unaligned g /////////////////////////
+	///////////////////////////////////////////////////////
+	AppendToGraph /W=figure_nrg_g_unaligned g_nrg_pick[][0] vs mu_nrg_unalign_pick[][0]
+	AppendToGraph /W=figure_nrg_g_unaligned g_nrg_pick[][1] vs mu_nrg_unalign_pick[][1]
+	AppendToGraph /W=figure_nrg_g_unaligned g_nrg_pick[][2] vs mu_nrg_unalign_pick[][2]
+	AppendToGraph /W=figure_nrg_g_unaligned g_nrg_pick[][3] vs mu_nrg_unalign_pick[][3]
+	
+	ModifyGraph /W=figure_nrg_g_unaligned lsize(g_nrg_pick)=2, rgb(g_nrg_pick)=(0,0,0)
+	ModifyGraph /W=figure_nrg_g_unaligned lsize(g_nrg_pick#1)=2, rgb(g_nrg_pick#1)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_nrg_g_unaligned lsize(g_nrg_pick#2)=2, rgb(g_nrg_pick#2)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_nrg_g_unaligned lsize(g_nrg_pick#3)=2, rgb(g_nrg_pick#3)=(186*257,0*257,8*257)
+	
+	Label /W=figure_nrg_g_unaligned bottom "Energy (arb.)\\Z24"
+	Label /W=figure_nrg_g_unaligned left "Conductance (\\$WMTEX$ \\frac{2e^2}{ℏ} \\$/WMTEX$)\\Z24"
+	SetAxis /W=figure_nrg_g_unaligned bottom -1.2e+06,1.2e+06
+	
+	
+	///////////////////////////////////////////////////////
+	////////////////////// unaligned occ //////////////////
+	///////////////////////////////////////////////////////
+	AppendToGraph /W=figure_nrg_occ_unaligned occ_nrg_pick[][0] vs mu_nrg_unalign_pick[][0]
+	AppendToGraph /W=figure_nrg_occ_unaligned occ_nrg_pick[][1] vs mu_nrg_unalign_pick[][1]
+	AppendToGraph /W=figure_nrg_occ_unaligned occ_nrg_pick[][2] vs mu_nrg_unalign_pick[][2]
+	AppendToGraph /W=figure_nrg_occ_unaligned occ_nrg_pick[][3] vs mu_nrg_unalign_pick[][3]
+	
+	ModifyGraph /W=figure_nrg_occ_unaligned lsize(occ_nrg_pick)=2, rgb(occ_nrg_pick)=(0,0,0)
+	ModifyGraph /W=figure_nrg_occ_unaligned lsize(occ_nrg_pick#1)=2, rgb(occ_nrg_pick#1)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_nrg_occ_unaligned lsize(occ_nrg_pick#2)=2, rgb(occ_nrg_pick#2)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_nrg_occ_unaligned lsize(occ_nrg_pick#3)=2, rgb(occ_nrg_pick#3)=(186*257,0*257,8*257)
+	
+	Label /W=figure_nrg_occ_unaligned bottom "Energy (arb.)\\Z24"
+	Label /W=figure_nrg_occ_unaligned left "Occupation\\Z24"
+	SetAxis /W=figure_nrg_occ_unaligned bottom -1.2e+06,1.2e+06
+	
+	///////////////////////////////////////////////////////
+	///////////////// aligned g ///////////////////////////
+	///////////////////////////////////////////////////////
+	AppendToGraph /W=figure_nrg_g_aligned g_nrg_pick[][0] vs mu_nrg_align_pick[][0]
+	AppendToGraph /W=figure_nrg_g_aligned g_nrg_pick[][1] vs mu_nrg_align_pick[][1]
+	AppendToGraph /W=figure_nrg_g_aligned g_nrg_pick[][2] vs mu_nrg_align_pick[][2]
+	AppendToGraph /W=figure_nrg_g_aligned g_nrg_pick[][3] vs mu_nrg_align_pick[][3]
+	
+	ModifyGraph /W=figure_nrg_g_aligned lsize(g_nrg_pick)=2, rgb(g_nrg_pick)=(0,0,0)
+	ModifyGraph /W=figure_nrg_g_aligned lsize(g_nrg_pick#1)=2, rgb(g_nrg_pick#1)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_nrg_g_aligned lsize(g_nrg_pick#2)=2, rgb(g_nrg_pick#2)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_nrg_g_aligned lsize(g_nrg_pick#3)=2, rgb(g_nrg_pick#3)=(186*257,0*257,8*257)
+	
+	Label /W=figure_nrg_g_aligned bottom "Energy (arb.)\\Z24"
+	Label /W=figure_nrg_g_aligned left "Conductance (\\$WMTEX$ \\frac{2e^2}{ℏ} \\$/WMTEX$)\\Z24"
+	SetAxis /W=figure_nrg_g_aligned bottom -1.2e+06,1.2e+06
+	
+	
+	///////////////////////////////////////////////////////
+	////////////////////// aligned occ ////////////////////
+	///////////////////////////////////////////////////////
+	AppendToGraph /W=figure_nrg_occ_aligned occ_nrg_pick[][0] vs mu_nrg_align_pick[][0]
+	AppendToGraph /W=figure_nrg_occ_aligned occ_nrg_pick[][1] vs mu_nrg_align_pick[][1]
+	AppendToGraph /W=figure_nrg_occ_aligned occ_nrg_pick[][2] vs mu_nrg_align_pick[][2]
+	AppendToGraph /W=figure_nrg_occ_aligned occ_nrg_pick[][3] vs mu_nrg_align_pick[][3]
+	
+	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick)=2, rgb(occ_nrg_pick)=(0,0,0)
+	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#1)=2, rgb(occ_nrg_pick#1)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#2)=2, rgb(occ_nrg_pick#2)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#3)=2, rgb(occ_nrg_pick#3)=(186*257,0*257,8*257)
+
+	Label /W=figure_nrg_occ_aligned bottom "Energy (arb.)\\Z24"
+	Label /W=figure_nrg_occ_aligned left "Occupation\\Z24"
+	SetAxis /W=figure_nrg_occ_aligned bottom -1.2e+06,1.2e+06
+	
+	Legend/C/N=text0/J "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 7"
+
+	/////	KILL WAVES	/////
+	killwaves /Z x_wave
+	killwaves /Z y_wave
+	killwaves /Z occ_nrg_x
+	killwaves /Z occ_nrg_y
+	killwaves /Z g_nrg_x
+	killwaves /Z g_nrg_y
+	killwaves /Z gamma_over_t_wave
+	killwaves /Z occ_nrg_1d_dummy_pick
+end

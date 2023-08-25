@@ -4,6 +4,12 @@
 #include <Global Fit 2>
 
 /////  This .ipf contains some high level functions that help stitch multiple steps into one function
+
+///// Procedure for creating the NRG waves
+// Go to Data/Load Waves/Load Igor Binary...
+
+// Run :: master_build_nrg_data()
+
 ///// The general procedure of going from RAW data to global fit with NRG data is:
 ///// run_clean_average_procedure()
 ///// run_nrg_procedure()
@@ -15,6 +21,8 @@
 // Create the Interpolated NRG
 //
 
+// Set the data path by running the below and choosing the Github data folder
+// newpath data
 
 // Upload the relevant dat files
 // •udh5(dat_min_max="6079,6102")
@@ -23,7 +31,7 @@
 // Run the cleaning procedure
 
 
-// Run the fitting anfd plotting procedure
+// Run the fitting and plotting procedure
 // figure_C_separate
 
 ////////////////////// FUNCTION DATABASE //////////////////////////////
@@ -222,3 +230,5 @@ end
 //	endfor
 //
 //end
+
+

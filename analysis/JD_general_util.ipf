@@ -133,10 +133,11 @@ function resampleWave(wave wav,variable targetFreq )
 	variable measureFreq
 //	struct ScanVars S
 //	fd_getScanVars(S,wavenum)
-struct AWGVars S
-fd_getoldAWG(S,wavenum)
-
-	measureFreq=S.measureFreq
+//	struct AWGVars S
+//	fd_getoldAWG(S,wavenum)
+//
+//	measureFreq=S.measureFreq
+	measureFreq = fd_getmeasfreq(wavenum)
 	variable N=measureFreq/targetFreq
 
 	
