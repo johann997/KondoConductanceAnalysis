@@ -631,8 +631,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type])
 		coefwave[0][0] = 1.0 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.02 // x scaling (linked)
 	elseif (cmpstr(gamma_over_temp_type, "low") == 0)
-		coefwave[0][0] = -2.3 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.01 // x scaling (linked)
+		coefwave[0][0] = 1E-6 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.02 // x scaling (linked)
 	endif
 	
 	for(i=0; i<numwvs; i++)
@@ -757,17 +757,17 @@ function info_mask_waves(string datnum)
 		cs_min_val = -1667; cs_max_val = 967
 ////////// low gamma ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6081") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1000
+		dot_min_val = -500; dot_max_val = 200
+		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6090") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1000
+		dot_min_val = -500; dot_max_val = 200
+		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6087") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1000
+		dot_min_val = -750; dot_max_val = 200
+		cs_min_val = -2000; cs_max_val = 200
 	elseif (cmpstr(datnum, "6084") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1000
+		dot_min_val = -750; dot_max_val = 300
+		cs_min_val = -2000; cs_max_val = 500
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
@@ -858,7 +858,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	// Perform global fit
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 
-//	print "Gamma/T at",(data.temps[0]),"=",exp(GFin.CoefWave[0][0])
+	print "Gamma/T at",(data.temps[0]),"=",exp(GFin.CoefWave[0][0])
 	variable /g GF_chisq
 //	print "Chisqr on conductance fit is",GF_chisq
 	cond_chisq = GF_chisq
@@ -917,6 +917,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		wave cond_vs_occ_wave_data = $cond_vs_occ_data_wave_name
 		cond_vs_occ_wave_data = cond_vs_occ_ydata_wave_name
 		
+		// NEW WAY //
+//		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name, wave2)
+		
+		// OLD WAY //
 		prune_waves($cond_vs_occ_data_wave_name, nrg_occ)
 		appendtograph $cond_vs_occ_data_wave_name vs nrg_occ
 		ModifyGraph mode($cond_vs_occ_data_wave_name)=2, lsize($cond_vs_occ_data_wave_name)=2, rgb($cond_vs_occ_data_wave_name)=(0,0,0)

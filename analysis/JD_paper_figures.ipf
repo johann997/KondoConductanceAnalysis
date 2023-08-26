@@ -229,12 +229,19 @@ end
 
 
 
-function figure_C_separate([variable baset])
+function figure_C_separate([variable baset, string gamma_type])
 	baset = paramisdefault(baset) ? 15 : baset
+	gamma_type = selectString(paramisdefault(gamma_type), gamma_type, "high") 
 	
-//	string datnums = "6079;6088;6085;6082"; string gamma_over_temp_type = "high" // high gamma
-	string datnums = "6080;6089;6086;6083"; string gamma_over_temp_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; string gamma_over_temp_type = "low" // low gamma
+	string datnums, gamma_over_temp_type
+	if (StringMatch(gamma_type, "high") == 1)
+		datnums = "6079;6088;6085;6082"; gamma_over_temp_type = "high" // high gamma
+	elseif (StringMatch(gamma_type, "mid") == 1)
+		datnums = "6080;6089;6086;6083"; gamma_over_temp_type = "mid" // mid gamma
+	elseif (StringMatch(gamma_type, "low") == 1)
+		datnums = "6081;6090;6087;6084"; gamma_over_temp_type = "low" // low gamma
+	endif
+	
 	string e_temps = num2str(baset) + ";100;300;500"
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	string colour, e_temp
@@ -314,7 +321,7 @@ function figure_C_separate([variable baset])
 		wave cond_avg_temp = $cond_avg
 		wave cond_avg_fit_temp = $cond_avg_fit
 		
-		SetScale/I x pnt2x(cond_avg_temp, 0)/200, pnt2x(cond_avg_temp, dimsize(cond_avg_temp, 0) - 1)/200, cond_avg_data_wave
+		SetScale/I x pnt2x(cond_avg_temp, 0)/200, pnt2x(cond_avg_temp, dimsize(cond_avg_temp, 0) - 1)/200, cond_avg_data_wave // setting scale in real gate units (P*200)
 		SetScale/I x pnt2x(cond_avg_fit_temp, 0)/200, pnt2x(cond_avg_fit_temp, dimsize(cond_avg_fit_temp, 0) - 1)/200, cond_avg_fit_wave  
 		
 		AppendToGraph /W=figure_ca $cond_avg_data_wave_name; AppendToGraph /W=figure_ca $cond_avg_fit_wave_name;
@@ -406,6 +413,13 @@ function figure_C_separate([variable baset])
 		///////////////////////////////////////////
 		string cond_vs_occ_data_wave_name_y = cond_avg + "condocc_data"
 		string cond_vs_occ_data_wave_name_x = "nrgocc_" + cond_avg
+		
+		///// START EXTRA /////
+		duplicate /o trans_avg_data_wave $cond_vs_occ_data_wave_name_x
+		SetScale/I x pnt2x($cond_vs_occ_data_wave_name_y, 0)/200, pnt2x($cond_vs_occ_data_wave_name_y, dimsize($cond_vs_occ_data_wave_name_y, 0) - 1)/200, $cond_vs_occ_data_wave_name_y
+		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name_y, $cond_vs_occ_data_wave_name_x)
+		///// END EXTRA /////
+		
 		AppendToGraph /W=figure_cc $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x;
 		ModifyGraph /W=figure_cc mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
 		
@@ -454,7 +468,7 @@ function figure_C_separate([variable baset])
 end
 
 
-function plot_NRG_conductance_occupation_aligned_unaligned()
+function figure_B_NRG()
 	// assumes NRG waves g_nrg and occ_nrg have been created
 	// assumes
 	// black (0,0,0)
@@ -605,4 +619,67 @@ function plot_NRG_conductance_occupation_aligned_unaligned()
 	killwaves /Z g_nrg_y
 	killwaves /Z gamma_over_t_wave
 	killwaves /Z occ_nrg_1d_dummy_pick
+end
+
+
+
+function figure_D([variable baset])
+	baset = paramisdefault(baset) ? 15 : baset
+		
+	string base_name_data_y = "_dot_cleaned_avgcondocc_data"
+	string base_name_data_x = "_dot_cleaned_avg"
+	string base_name_fit_y = "_dot_cleaned_avgcondocc_nrg_y"
+	string base_name_fit_x = "_dot_cleaned_avgcondocc_nrg_x"
+	
+	string data_y, data_x, fit_y, fit_x, datnum
+	
+	closeallGraphs()
+	
+	Display; KillWindow /Z figure_Da; DoWindow/C/O figure_Da 
+	
+	///// low gamma /////
+	figure_C_separate(baset = baset,  gamma_type = "low") // dat 6081
+	datnum = "6081"
+	data_y = "dat" + datnum + base_name_data_y
+	data_x = "nrgocc_dat" + datnum + base_name_data_x
+	fit_y = "dat" + datnum + base_name_fit_y
+	fit_x = "dat" + datnum + base_name_fit_x
+	
+	AppendToGraph /W=figure_Da $data_y vs $data_x
+	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	ModifyGraph /W=figure_Da mode($data_y)=2, lsize($data_y)=2, rgb($data_y)=(0,0,0)
+	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(0,0,0)
+	
+	///// mid gamma /////
+	figure_C_separate(baset = baset,  gamma_type = "mid") // dat 6080
+	datnum = "6080"
+	data_y = "dat" + datnum + base_name_data_y
+	data_x = "nrgocc_dat" + datnum + base_name_data_x
+	fit_y = "dat" + datnum + base_name_fit_y
+	fit_x = "dat" + datnum + base_name_fit_x
+	
+	AppendToGraph /W=figure_Da $data_y vs $data_x
+	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	ModifyGraph /W=figure_Da mode($data_y)=2, lsize($data_y)=2, rgb($data_y)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(94*257,135*257,93*257)
+	
+	
+	///// high gamma /////
+	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
+	datnum = "6079"
+	data_y = "dat" + datnum + base_name_data_y
+	data_x = "nrgocc_dat" + datnum + base_name_data_x
+	fit_y = "dat" + datnum + base_name_fit_y
+	fit_x = "dat" + datnum + base_name_fit_x
+	
+	AppendToGraph /W=figure_Da $data_y vs $data_x
+	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	ModifyGraph /W=figure_Da mode($data_y)=2, lsize($data_y)=2, rgb($data_y)=(186*257,0*257,8*257)
+	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
+	
+	closeallGraphs(no_close_graphs="figure_Da")
+	
+	Label /W=figure_Da bottom "Occupation\\Z24"
+	Label /W=figure_Da left "Conductance (\\$WMTEX$ \\frac{2e^2}{ℏ} \\$/WMTEX$)\\Z24"
+
 end

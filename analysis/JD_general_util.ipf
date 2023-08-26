@@ -585,7 +585,7 @@ end
 
 
 function prune_waves(wave1, wave2)
-	// this function points from both waves if there is a NaN in either wave
+	// this function removes points from both waves if there is a NaN in either wave
 	// assumes each wave has the same length
 	wave wave1, wave2
 	
@@ -620,6 +620,62 @@ function prune_waves(wave1, wave2)
 			num_bad_rows += 1
 		endif
 	endfor
+end
+
+
+function crop_waves_by_x_scaling(wave1, wave2)
+	// this function removes points from both waves if x point is not equal
+	// assumes each wave has the same length
+	wave wave1, wave2
 	
+	// create wave references
+	string wave1_name = nameofwave(wave1)
+	string wave2_name = nameofwave(wave2)
+
+	wave wave1_ref = $wave1_name
+	wave wave2_ref = $wave2_name
+	
+	// create x wave references
+	create_x_wave(wave1_ref)
+	wave wave1_x_wave = x_wave
+	
+	create_x_wave(wave2_ref)
+	wave wave2_x_wave = x_wave
+	
+	
+	// removing bad rows from wave1
+	variable num_rows_wave1 = dimsize(wave1_ref, 0)
+	variable x1, x2
+
+	int num_bad_rows = 0	
+	int i 
+	for (i = 0; i < num_rows_wave1; i++)
+	
+		x1 = wave1_x_wave[i]
+		
+		FindValue /V=(x1) wave2_x_wave
+
+		if (V_row == -1) // value from x1 is not in x2
+			DeletePoints (i - num_bad_rows), 1, wave1_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+	
+	
+	// removing bad rows from wave2
+	variable num_rows_wave2 = dimsize(wave2_ref, 0)
+
+	num_bad_rows = 0	
+	for (i = 0; i < num_rows_wave2; i++)
+	
+		x2 = wave2_x_wave[i]
+		
+		FindValue /V=(x2) wave1_x_wave
+	
+		if (V_row == -1) // value from x2 is not in x1
+			DeletePoints (i - num_bad_rows), 1, wave2_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
 	
 end
