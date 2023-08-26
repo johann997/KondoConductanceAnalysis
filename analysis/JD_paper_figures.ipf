@@ -683,3 +683,94 @@ function figure_D([variable baset])
 	Label /W=figure_Da left "Conductance (\\$WMTEX$ \\frac{2e^2}{ℏ} \\$/WMTEX$)\\Z24"
 
 end
+
+
+
+
+function figure_poster_gamma_tim()	
+	// int_entropy_weak, int_entropy_similar, int_entropy_med, int_entropy_strong
+	// int_entropy_weak_fit, int_entropy_similar_fit, int_entropy_med_fit, int_entropy_strong_fit
+	
+	// occupation_data_weak, occupation_data_similar, occupation_data_med, occupation_data_strong
+	// occupation_nrg_weak, occupation_nrg_similar, occupation_nrg_med, occupation_nrg_strong
+	
+	wave int_entropy_weak, int_entropy_similar, int_entropy_med, int_entropy_strong
+	wave int_entropy_weak_fit, int_entropy_similar_fit, int_entropy_med_fit, int_entropy_strong_fit
+	
+	wave occupation_data_weak, occupation_data_similar, occupation_data_med, occupation_data_strong
+	wave occupation_nrg_weak, occupation_nrg_similar, occupation_nrg_med, occupation_nrg_strong
+	
+	// one time re-scaling to get NRG in terms of real gate units
+//	SetScale/I x pnt2x(occupation_nrg_weak, 0)/100, pnt2x(occupation_nrg_weak, dimsize(occupation_nrg_weak, 0) - 1)/100, occupation_nrg_weak 
+//	SetScale/I x pnt2x(occupation_nrg_similar, 0)/100, pnt2x(occupation_nrg_similar, dimsize(occupation_nrg_similar, 0) - 1)/100, occupation_nrg_similar 
+//	SetScale/I x pnt2x(occupation_nrg_med, 0)/100, pnt2x(occupation_nrg_med, dimsize(occupation_nrg_med, 0) - 1)/100, occupation_nrg_med 
+//	SetScale/I x pnt2x(occupation_nrg_strong, 0)/100, pnt2x(occupation_nrg_strong, dimsize(occupation_nrg_strong, 0) - 1)/100, occupation_nrg_strong 
+//	
+//	
+	// make windows
+	Display; KillWindow /Z figure_poster_gamma_entropy; DoWindow/C/O figure_poster_gamma_entropy 
+	Display; KillWindow /Z figure_poster_gamma_occ; DoWindow/C/O figure_poster_gamma_occ 
+	
+	
+	///////////////////////////////////////////////////////
+	///////////////// occupation /////////////////////////
+	///////////////////////////////////////////////////////
+	///// DATA ///// 
+	AppendToGraph /W=figure_poster_gamma_occ occupation_data_weak
+	AppendToGraph /W=figure_poster_gamma_occ occupation_data_similar
+	AppendToGraph /W=figure_poster_gamma_occ occupation_data_med
+	AppendToGraph /W=figure_poster_gamma_occ occupation_data_strong
+	
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_weak)=2, lsize(occupation_data_weak)=2, rgb(occupation_data_weak)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_similar)=2, lsize(occupation_data_similar)=2, rgb(occupation_data_similar)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_med)=2, lsize(occupation_data_med)=2, rgb(occupation_data_med)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_strong)=2, lsize(occupation_data_strong)=2, rgb(occupation_data_strong)=(186*257,0*257,8*257)
+	
+	
+	///// NRG /////
+	AppendToGraph /W=figure_poster_gamma_occ occupation_nrg_weak
+	AppendToGraph /W=figure_poster_gamma_occ occupation_nrg_similar
+	AppendToGraph /W=figure_poster_gamma_occ occupation_nrg_med
+	AppendToGraph /W=figure_poster_gamma_occ occupation_nrg_strong
+	
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_nrg_weak)=0, lsize(occupation_nrg_weak)=2, rgb(occupation_nrg_weak)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_nrg_similar)=0, lsize(occupation_nrg_similar)=2, rgb(occupation_nrg_similar)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_nrg_med)=0, lsize(occupation_nrg_med)=2, rgb(occupation_nrg_med)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_nrg_strong)=0, lsize(occupation_nrg_strong)=2, rgb(occupation_nrg_strong)=(186*257,0*257,8*257)
+	
+	
+	Label /W=figure_poster_gamma_occ bottom "Sweep Gate (mV)\\Z24\\u#2"
+	Label /W=figure_poster_gamma_occ left "Occupation \\Z24\\u#2"
+	
+	
+	///////////////////////////////////////////////////////
+	//////////////////// entropy //////////////////////////
+	///////////////////////////////////////////////////////
+	///// DATA ///// 
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_weak
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_similar
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_med
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_strong
+	
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_weak)=2, lsize(int_entropy_weak)=2, rgb(int_entropy_weak)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_similar)=2, lsize(int_entropy_similar)=2, rgb(int_entropy_similar)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_med)=2, lsize(int_entropy_med)=2, rgb(int_entropy_med)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_strong)=2, lsize(int_entropy_strong)=2, rgb(int_entropy_strong)=(186*257,0*257,8*257)
+	
+	
+	///// NRG /////
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_weak_fit
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_similar_fit
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_med_fit
+	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_strong_fit
+	
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_weak_fit)=0, lsize(int_entropy_weak_fit)=2, rgb(int_entropy_weak_fit)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_similar_fit)=0, lsize(int_entropy_similar_fit)=2, rgb(int_entropy_similar_fit)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_med_fit)=0, lsize(int_entropy_med_fit)=2, rgb(int_entropy_med_fit)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_strong_fit)=0, lsize(int_entropy_strong_fit)=2, rgb(int_entropy_strong_fit)=(186*257,0*257,8*257)
+	
+	
+	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\Z24\\u#2"
+	Label /W=figure_poster_gamma_entropy left "Entropy (kB)\\Z24\\u#2"
+
+end
