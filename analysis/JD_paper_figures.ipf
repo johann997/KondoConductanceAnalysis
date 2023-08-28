@@ -469,6 +469,7 @@ end
 
 
 function figure_B_NRG()
+	// SavePICT/P=home/E=-5/RES=1000/o
 	// assumes NRG waves g_nrg and occ_nrg have been created
 	// assumes
 	// black (0,0,0)
@@ -688,6 +689,7 @@ end
 
 
 function figure_poster_gamma_tim()	
+	// SavePICT/P=home/E=-5/RES=1000/o
 	// int_entropy_weak, int_entropy_similar, int_entropy_med, int_entropy_strong
 	// int_entropy_weak_fit, int_entropy_similar_fit, int_entropy_med_fit, int_entropy_strong_fit
 	
@@ -721,10 +723,10 @@ function figure_poster_gamma_tim()
 	AppendToGraph /W=figure_poster_gamma_occ occupation_data_med
 	AppendToGraph /W=figure_poster_gamma_occ occupation_data_strong
 	
-	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_weak)=2, lsize(occupation_data_weak)=2, rgb(occupation_data_weak)=(0,0,0)
-	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_similar)=2, lsize(occupation_data_similar)=2, rgb(occupation_data_similar)=(94*257,135*257,93*257)
-	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_med)=2, lsize(occupation_data_med)=2, rgb(occupation_data_med)=(205*257,132*257,48*257)
-	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_strong)=2, lsize(occupation_data_strong)=2, rgb(occupation_data_strong)=(186*257,0*257,8*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_weak)=3, marker(occupation_data_weak)=41, lsize(occupation_data_weak)=2, rgb(occupation_data_weak)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_similar)=3, marker(occupation_data_similar)=41, lsize(occupation_data_similar)=2, rgb(occupation_data_similar)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_med)=3, marker(occupation_data_med)=41, lsize(occupation_data_med)=2, rgb(occupation_data_med)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_data_strong)=3, marker(occupation_data_strong)=41, lsize(occupation_data_strong)=2, rgb(occupation_data_strong)=(186*257,0*257,8*257)
 	
 	
 	///// NRG /////
@@ -741,7 +743,7 @@ function figure_poster_gamma_tim()
 	
 	Label /W=figure_poster_gamma_occ bottom "Sweep Gate (mV)\\Z24\\u#2"
 	Label /W=figure_poster_gamma_occ left "Occupation \\Z24\\u#2"
-	
+	SetAxis /W=figure_poster_gamma_occ bottom -3,3
 	
 	///////////////////////////////////////////////////////
 	//////////////////// entropy //////////////////////////
@@ -752,10 +754,10 @@ function figure_poster_gamma_tim()
 	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_med
 	AppendToGraph /W=figure_poster_gamma_entropy int_entropy_strong
 	
-	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_weak)=2, lsize(int_entropy_weak)=2, rgb(int_entropy_weak)=(0,0,0)
-	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_similar)=2, lsize(int_entropy_similar)=2, rgb(int_entropy_similar)=(94*257,135*257,93*257)
-	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_med)=2, lsize(int_entropy_med)=2, rgb(int_entropy_med)=(205*257,132*257,48*257)
-	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_strong)=2, lsize(int_entropy_strong)=2, rgb(int_entropy_strong)=(186*257,0*257,8*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_weak)=3, marker(int_entropy_weak)=41, lsize(int_entropy_weak)=2, rgb(int_entropy_weak)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_similar)=3, marker(int_entropy_similar)=41, lsize(int_entropy_similar)=2, rgb(int_entropy_similar)=(94*257,135*257,93*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_med)=3, marker(int_entropy_med)=41, lsize(int_entropy_med)=2, rgb(int_entropy_med)=(205*257,132*257,48*257)
+	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_strong)=3, marker(int_entropy_strong)=41, lsize(int_entropy_strong)=2, rgb(int_entropy_strong)=(186*257,0*257,8*257)
 	
 	
 	///// NRG /////
@@ -772,5 +774,6 @@ function figure_poster_gamma_tim()
 	
 	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\Z24\\u#2"
 	Label /W=figure_poster_gamma_entropy left "Entropy (kB)\\Z24\\u#2"
+	SetAxis /W=figure_poster_gamma_entropy bottom -3,3
 
 end
