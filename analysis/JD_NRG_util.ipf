@@ -729,7 +729,7 @@ function info_mask_waves(string datnum)
 	string mask_type = "linear"
 	
 	
-////////// high gamma ////////////////////////////////////////////////////
+////////// high gamma low field ////////////////////////////////////////////////////
 	if (cmpstr(datnum, "6079") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 1074
@@ -742,7 +742,7 @@ function info_mask_waves(string datnum)
 	elseif (cmpstr(datnum, "6082") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 2000
-////////// mid gamma ////////////////////////////////////////////////////
+////////// mid gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
 		dot_min_val = -500; dot_max_val = 500
 		cs_min_val = -1315; cs_max_val = 936
@@ -755,7 +755,7 @@ function info_mask_waves(string datnum)
 	elseif (cmpstr(datnum, "6083") == 0)
 		dot_min_val = -500; dot_max_val = 500
 		cs_min_val = -1667; cs_max_val = 967
-////////// low gamma ////////////////////////////////////////////////////
+////////// low gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6081") == 0)
 		dot_min_val = -500; dot_max_val = 200
 		cs_min_val = -2000; cs_max_val = 1000
@@ -768,6 +768,19 @@ function info_mask_waves(string datnum)
 	elseif (cmpstr(datnum, "6084") == 0)
 		dot_min_val = -750; dot_max_val = 300
 		cs_min_val = -2000; cs_max_val = 500
+////////// high gamma high field ////////////////////////////////////////////////////
+	elseif (cmpstr(datnum, "6100") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -3000; cs_max_val = 1074
+	elseif (cmpstr(datnum, "6097") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "6094") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "6091") == 0)
+		dot_min_val = -2000; dot_max_val = 1000
+		cs_min_val = -3000; cs_max_val = 2000
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
