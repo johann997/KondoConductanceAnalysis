@@ -388,3 +388,31 @@ function twosubplot(graphID, wave2name,[labelx, labely])
 	ModifyGraph /W = $graphID freePos(b2)={0,left}
 
 end
+
+
+function create_marker_size(wave1d, every_n_max, [min_marker, max_marker])
+	// create wave named nameofwave(wave1d) + "_marker_size" with every_n_max value equal to max_marker and the rest min_marker
+	// aimed to help clean up graphs without deleting points from waves
+	wave wave1d
+	int every_n_max, min_marker, max_marker
+	
+	min_marker = paramisdefault(min_marker) ? 0.01 : min_marker // 0.01 is default
+	max_marker = paramisdefault(max_marker) ? 1 : max_marker // 1 is default
+
+	string wave_name = nameOfWave(wave1d)
+	string wave_marker_name = wave_name + "_marker_size"
+	
+	duplicate /o $wave_name $wave_marker_name
+	wave wave_marker = $wave_marker_name
+	
+	variable num_cols = dimsize(wave_marker, 0)
+	variable i
+	for (i = 0; i < num_cols; i++)
+		
+		if (mod(i, every_n_max) == 0)
+			wave_marker[i] = max_marker
+		else
+			wave_marker[i] = min_marker
+		endif
+	endfor
+end
