@@ -211,7 +211,7 @@ function etemp_test()
 	Label bottom "Electron Temp (mK)"
 	Label left "Chi Squared Conductance"
 	Label right "Chi Squared Occupation"
-	ModifyGraph rgb(occ_chisq_wave)=(0,0,0)
+	ModifyGraph rgb(occ_chisq_wave)=(0,0,0), gFont="Calibri", gfSize=14
 end
 
 
@@ -437,16 +437,16 @@ function figure_C_separate([variable baset, string gamma_type, variable field_on
 	
 	///// setting  axis labels /////
 	// y - axis labels
-	Label /W=figure_ca left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
-	Label /W=figure_cb1 left "Occupation (.arb)"
-	Label /W=figure_cb2 left "Current (nA)"
-	Label /W=figure_cc left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
+//	Label /W=figure_ca left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
+//	Label /W=figure_cb1 left "Occupation (.arb)"
+//	Label /W=figure_cb2 left "Current (nA)"
+//	Label /W=figure_cc left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
 	
 	// x - axis labels
-	Label /W=figure_ca bottom "Sweep Gate (mV)"
-	Label /W=figure_cb1 bottom "Sweep Gate (mV)"
-	Label /W=figure_cb2 bottom "Sweep Gate (mV)"
-	Label /W=figure_cc bottom "Occupation (.arb)"
+//	Label /W=figure_ca bottom "Sweep Gate (mV)"
+//	Label /W=figure_cb1 bottom "Sweep Gate (mV)"
+//	Label /W=figure_cb2 bottom "Sweep Gate (mV)"
+//	Label /W=figure_cc bottom "Occupation (.arb)"
 	
 	// setting axis range
 	SetAxis /W=figure_ca bottom -10, 10
@@ -568,10 +568,11 @@ function figure_B_NRG()
 	ModifyGraph /W=figure_nrg_g_unaligned lsize(g_nrg_pick#2)=2, rgb(g_nrg_pick#2)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_nrg_g_unaligned lsize(g_nrg_pick#3)=2, rgb(g_nrg_pick#3)=(186*257,0*257,8*257)
 	
-	ModifyGraph /W=figure_nrg_g_unaligned mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-	Label /W=figure_nrg_g_unaligned bottom "Energy (arb.)"
-	Label /W=figure_nrg_g_unaligned left "Conductance (\\$WMTEX$ 2e^2/ℏ \\$/WMTEX$)"
+//	Label /W=figure_nrg_g_unaligned bottom "Energy (arb.)"
+//	Label /W=figure_nrg_g_unaligned left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
 	SetAxis /W=figure_nrg_g_unaligned bottom -1.2e+03,1.2e+03
+	ModifyGraph /W=figure_nrg_g_unaligned mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+
 	
 	
 	///////////////////////////////////////////////////////
@@ -587,11 +588,11 @@ function figure_B_NRG()
 	ModifyGraph /W=figure_nrg_occ_unaligned lsize(occ_nrg_pick#2)=2, rgb(occ_nrg_pick#2)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_nrg_occ_unaligned lsize(occ_nrg_pick#3)=2, rgb(occ_nrg_pick#3)=(186*257,0*257,8*257)
 	
-	ModifyGraph /W=figure_nrg_occ_unaligned mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-	Label /W=figure_nrg_occ_unaligned bottom "Energy (arb.)"
-	Label /W=figure_nrg_occ_unaligned left "Occupation"
+//	Label /W=figure_nrg_occ_unaligned bottom "Energy (arb.)"
+//	Label /W=figure_nrg_occ_unaligned left "Occupation"
 	SetAxis /W=figure_nrg_occ_unaligned bottom -1.2e+03,1.2e+03
-	
+	ModifyGraph /W=figure_nrg_occ_unaligned mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+
 	///////////////////////////////////////////////////////
 	///////////////// aligned g ///////////////////////////
 	///////////////////////////////////////////////////////
@@ -605,10 +606,10 @@ function figure_B_NRG()
 	ModifyGraph /W=figure_nrg_g_aligned lsize(g_nrg_pick#2)=2, rgb(g_nrg_pick#2)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_nrg_g_aligned lsize(g_nrg_pick#3)=2, rgb(g_nrg_pick#3)=(186*257,0*257,8*257)
 	
-	ModifyGraph /W=figure_nrg_g_aligned mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-	Label /W=figure_nrg_g_aligned bottom "Energy (arb.)"
-	Label /W=figure_nrg_g_aligned left "Conductance (\\$WMTEX$ 2e^2/ℏ \\$/WMTEX$)"
+//	Label /W=figure_nrg_g_aligned bottom "Energy (arb.)"
+//	Label /W=figure_nrg_g_aligned left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
 	SetAxis /W=figure_nrg_g_aligned bottom -1.2e+03,1.2e+03
+	ModifyGraph /W=figure_nrg_g_aligned mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
 	
 	
 	///////////////////////////////////////////////////////
@@ -624,12 +625,14 @@ function figure_B_NRG()
 	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#2)=2, rgb(occ_nrg_pick#2)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#3)=2, rgb(occ_nrg_pick#3)=(186*257,0*257,8*257)
 
-	ModifyGraph /W=figure_nrg_occ_aligned mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=18, tick=2
-	Label /W=figure_nrg_occ_aligned bottom "Energy (arb.)"
-	Label /W=figure_nrg_occ_aligned left "Occupation"
-	SetAxis /W=figure_nrg_occ_aligned bottom -1.2e+03,1.2e+03
+	Legend/C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
 	
-	Legend/C/N=text0/J "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
+//	Label /W=figure_nrg_occ_aligned bottom "Energy (arb.)"
+//	Label /W=figure_nrg_occ_aligned left "Occupation"
+	SetAxis /W=figure_nrg_occ_aligned bottom -1.2e+03,1.2e+03
+	ModifyGraph /W=figure_nrg_occ_aligned mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14, gfSize=14
+	
+//	Legend/C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
 
 	/////	KILL WAVES	/////
 	killwaves /Z x_wave
@@ -717,25 +720,23 @@ function figure_dummy_conductance_occupation()
 	///////////////////////////////////////////////////////
 	mu_nrg_align_pick[][0] = mu_nrg_align_pick[p][0] / 1e3
 	AppendToGraph /W=figure_nrg_g_dummy g_nrg_pick[][0] vs mu_nrg_align_pick[][0]
-	
-	ModifyGraph /W=figure_nrg_g_dummy lsize(g_nrg_pick)=2, rgb(g_nrg_pick)=(0,0,0), mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-	
-	Label /W=figure_nrg_g_dummy bottom "Energy (arb.)"
-	Label /W=figure_nrg_g_dummy left "Conductance (\\$WMTEX$ 2e^2 / ℏ \\$/WMTEX$)"
+		
+//	Label /W=figure_nrg_g_dummy bottom "Energy (arb.)"
+//	Label /W=figure_nrg_g_dummy left "Conductance (\\$WMTEX$ 2e^2 / ℏ \\$/WMTEX$)"
 	SetAxis /W=figure_nrg_g_dummy bottom -0.1e+03,0.1e+03
-	
+	ModifyGraph /W=figure_nrg_g_dummy lsize(g_nrg_pick)=2, rgb(g_nrg_pick)=(0,0,0), mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2,  gFont="Calibri", gfSize=14
+
 	
 	///////////////////////////////////////////////////////
 	////////////////////// aligned occ ////////////////////
 	///////////////////////////////////////////////////////
 	AppendToGraph /W=figure_nrg_occ_dummy occ_nrg_pick[][0] vs mu_nrg_align_pick[][0]
 	
-	ModifyGraph /W=figure_nrg_occ_dummy lsize(occ_nrg_pick)=2, rgb(occ_nrg_pick)=(0,0,0), mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-
-	Label /W=figure_nrg_occ_dummy bottom "Energy (arb.)\\Z24"
-	Label /W=figure_nrg_occ_dummy left "Occupation\\Z24"
+//	Label /W=figure_nrg_occ_dummy bottom "Energy (arb.)\\Z24"
+//	Label /W=figure_nrg_occ_dummy left "Occupation\\Z24"
 	SetAxis /W=figure_nrg_occ_dummy bottom -0.1e+03,0.1e+03
-	
+	ModifyGraph /W=figure_nrg_occ_dummy lsize(occ_nrg_pick)=2, rgb(occ_nrg_pick)=(0,0,0), mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2,  gFont="Calibri", gfSize=14
+
 //	Legend/C/N=text0/J "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 7"
 
 
@@ -746,9 +747,12 @@ end
 function figure_D([variable baset])
 	baset = paramisdefault(baset) ? 15 : baset
 		
-	string base_name_data_y = "_dot_cleaned_avgcondocc_data"
+//	string base_name_data_y = "_dot_cleaned_avgcondocc_data"
+	string base_name_data_y = "_dot_cleaned_avg_figc"
 	string base_name_data_x = "_dot_cleaned_avg"
-	string base_name_fit_y = "_dot_cleaned_avgcondocc_nrg_y"
+	
+//	string base_name_fit_y = "_dot_cleaned_avgcondocc_nrg_y"
+	string base_name_fit_y = "_dot_cleaned_avg_figc"
 	string base_name_fit_x = "_dot_cleaned_avgcondocc_nrg_x"
 	
 	string data_y, data_x, fit_y, fit_x, datnum, marker_size
@@ -767,14 +771,18 @@ function figure_D([variable baset])
 	datnum = "6081"
 	data_y = "dat" + datnum + base_name_data_y
 	data_x = "nrgocc_dat" + datnum + base_name_data_x
-	fit_y = "dat" + datnum + base_name_fit_y
+//	fit_y = "dat" + datnum + base_name_fit_y
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
 	fit_x = "dat" + datnum + base_name_fit_x
 	marker_size = data_y + "_marker_size"
 	
 	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
 	
-	AppendToGraph /W=figure_Da $data_y vs $data_x
-	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+//	AppendToGraph /W=figure_Da $data_y vs $data_x
+//	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	AppendToGraph /W=figure_Da $data_y 
+	AppendToGraph /W=figure_Da $fit_y 
+//	
 	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(94*257,135*257,93*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(94*257,135*257,93*257)
 	
@@ -783,14 +791,18 @@ function figure_D([variable baset])
 	datnum = "6080"
 	data_y = "dat" + datnum + base_name_data_y
 	data_x = "nrgocc_dat" + datnum + base_name_data_x
-	fit_y = "dat" + datnum + base_name_fit_y
+//	fit_y = "dat" + datnum + base_name_fit_y
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
 	fit_x = "dat" + datnum + base_name_fit_x
 	marker_size = data_y + "_marker_size"
 	
 	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
 	
-	AppendToGraph /W=figure_Da $data_y vs $data_x
-	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+//	AppendToGraph /W=figure_Da $data_y vs $data_x
+//	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	AppendToGraph /W=figure_Da $data_y 
+	AppendToGraph /W=figure_Da $fit_y 
+	
 	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(205*257,132*257,48*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(205*257,132*257,48*257)
 	
@@ -800,23 +812,32 @@ function figure_D([variable baset])
 	datnum = "6079"
 	data_y = "dat" + datnum + base_name_data_y
 	data_x = "nrgocc_dat" + datnum + base_name_data_x
-	fit_y = "dat" + datnum + base_name_fit_y
+//	fit_y = "dat" + datnum + base_name_fit_y
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
 	fit_x = "dat" + datnum + base_name_fit_x
 	marker_size = data_y + "_marker_size"
 	
 	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
 	
-	AppendToGraph /W=figure_Da $data_y vs $data_x
-	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+//	AppendToGraph /W=figure_Da $data_y vs $data_x
+//	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	AppendToGraph /W=figure_Da $data_y 
+	AppendToGraph /W=figure_Da $fit_y 
+	
 	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
 	
+	SetAxis /W=figure_Da bottom -5, 5
+	
 	closeallGraphs(no_close_graphs="figure_Da;figure_Db")
 	
-	ModifyGraph /W=figure_Da mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=18, tick=2
-	Label /W=figure_Da bottom "Occupation"
-	Label /W=figure_Da left "Conductance (\\$WMTEX$ 2e^2/ℏ \\$/WMTEX$)"
-	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6081_dot_cleaned_avgcondocc_nrg_y) Γ/T = 2\r\\s(dat6080_dot_cleaned_avgcondocc_nrg_y) Γ/T = 11 \r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) Γ/T = 28"
+//	Label /W=figure_Da bottom "Occupation"
+//	Label /W=figure_Da left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
+//	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6081_dot_cleaned_avgcondocc_nrg_y) Γ/T = 2\r\\s(dat6080_dot_cleaned_avgcondocc_nrg_y) Γ/T = 11 \r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) Γ/T = 28"
+	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(GFit_dat6081_dot_cleaned_avg_figc) Γ/T = 2\r\\s(GFit_dat6080_dot_cleaned_avg_figc) Γ/T = 11 \r\\s(GFit_dat6079_dot_cleaned_avg_figc) Γ/T = 28"
+
+	
+	ModifyGraph /W=figure_Da mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14
 
 	
 	//////////////////////
@@ -835,9 +856,9 @@ function figure_D([variable baset])
 	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
 	
 	AppendToGraph /W=figure_Db $data_y vs $data_x
-	AppendToGraph /W=figure_Db $fit_y vs $fit_x
-	ModifyGraph /W=figure_Db mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-	ModifyGraph /W=figure_Db mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
+//	AppendToGraph /W=figure_Db $fit_y vs $fit_x
+	ModifyGraph /W=figure_Db mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}, gFont="Calibri", gfSize=14
+//	ModifyGraph /W=figure_Db mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
 	
 	///// high gamma high field /////
 	figure_C_separate(baset = baset,  gamma_type = "high", field_on = 1) // dat 6100
@@ -851,18 +872,21 @@ function figure_D([variable baset])
 	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
 	
 	AppendToGraph /W=figure_Db $data_y vs $data_x
-	AppendToGraph /W=figure_Db $fit_y vs $fit_x
-	ModifyGraph /W=figure_Db mode($data_y)=3, marker($data_y)=13,  lsize($data_y)=2, rgb($data_y)=(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-	ModifyGraph /W=figure_Db mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
+//	AppendToGraph /W=figure_Db $fit_y vs $fit_x
+	ModifyGraph /W=figure_Db mode($data_y)=3, marker($data_y)=13,  lsize($data_y)=2, rgb($data_y)=(159*257,139*257,193*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}, gFont="Calibri", gfSize=14
+//	ModifyGraph /W=figure_Db mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
 	
 	closeallGraphs(no_close_graphs="figure_Da;figure_Db")	
 	
-	ModifyGraph /W=figure_Db mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=18, tick=2
-	Label /W=figure_Db bottom "Occupation"
-	Label /W=figure_Db left "Conductance (\\$WMTEX$ 2e^2/ℏ \\$/WMTEX$)"
+//	Label /W=figure_Db bottom "Occupation"
+//	Label /W=figure_Db left "Conductance (\\$WMTEX$ 2e^2/ℏ \\$/WMTEX$)"
 	
 	
-	Legend /W=figure_Db/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6079_dot_cleaned_avgcondocc_data) Data 70mT\r\\s(dat6100_dot_cleaned_avgcondocc_data) Data 2000mT\r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) NRG"
+	Legend /W=figure_Db/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6079_dot_cleaned_avgcondocc_data) Data 70mT\r\\s(dat6100_dot_cleaned_avgcondocc_data) Data 2000mT"
+	ModifyGraph /W=figure_Db mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14
+
+//	Legend /W=figure_Db/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6079_dot_cleaned_avgcondocc_data) Data 70mT\r\\s(dat6100_dot_cleaned_avgcondocc_data) Data 2000mT\r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) NRG"
+
 end
 
 
@@ -919,10 +943,10 @@ function figure_tim_gamma()
 	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_nrg_med)=0, lsize(occupation_nrg_med)=2, rgb(occupation_nrg_med)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_poster_gamma_occ mode(occupation_nrg_strong)=0, lsize(occupation_nrg_strong)=2, rgb(occupation_nrg_strong)=(186*257,0*257,8*257)
 	
-	ModifyGraph /W=figure_poster_gamma_occ mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-	Label /W=figure_poster_gamma_occ bottom "Sweep Gate (mV)\\u#2"
-	Label /W=figure_poster_gamma_occ left "Occupation \\u#2"
+//	Label /W=figure_poster_gamma_occ bottom "Sweep Gate (mV)\\u#2"
+//	Label /W=figure_poster_gamma_occ left "Occupation \\u#2"
 	SetAxis /W=figure_poster_gamma_occ bottom -3,3
+	ModifyGraph /W=figure_poster_gamma_occ mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
 	
 	///////////////////////////////////////////////////////
 	//////////////////// entropy //////////////////////////
@@ -951,9 +975,101 @@ function figure_tim_gamma()
 	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_strong_fit)=0, lsize(int_entropy_strong_fit)=2, rgb(int_entropy_strong_fit)=(186*257,0*257,8*257)
 	
 	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_similar_fit)  Γ/T = 1.3\r\\s(int_entropy_med_fit)  Γ/T = 5\r\\s(int_entropy_strong_fit) Γ/T = 18"
-	ModifyGraph /W=figure_poster_gamma_entropy mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=18, tick=2
-	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\u#2"
-	Label /W=figure_poster_gamma_entropy left "Entropy (kB)\\u#2"
+//	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\u#2"
+//	Label /W=figure_poster_gamma_entropy left "Entropy (kB)\\u#2"
 	SetAxis /W=figure_poster_gamma_entropy bottom -3,3
+	Label /W=figure_poster_gamma_entropy bottom "\\u#2"
+	Label /W=figure_poster_gamma_entropy left "\\u#2"
+	ModifyGraph /W=figure_poster_gamma_entropy mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+
+end
+
+
+
+
+
+function figure_tim_single()	
+	// SavePICT/P=home/E=-5/RES=1000/o
+	// int_entropy_weak, int_entropy_similar, int_entropy_med, int_entropy_strong
+	// int_entropy_weak_fit, int_entropy_similar_fit, int_entropy_med_fit, int_entropy_strong_fit
+	
+	// occupation_data_weak, occupation_data_similar, occupation_data_med, occupation_data_strong
+	// occupation_nrg_weak, occupation_nrg_similar, occupation_nrg_med, occupation_nrg_strong
+	
+	wave int_entropy_weak, int_entropy_med
+	wave int_entropy_weak_fit, int_entropy_med_fit
+	
+	wave occupation_data_weak, occupation_data_med
+	wave occupation_nrg_weak, occupation_nrg_med
+	
+
+	// make windows
+	Display; KillWindow /Z figure_poster_gamma_med; DoWindow/C/O figure_poster_gamma_med 
+	Display; KillWindow /Z figure_poster_gamma_weak; DoWindow/C/O figure_poster_gamma_weak 
+	
+	make /o/n=2 ln2 = {ln(2), ln(2)}
+	make /o/n=2 ln3 = {ln(3), ln(3)}
+	make /o/n=2 ln_xarray = {-3, 3}
+	
+	///////////////////////////////////////////////////////
+	///////////////// med gamma ////////////////////////
+	///////////////////////////////////////////////////////	
+	///// NRG /////
+	AppendToGraph /W=figure_poster_gamma_med /l=l2 occupation_nrg_med
+	AppendToGraph /W=figure_poster_gamma_med int_entropy_med_fit
+	AppendToGraph /W=figure_poster_gamma_med ln2 vs ln_xarray
+	AppendToGraph /W=figure_poster_gamma_med ln3 vs ln_xarray
+	
+	ModifyGraph /W=figure_poster_gamma_med mode(int_entropy_med_fit)=0, lsize(int_entropy_med_fit)=2, rgb(int_entropy_med_fit)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_med mode(occupation_nrg_med)=7, lsize(occupation_nrg_med)=0.1, rgb(occupation_nrg_med)=(0,0,0), usePlusRGB(occupation_nrg_med)=1, hbFill(occupation_nrg_med)=5, plusRGB(occupation_nrg_med)=(0,0,0, 30000)
+
+	SetAxis /W=figure_poster_gamma_med bottom -3,3
+	SetAxis /W=figure_poster_gamma_med left 0,1.15
+	SetAxis /W=figure_poster_gamma_med l2 0,1
+	ModifyGraph /W=figure_poster_gamma_med freePos(l2)={inf,bottom}, tick(l2)=0,tlOffset(l2)=-24,tickEnab(l2)={0,1}
+	ModifyGraph /W=figure_poster_gamma_med lstyle(ln2)=11,rgb(ln2)=(0,0,0), lstyle(ln3)=11,rgb(ln3)=(0,0,0)
+
+	Label /W=figure_poster_gamma_med bottom "\\u#2"
+	Label /W=figure_poster_gamma_med left "\\u#2"
+	Label /W=figure_poster_gamma_med l2 "\\u#2"
+	
+	ModifyGraph /W=figure_poster_gamma_med mirror=0, nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+	ModifyGraph /W=figure_poster_gamma_med mirror(bottom)=1
+	ModifyGraph /W=figure_poster_gamma_med tick(l2)=0
+	
+	///////////////////////////////////////////////////////
+	//////////////////// weak gamma  //////////////////////
+	///////////////////////////////////////////////////////
+	///// NRG /////
+	AppendToGraph /W=figure_poster_gamma_weak /l=l2 occupation_nrg_weak
+	AppendToGraph /W=figure_poster_gamma_weak int_entropy_weak_fit
+	AppendToGraph /W=figure_poster_gamma_weak ln2 vs ln_xarray
+	AppendToGraph /W=figure_poster_gamma_weak ln3 vs ln_xarray
+	
+	ModifyGraph /W=figure_poster_gamma_weak mode(int_entropy_weak_fit)=0, lsize(int_entropy_weak_fit)=2, rgb(int_entropy_weak_fit)=(0,0,0)
+	ModifyGraph /W=figure_poster_gamma_weak mode(occupation_nrg_weak)=7, lsize(occupation_nrg_weak)=0.1, rgb(occupation_nrg_weak)=(0,0,0), usePlusRGB(occupation_nrg_weak)=1, hbFill(occupation_nrg_weak)=5, plusRGB(occupation_nrg_weak)=(0,0,0, 30000)
+	
+
+	SetAxis /W=figure_poster_gamma_weak bottom -2,2
+	SetAxis /W=figure_poster_gamma_weak left 0,1.15
+	SetAxis /W=figure_poster_gamma_weak l2 0,1
+	ModifyGraph /W=figure_poster_gamma_weak freePos(l2)={inf,bottom}, tick(l2)=0,tlOffset(l2)=-24,tickEnab(l2)={0,1}
+	ModifyGraph /W=figure_poster_gamma_weak lstyle(ln2)=11,rgb(ln2)=(0,0,0), lstyle(ln3)=11,rgb(ln3)=(0,0,0)
+
+	Label /W=figure_poster_gamma_weak bottom "\\u#2"
+	Label /W=figure_poster_gamma_weak left "\\u#2"
+	Label /W=figure_poster_gamma_weak l2 "\\u#2"
+	
+	ModifyGraph /W=figure_poster_gamma_weak mirror=0, nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+	ModifyGraph /W=figure_poster_gamma_weak mirror(bottom)=1
+	ModifyGraph /W=figure_poster_gamma_weak tick(l2)=0
+	
+//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_similar_fit)  Γ/T = 1.3\r\\s(int_entropy_med_fit)  Γ/T = 5\r\\s(int_entropy_strong_fit) Γ/T = 18"
+////	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\u#2"
+////	Label /W=figure_poster_gamma_entropy left "Entropy (kB)\\u#2"
+//	SetAxis /W=figure_poster_gamma_entropy bottom -3,3
+//	Label /W=figure_poster_gamma_entropy bottom "\\u#2"
+//	Label /W=figure_poster_gamma_entropy left "\\u#2"
+//	ModifyGraph /W=figure_poster_gamma_entropy mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
 
 end
