@@ -679,3 +679,36 @@ function crop_waves_by_x_scaling(wave1, wave2)
 	endfor
 	
 end
+
+
+
+function translate_wave_by_occupation(wave1, wave2)
+	// overwrites x scaling of wave1 by shifting it using wave2
+	// assumes both waves have correct x scaling
+	// does not assume each wave has same delta x
+	// hard coded to shift x-axis of wave1 when wave2 = 0.5
+	
+	wave wave1, wave2
+	
+	// create wave references
+	string wave1_name = nameofwave(wave1)
+	string wave2_name = nameofwave(wave2)
+	
+	wave wave1_ref = $wave1_name
+	wave wave2_ref = $wave2_name
+	
+	// create x wave references
+	create_x_wave(wave1_ref)
+	wave wave1_x_wave = x_wave
+	
+	FindLevel /Q $wave2_name, 0.5
+	variable gate_val_half = V_LevelX
+	
+	variable num_rows_wave1 = dimsize(wave1_ref, 0)
+	
+	print wave1_name, gate_val_half
+	
+//	SetScale/I x (wave1_x_wave[0] + gate_val_half), (wave1_x_wave[num_rows_wave1 - 1] + gate_val_half), $wave1_name
+
+
+end
