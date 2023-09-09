@@ -348,16 +348,16 @@ function udh5([dat_num, dat_list, dat_min_max, exclude_name])
 	variable i
 	if (!stringmatch(dat_list, ""))
 		hdflist = ""
-		for(i=0; i<ItemsInList(dat_list, ","); i+=1)
-			hdflist = hdflist + "dat" + StringFromList(i, dat_list, ",") + ".h5;"
+		for(i=0; i<ItemsInList(dat_list, ";"); i+=1)
+			hdflist = hdflist + "dat" + StringFromList(i, dat_list, ";") + ".h5;"
 		endfor
 	endif
 	
 	////////////////////////////////////////////////////////
 	///// Overwriting hdflist if dat_min_max specified /////
 	////////////////////////////////////////////////////////
-	variable dat_start = str2num(StringFromList(0, dat_min_max, ","))
-	variable dat_end = str2num(StringFromList(1, dat_min_max, ","))
+	variable dat_start = str2num(StringFromList(0, dat_min_max, ";"))
+	variable dat_end = str2num(StringFromList(1, dat_min_max, ";"))
 	
 	if (!stringmatch(dat_min_max, ""))
 		hdflist = ""
@@ -708,7 +708,7 @@ function translate_wave_by_occupation(wave1, wave2)
 	
 	print wave1_name, gate_val_half
 	
-	SetScale/I x (wave1_x_wave[0] + gate_val_half), (wave1_x_wave[num_rows_wave1 - 1] + gate_val_half), $wave1_name
+	SetScale/I x (wave1_x_wave[0] - gate_val_half), (wave1_x_wave[num_rows_wave1 - 1] - gate_val_half), $wave1_name
 
 
 end
