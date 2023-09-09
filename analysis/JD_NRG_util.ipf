@@ -929,13 +929,16 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		// calculating occupation data
 		create_x_wave($occ_data_name)
 		wave x_wave
-		fitfunc_nrgctAAO(occ_coef, $occ_data_name, x_wave)
+//		fitfunc_nrgctAAO(occ_coef, $occ_data_name, x_wave)
+//		fitfunc_nrgocc(cs_coef, $occ_data_name)
+		fitfunc_ct_to_occ(cs_coef, $occ_data_name, x_wave)
 		
 		// calculating occupation fit
 		create_x_wave($occ_fit_name)
 		wave x_wave
-		fitfunc_nrgctAAO(occ_coef, $occ_fit_name, x_wave)
-		
+//		fitfunc_nrgctAAO(occ_coef, $occ_fit_name, x_wave)
+		fitfunc_nrgocc(cs_coef, $occ_fit_name)	
+			
 		// append occupation to graph
 		appendtograph /r $occ_data_name
 		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(0,0,0)
@@ -980,25 +983,12 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		///// creating occupation data wave /////
 		
 	
-		///// saving occupation fit data from GFfit_XXX to fit_XXX this is in tune with how charge transitions are saved
+		///// saving occupation fit data from GFfit_XXX to fit_XXX this is same naming scheme with how charge transitions are saved
 		wavenm = "GFit_" + stringfromlist(i,data.g_wvlist)
 		newwavenm = "fit_" + stringfromlist(i,data.g_wvlist)
 		duplicate /o $wavenm $newwavenm
 	endfor
 	
-//	// Add NRG data on top
-//	for(i=0;i<numwvs;i++)
-//		wavenm="coef_"+stringfromlist(i,data.g_wvlist)
-//		wave g_coefs=$wavenm
-//		wave g_nrg
-//		wave occ_nrg
-//		nrgline = scaletoindex(g_nrg,(g_coefs[0]+g_coefs[3]),1)
-//		wavenm = "g"+num2str(nrgline)
-//		matrixop /o $wavenm=col(g_nrg,nrgline)
-//		wave gnrg = $wavenm
-//		gnrg *= g_coefs[4]
-//		appendtograph gnrg vs occ_nrg[][nrgline]
-//	endfor
 		
 	// Add NRG data on top
 	for(i=0;i<numwvs;i++)
@@ -1191,5 +1181,22 @@ Function fitfunc_nrgocc(pw, yw) : FitFunc
 	WAVE pw, yw
 	wave nrg=occ_nrg
 	
-	yw = interp2d(nrg,(pw[1]*(x-pw[2])),(pw[0]+pw[3]))
+	yw = interp2d(nrg, (pw[1]*(x-pw[2])), (pw[0]+pw[3]))
+end
+
+
+Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
+	WAVE pw, yw, xw
+	wave nrg=occ_nrg
+	
+//	yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
+	
+	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2)
+	yw[] = yw[p]/pw[7]
+	
+	xw[] = xw[p]/pw[1]
+	xw[] = xw[p] + pw[2]
+	
+	SetScale/I x pnt2x(xw, 0), pnt2x(xw, dimsize(xw, 0) - 1), yw
+	
 end

@@ -149,8 +149,9 @@ end
 
 
 function run_clean_average_procedure([string datnums])
-	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102"
-	
+//	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102"
+	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102" // low field, low, mid, high gamma
+
 	datnums = selectString(paramisdefault(datnums), datnums, default_datnums) // e.g. "RAW"
 
 	variable notch_on = 1
