@@ -849,7 +849,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	
 	variable i, numcoefs, counter, numwvs, options, nrgline
-	string strnm, wavenm, runlabel = gamma_over_temp_type + "G"
+	string strnm, wavenm, newwavenm, runlabel = gamma_over_temp_type + "G"
 
 	make /o/n=4 temps
 	wave data.temps
@@ -877,80 +877,136 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	cond_chisq = GF_chisq
 	
 	
-	////////////////////////////////////////////////
-	///// Fitting and Plotting Occupation Data /////
-	////////////////////////////////////////////////
-	// Use coefficients determined from conductance fit to fit occupation data
-	string current_data_name, current_fit_name
-	variable total_occ_chisq
+	//////////////////////////////////////////////////////////////////////
+	///// Fitting and Plotting Charge Transition and Occupation Data /////
+	//////////////////////////////////////////////////////////////////////
+	// Use coefficients determined from conductance fit to fit charge transition data
+	// Create occupation data
+	string cs_data_name, cs_fit_name, occ_data_name, occ_fit_name
+	variable total_cs_chisq
 	display
 	for(i=0;i<numwvs;i++)
-		string occ_coef="coef_"+stringfromlist(i,data.occ_wvlist)
-		make/o /n=8 $occ_coef=0 // Make coefficient wave for occupation fits
-		wave curr_coef=$("coef_"+stringfromlist(i,data.g_wvlist))
-		wave new_coef=$occ_coef
+		string cs_coef_name = "coef_" + stringfromlist(i,data.occ_wvlist)
+		make/o /n=8 $cs_coef_name = 0 // Make coefficient wave for occupation fits
+		wave curr_coef = $("coef_" + stringfromlist(i,data.g_wvlist))
+		wave cs_coef = $cs_coef_name
 		
-		current_data_name = stringfromlist(i,data.occ_wvlist)
-		wave currwv=$(stringfromlist(i,data.occ_wvlist))
-		appendtograph currwv
-		ModifyGraph mode($current_data_name)=2, lsize($current_data_name)=2, rgb($current_data_name)=(0,0,0)
-		new_coef[0,3] = curr_coef[p]; wavestats /q currwv; new_coef[4]=v_avg;  new_coef[7]=(v_min-v_max); // new_coef[6]=0;
-		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+		cs_data_name = stringfromlist(i,data.occ_wvlist)
+		wave cs_data = $cs_data_name
 		
-		total_occ_chisq += V_chisq
+		appendtograph cs_data
+		ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(0,0,0)
+		cs_coef[0,3] = curr_coef[p]; wavestats /q cs_data; cs_coef[4]=v_avg;  cs_coef[7]=(v_min-v_max); // cs_coef[6]=0;
+		FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+		FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D /M=$(stringfromlist(i,data.occ_maskwvlist))
 		
-		current_data_name = "fit_" + current_data_name
-		ModifyGraph mode($current_data_name)=0, lsize($current_data_name)=2, rgb($current_data_name)=(65535,0,0)
+		// hold G/T scaling
+		// hold leverarm 
+		// fitfunc_nrgctAAO inputs :: yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
+		
+		total_cs_chisq += V_chisq // sum the chisq from each fit
+		
+		// add fit to graph
+		cs_fit_name = "fit_" + cs_data_name
+		ModifyGraph mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(65535,0,0)
+		
+		////////////////////////////////////
+		///// Creating Occupation data /////
+		////////////////////////////////////
+		// charge transition coefficients are stored in cs_coef
+		wave occ_coef
+		duplicate /o cs_coef occ_coef
+		// need to force linear, quadratic terms to zero 
+		occ_coef[4]=0; occ_coef[5]=0; occ_coef[6]=0; occ_coef[7]=1;
+		
+		// creating occupation data and fit
+		occ_data_name = cs_data_name + "_occ"
+		occ_fit_name = cs_fit_name + "_occ"
+		
+		duplicate /o $cs_data_name $occ_data_name
+		duplicate /o $cs_fit_name $occ_fit_name
+		
+		// calculating occupation data
+		create_x_wave($occ_data_name)
+		wave x_wave
+		fitfunc_nrgctAAO(occ_coef, $occ_data_name, x_wave)
+		
+		// calculating occupation fit
+		create_x_wave($occ_fit_name)
+		wave x_wave
+		fitfunc_nrgctAAO(occ_coef, $occ_fit_name, x_wave)
+		
+		// append occupation to graph
+		appendtograph /r $occ_data_name
+		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(0,0,0)
+		appendtograph /r $occ_fit_name
+		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(65535,0,0)
+		
 	endfor
 	
-//	print "Chisqr on occupation fit is " + num2str(total_occ_chisq/4)
-	occ_chisq = total_occ_chisq/4
-	
-	
+//	print "Chisqr on occupation fit is " + num2str(total_cs_chisq/4)
+	occ_chisq = total_cs_chisq/4 /// NOTE: Poorly named variable, this should be cs 
+
+
 	
 	////////////////////////////////////////////////////
-	///// Plotting Conductance vs. Occupation Data /////
+	///// Creating Occupation and Plotting Conductance vs. Occupation Data /////
 	////////////////////////////////////////////////////
 	// Use coefficients determined from occupations fit to find occupation(Vgate)
+	// create NRG occupation wave with same x-scaling as data conductance
+	// create data conduction curve 
 	string cond_vs_occ_data_wave_name
 	display
 	for(i=0;i<numwvs;i++)
-		wavenm="nrgocc_" + stringfromlist(i,data.g_wvlist)
-		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist) + "condocc_data"
-		
-		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
+		wavenm = stringfromlist(i,data.g_wvlist) + "_occ_nrg" // create a new name XXX_occ_nrg where XXX is the name of the conductance wave used in the NRG fitting
 
-		wave nrg_occ = $wavenm
-		wavenm="coef_" + stringfromlist(i,data.occ_wvlist)
-		fitfunc_nrgocc($wavenm, nrg_occ)
-		wave cond_vs_occ_ydata_wave_name = $(stringfromlist(i,data.g_wvlist))
+		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm // copy the conductance wave into nrgocc_XXX, in the end just to use its x-scaling
+		wave nrg_occ = $wavenm // call this wave nrg_occ for use in this function
 		
-		duplicate /o nrg_occ $cond_vs_occ_data_wave_name
-		wave cond_vs_occ_wave_data = $cond_vs_occ_data_wave_name
-		cond_vs_occ_wave_data = cond_vs_occ_ydata_wave_name
+		wavenm = "coef_" + stringfromlist(i,data.occ_wvlist)
+		fitfunc_nrgocc($wavenm, nrg_occ) // overwrite nrg_occ using occupation fit params and NRG occupation (keep same x-scaling as conduction)
 		
+		string cond_vs_occ_ydata_wave_name = stringfromlist(i,data.g_wvlist)
+
 		// NEW WAY //
 //		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name, wave2)
 		
 		// OLD WAY //
-		prune_waves($cond_vs_occ_data_wave_name, nrg_occ)
-		appendtograph $cond_vs_occ_data_wave_name vs nrg_occ
-		ModifyGraph mode($cond_vs_occ_data_wave_name)=2, lsize($cond_vs_occ_data_wave_name)=2, rgb($cond_vs_occ_data_wave_name)=(0,0,0)
-	endfor
+//		prune_waves($cond_vs_occ_ydata_wave_name, nrg_occ)
+		appendtograph $cond_vs_occ_ydata_wave_name vs nrg_occ
+		ModifyGraph mode($cond_vs_occ_ydata_wave_name)=2, lsize($cond_vs_occ_ydata_wave_name)=2, rgb($cond_vs_occ_ydata_wave_name)=(0,0,0)
+	
+	
+		///// creating occupation data wave /////
 		
+	
+		///// saving occupation fit data from GFfit_XXX to fit_XXX this is in tune with how charge transitions are saved
+		wavenm = "GFit_" + stringfromlist(i,data.g_wvlist)
+		newwavenm = "fit_" + stringfromlist(i,data.g_wvlist)
+		duplicate /o $wavenm $newwavenm
+	endfor
+	
+//	// Add NRG data on top
+//	for(i=0;i<numwvs;i++)
+//		wavenm="coef_"+stringfromlist(i,data.g_wvlist)
+//		wave g_coefs=$wavenm
+//		wave g_nrg
+//		wave occ_nrg
+//		nrgline = scaletoindex(g_nrg,(g_coefs[0]+g_coefs[3]),1)
+//		wavenm = "g"+num2str(nrgline)
+//		matrixop /o $wavenm=col(g_nrg,nrgline)
+//		wave gnrg = $wavenm
+//		gnrg *= g_coefs[4]
+//		appendtograph gnrg vs occ_nrg[][nrgline]
+//	endfor
 		
 	// Add NRG data on top
-	string cond_vs_occ_nrg_wave_name
 	for(i=0;i<numwvs;i++)
 		wavenm="coef_" + stringfromlist(i,data.g_wvlist)
-		string cond_vs_occ_nrg_wave_name_x = stringfromlist(i,data.g_wvlist) + "condocc_nrg_x"
-		string cond_vs_occ_nrg_wave_name_y = stringfromlist(i,data.g_wvlist) + "condocc_nrg_y"
+		string cond_vs_occ_xnrg_wave_name = stringfromlist(i,data.g_wvlist) + "_occ_nrg"
+		string cond_vs_occ_ynrg_wave_name = stringfromlist(i,data.g_wvlist) + "_cond_nrg"
 		
-		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist) + "condocc_data"
-		wave cond_vs_occ_data_wave = $cond_vs_occ_data_wave_name
-		
-		wave g_coefs=$wavenm
+		wave g_coefs = $wavenm
 		wave g_nrg
 		wave occ_nrg
 		nrgline = scaletoindex(g_nrg, (g_coefs[0] + g_coefs[3]), 1)
@@ -959,21 +1015,24 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		wave gnrg = $wavenm
 		gnrg *= g_coefs[4]
 
-		// save y-wave
-		duplicate /o gnrg, $cond_vs_occ_nrg_wave_name_y
+		// save NRG conduction
+		duplicate /o gnrg, $cond_vs_occ_ynrg_wave_name
 		
-		// save x-wave
-		duplicate /RMD=[][nrgline] /o occ_nrg, $cond_vs_occ_nrg_wave_name_x
+		// save x-wave (alrady saved above)
+		duplicate /RMD=[][nrgline] /o occ_nrg, $cond_vs_occ_xnrg_wave_name
 		
 		
-//		appendtograph gnrg vs occ_nrg[][nrgline]
-		appendtograph $cond_vs_occ_nrg_wave_name_y vs $cond_vs_occ_nrg_wave_name_x
-		wave cond_vs_occ_nrg_wave_y = $cond_vs_occ_nrg_wave_name_y
+		appendtograph $cond_vs_occ_ynrg_wave_name vs $cond_vs_occ_xnrg_wave_name
+		wave cond_vs_occ_nrg_wave_y = $cond_vs_occ_ynrg_wave_name
+		
+		
+		///// calculate chi2 /////
+		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist)
+		wave cond_vs_occ_data_wave = $cond_vs_occ_data_wave_name
 		
 		duplicate /o cond_vs_occ_data_wave, cond_vs_occ_calc
 		wave cond_vs_occ_calc 
 		cond_vs_occ_calc = (cond_vs_occ_data_wave - cond_vs_occ_nrg_wave_y)^2
-		
 		condocc_chisq += sum(cond_vs_occ_calc)
 	endfor
 	
