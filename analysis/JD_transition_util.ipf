@@ -113,7 +113,8 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 //		replace_nans_with_avg($cleaned_wave_name, overwrite=0) // remove any row with > 25% NaNs in the row
 		avg_wav($cleaned_wave_name) // quick average plot
 		
-		wavetransform/o zapnans $avg_wave_name
+//		wavetransform/o zapnans $avg_wave_name
+//		zapnan_scaling_overwrite($avg_wave_name)
 		get_initial_params($avg_wave_name); //print W_coef
 		
 		fit_transition($avg_wave_name, minx, maxx, fit_width = fit_width)

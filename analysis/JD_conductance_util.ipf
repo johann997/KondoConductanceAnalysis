@@ -107,6 +107,47 @@ function zap_NaN_rows(wave_2d, [overwrite, percentage_cutoff_inf])
 end
 
 
+
+function zapnan_scaling_overwrite(wave_1d, [overwrite])
+	// removes any NaNs from a wave and preserves the x-scaling, assumes NaNs are only at the ends.
+	// wave_1d: 2d wave to remove rows from
+	// overwrite: Default is overwrite = 0. overwrite = 1 will overwrite input wave and params wave.
+	// percentage_cutoff_inf: Default is percentage_cutoff_inf = 0.15 :: 15%
+	wave wave_1d
+	int overwrite
+
+	// Duplicating 2d wave
+	if (overwrite == 0)
+		string wave_1d_name = nameofwave(wave_1d)
+		string wave_1d_name_new = wave_1d_name + "_zap"
+		duplicate /o wave_1d $wave_1d_name_new
+		wave wave_1d_new = $wave_1d_name_new 
+	endif
+	
+	
+	create_x_wave(wave_1d)
+	wave x_wave
+
+	
+	variable num_cols = dimsize(wave_1d, 0)
+	variable value
+	variable num_nan = 0
+	
+	variable i 
+	for (i = 0; i < num_cols; i++)
+	
+		value = wave_1d[i]
+		
+		if (numtype(value) == 2)
+			DeletePoints/M=0 (i - num_nan), 1, wave_1d_new // delete row
+			DeletePoints/M=0 (i - num_nan), 1, x_wave // delete row
+			num_nan += 1
+		endif
+	endfor
+end
+
+
+
 function/wave split_wave(wave wav, variable flag)
 	// split the wave into positive and negative waves
 	wave kenner

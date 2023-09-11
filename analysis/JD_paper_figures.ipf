@@ -324,11 +324,11 @@ function figure_C_separate([variable baset, string gamma_type, variable field_on
 		wave cond_avg_data_wave = $cond_avg_data_wave_name 
 		wave cond_avg_fit_wave = $cond_avg_fit_wave_name 
 		
-		wave cond_avg_temp = $cond_avg
-		wave cond_avg_fit_temp = $cond_avg_fit
+//		wave cond_avg_temp = $cond_avg
+//		wave cond_avg_fit_temp = $cond_avg_fit
 		
-		SetScale/I x pnt2x(cond_avg_temp, 0)/200, pnt2x(cond_avg_temp, dimsize(cond_avg_temp, 0) - 1)/200, cond_avg_data_wave // setting scale in real gate units (P*200)
-		SetScale/I x pnt2x(cond_avg_fit_temp, 0)/200, pnt2x(cond_avg_fit_temp, dimsize(cond_avg_fit_temp, 0) - 1)/200, cond_avg_fit_wave  
+		SetScale/I x pnt2x(cond_avg_data_wave, 0)/200, pnt2x(cond_avg_data_wave, dimsize(cond_avg_data_wave, 0) - 1)/200, cond_avg_data_wave // setting scale in real gate units (P*200)
+		SetScale/I x pnt2x(cond_avg_fit_wave, 0)/200, pnt2x(cond_avg_fit_wave, dimsize(cond_avg_fit_wave, 0) - 1)/200, cond_avg_fit_wave  
 		
 		AppendToGraph /W=figure_ca $cond_avg_data_wave_name; AppendToGraph /W=figure_ca $cond_avg_fit_wave_name;
 		ModifyGraph /W=figure_ca mode($cond_avg_data_wave_name)=2, lsize($cond_avg_data_wave_name)=1, rgb($cond_avg_data_wave_name)=(red,green,blue)
@@ -349,8 +349,8 @@ function figure_C_separate([variable baset, string gamma_type, variable field_on
 		wave occ_avg_data_wave = $occ_avg_data_wave_name 
 		wave occ_avg_fit_wave = $occ_avg_fit_wave_name 
 		
-		wave occ_avg_temp = $occ_avg
-		wave occ_avg_fit_temp = $occ_avg_fit
+//		wave occ_avg_temp = $occ_avg
+//		wave occ_avg_fit_temp = $occ_avg_fit
 		
 		///// METHOD 1 ::::: Re-offsetting and removing quadratic and linear terms /////
 //		duplicate/o $trans_avg $trans_avg_data_wave_name
@@ -405,25 +405,25 @@ function figure_C_separate([variable baset, string gamma_type, variable field_on
 		
 		
 		///// adding charghe transition /////
-		string trans_orig_avg_data_wave_name = trans_avg + "_figc"
-		string trans_orig_avg_fit_wave_name = trans_avg_fit + "_figc"
+		string trans_avg_data_wave_name = trans_avg + "_figc"
+		string trans_avg_fit_wave_name = trans_avg_fit + "_figc"
 		
-		duplicate/o $trans_avg $trans_orig_avg_data_wave_name
-		duplicate/o $trans_avg_fit $trans_orig_avg_fit_wave_name
+		duplicate/o $trans_avg $trans_avg_data_wave_name
+		duplicate/o $trans_avg_fit $trans_avg_fit_wave_name
 		
-		wave trans_orig_avg_data_wave = $trans_orig_avg_data_wave_name 
-		wave trans_orig_avg_fit_wave = $trans_orig_avg_fit_wave_name 
+		wave trans_avg_data_wave = $trans_avg_data_wave_name 
+		wave trans_avg_fit_wave = $trans_avg_fit_wave_name 
 		
-		wave trans_avg_temp = $trans_avg
-		wave trans_avg_fit_temp = $trans_avg_fit
+//		wave trans_avg_temp = $trans_avg
+//		wave trans_avg_fit_temp = $trans_avg_fit
 		
-		SetScale/I x pnt2x(trans_avg_temp, 0)/200, pnt2x(trans_avg_temp, dimsize(trans_avg_temp, 0) - 1)/200, trans_orig_avg_data_wave
-		SetScale/I x pnt2x(trans_avg_fit_temp, 0)/200, pnt2x(trans_avg_fit_temp, dimsize(trans_avg_fit_temp, 0) - 1)/200, trans_orig_avg_fit_wave 
+		SetScale/I x pnt2x(trans_avg_data_wave, 0)/200, pnt2x(trans_avg_data_wave, dimsize(trans_avg_data_wave, 0) - 1)/200, trans_avg_data_wave
+		SetScale/I x pnt2x(trans_avg_fit_wave, 0)/200, pnt2x(trans_avg_fit_wave, dimsize(trans_avg_fit_wave, 0) - 1)/200, trans_avg_fit_wave 
 		
 		///// Appending traces to graph cb /////
-		AppendToGraph /W=figure_cb2 $trans_orig_avg_data_wave_name; AppendToGraph /W=figure_cb2 $trans_orig_avg_fit_wave_name;
-		ModifyGraph /W=figure_cb2 mode($trans_orig_avg_data_wave_name)=2, lsize($trans_orig_avg_data_wave_name)=1, rgb($trans_orig_avg_data_wave_name)=(red,green,blue)
-		ModifyGraph /W=figure_cb2 mode($trans_orig_avg_fit_wave_name)=0, lsize($trans_orig_avg_fit_wave_name)=2, rgb($trans_orig_avg_fit_wave_name)=(red,green,blue)
+		AppendToGraph /W=figure_cb2 $trans_avg_data_wave_name; AppendToGraph /W=figure_cb2 $trans_avg_fit_wave_name;
+		ModifyGraph /W=figure_cb2 mode($trans_avg_data_wave_name)=2, lsize($trans_avg_data_wave_name)=1, rgb($trans_avg_data_wave_name)=(red,green,blue)
+		ModifyGraph /W=figure_cb2 mode($trans_avg_fit_wave_name)=0, lsize($trans_avg_fit_wave_name)=2, rgb($trans_avg_fit_wave_name)=(red,green,blue)
 		
 		
 //		///////////////////////////////////////////
@@ -815,15 +815,15 @@ function figure_D([variable baset])
 //	AppendToGraph /W=figure_Da $data_y vs $data_x
 //	AppendToGraph /W=figure_Da $fit_y vs $fit_x
 	translate_wave_by_occupation($data_y, $data_x) // NOW
-	AppendToGraph /W=figure_Da $data_y; AppendToGraph /W=figure_Da /r $data_x 
+	AppendToGraph /W=figure_Da $data_y; //AppendToGraph /W=figure_Da /r $data_x 
 	translate_wave_by_occupation($fit_y, $fit_x) // NOW
-	AppendToGraph /W=figure_Da $fit_y; AppendToGraph /W=figure_Da /r $fit_x 
+	AppendToGraph /W=figure_Da $fit_y; //AppendToGraph /W=figure_Da /r $fit_x 
 //	
 	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(186*257,0,8*257)//(94*257,135*257,93*257)
-	ModifyGraph /W=figure_Da mode($data_x)=3, marker($data_x)=41, lsize($data_x)=2, zmrkSize($data_x)={$marker_size,*,*,0.01,4}, rgb($data_x)=(186*257,0,8*257)//(94*257,135*257,93*257)
+//	ModifyGraph /W=figure_Da mode($data_x)=3, marker($data_x)=41, lsize($data_x)=2, zmrkSize($data_x)={$marker_size,*,*,0.01,4}, rgb($data_x)=(186*257,0,8*257)//(94*257,135*257,93*257)
 
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0,8*257) //(94*257,135*257,93*257)
-	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(186*257,0,8*257) //(94*257,135*257,93*257)
+//	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(186*257,0,8*257) //(94*257,135*257,93*257)
 
 //	///// mid gamma /////
 //	figure_C_separate(baset = baset,  gamma_type = "mid") // dat 6080
@@ -861,19 +861,18 @@ function figure_D([variable baset])
 //	AppendToGraph /W=figure_Da $data_y vs $data_x
 //	AppendToGraph /W=figure_Da $fit_y vs $fit_x
 	translate_wave_by_occupation($data_y, $data_x) // NOW
-	AppendToGraph /W=figure_Da $data_y; AppendToGraph /W=figure_Da /r $data_x 
+	AppendToGraph /W=figure_Da $data_y; //AppendToGraph /W=figure_Da /r $data_x 
 	translate_wave_by_occupation($fit_y, $fit_x) // NOW
-	AppendToGraph /W=figure_Da $fit_y; AppendToGraph /W=figure_Da /r $fit_x 
+	AppendToGraph /W=figure_Da $fit_y; //AppendToGraph /W=figure_Da /r $fit_x 
 	
 	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-	ModifyGraph /W=figure_Da mode($data_x)=3, marker($data_x)=41, lsize($data_x)=2, zmrkSize($data_x)={$marker_size,*,*,0.01,4}, rgb($data_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
+//	ModifyGraph /W=figure_Da mode($data_x)=3, marker($data_x)=41, lsize($data_x)=2, zmrkSize($data_x)={$marker_size,*,*,0.01,4}, rgb($data_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
 
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
-	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
+//	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
 	
-//	SetAxis /W=figure_Da bottom -5, 2
-	SetAxis /W=figure_Da bottom -5, 2
-	SetAxis /W=figure_Da right 0, 1
+	SetAxis /W=figure_Da bottom -2, 5
+//	SetAxis /W=figure_Da right 0, 1
 	
 	closeallGraphs(no_close_graphs="figure_Da;figure_Db")
 	
@@ -881,10 +880,10 @@ function figure_D([variable baset])
 //	Label /W=figure_Da left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
 //	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6081_dot_cleaned_avgcondocc_nrg_y) Γ/T = 2\r\\s(dat6080_dot_cleaned_avgcondocc_nrg_y) Γ/T = 11 \r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) Γ/T = 28"
 //	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(fit_dat6081_dot_cleaned_avg_figc) Γ/T = 2\r\\s(fit_dat6080_dot_cleaned_avg_figc) Γ/T = 11 \r\\s(fit_dat6079_dot_cleaned_avg_figc) Γ/T = 28"
-	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(fit_dat6081_dot_cleaned_avg_figc) Γ/T = low\r\\s(fit_dat6079_dot_cleaned_avg_figc) Γ/T = high"
+	Legend /W=figure_Da/C/N=text0/A=RT/X=63.49/Y=5.56/J "\\s(fit_dat6081_dot_cleaned_avg_figc) Γ/T = low\r\\s(fit_dat6079_dot_cleaned_avg_figc) Γ/T = high"
 
 	
-	ModifyGraph /W=figure_Da mirror=0, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked
+	ModifyGraph /W=figure_Da mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked
 
 	
 	//////////////////////

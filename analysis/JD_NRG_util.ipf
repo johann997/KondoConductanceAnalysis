@@ -719,9 +719,9 @@ function info_mask_waves(string datnum)
 	string dot_wave_name, dot_mask_wave_name
 	string cs_wave_name, cs_mask_wave_name
 	dot_wave_name = "dat" + datnum + "_dot_cleaned_avg"
-	dot_mask_wave_name = "dat" + datnum + "_dot_cleaned_avg_mask"
+	dot_mask_wave_name = dot_wave_name + "_mask"
 	cs_wave_name = "dat" + datnum + "_cs_cleaned_avg"
-	cs_mask_wave_name = "dat" + datnum + "_cs_cleaned_avg_mask"
+	cs_mask_wave_name = cs_wave_name + "_mask"
 	
 	variable dot_min_val = -inf, dot_max_val = inf, cs_min_val = -inf, cs_max_val = inf
 	variable dot_min_index = -inf, dot_max_index = inf, cs_min_index = -inf, cs_max_index = inf
@@ -952,80 +952,80 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 
 
 	
-	////////////////////////////////////////////////////
-	///// Creating Occupation and Plotting Conductance vs. Occupation Data /////
-	////////////////////////////////////////////////////
-	// Use coefficients determined from occupations fit to find occupation(Vgate)
-	// create NRG occupation wave with same x-scaling as data conductance
-	// create data conduction curve 
-	string cond_vs_occ_data_wave_name
-	display
-	for(i=0;i<numwvs;i++)
-		wavenm = stringfromlist(i,data.g_wvlist) + "_occ_nrg" // create a new name XXX_occ_nrg where XXX is the name of the conductance wave used in the NRG fitting
-
-		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm // copy the conductance wave into nrgocc_XXX, in the end just to use its x-scaling
-		wave nrg_occ = $wavenm // call this wave nrg_occ for use in this function
-		
-		wavenm = "coef_" + stringfromlist(i,data.occ_wvlist)
-		fitfunc_nrgocc($wavenm, nrg_occ) // overwrite nrg_occ using occupation fit params and NRG occupation (keep same x-scaling as conduction)
-		
-		string cond_vs_occ_ydata_wave_name = stringfromlist(i,data.g_wvlist)
-
-		// NEW WAY //
-//		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name, wave2)
-		
-		// OLD WAY //
-//		prune_waves($cond_vs_occ_ydata_wave_name, nrg_occ)
-		appendtograph $cond_vs_occ_ydata_wave_name vs nrg_occ
-		ModifyGraph mode($cond_vs_occ_ydata_wave_name)=2, lsize($cond_vs_occ_ydata_wave_name)=2, rgb($cond_vs_occ_ydata_wave_name)=(0,0,0)
+//	////////////////////////////////////////////////////
+//	///// Creating Occupation and Plotting Conductance vs. Occupation Data /////
+//	////////////////////////////////////////////////////
+//	// Use coefficients determined from occupations fit to find occupation(Vgate)
+//	// create NRG occupation wave with same x-scaling as data conductance
+//	// create data conduction curve 
+//	string cond_vs_occ_data_wave_name
+//	display
+//	for(i=0;i<numwvs;i++)
+//		wavenm = stringfromlist(i,data.g_wvlist) + "_occ_nrg" // create a new name XXX_occ_nrg where XXX is the name of the conductance wave used in the NRG fitting
+//
+//		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm // copy the conductance wave into nrgocc_XXX, in the end just to use its x-scaling
+//		wave nrg_occ = $wavenm // call this wave nrg_occ for use in this function
+//		
+//		wavenm = "coef_" + stringfromlist(i,data.occ_wvlist)
+//		fitfunc_nrgocc($wavenm, nrg_occ) // overwrite nrg_occ using occupation fit params and NRG occupation (keep same x-scaling as conduction)
+//		
+//		string cond_vs_occ_ydata_wave_name = stringfromlist(i,data.g_wvlist)
+//
+//		// NEW WAY //
+////		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name, wave2)
+//		
+//		// OLD WAY //
+////		prune_waves($cond_vs_occ_ydata_wave_name, nrg_occ)
+//		appendtograph $cond_vs_occ_ydata_wave_name vs nrg_occ
+//		ModifyGraph mode($cond_vs_occ_ydata_wave_name)=2, lsize($cond_vs_occ_ydata_wave_name)=2, rgb($cond_vs_occ_ydata_wave_name)=(0,0,0)
+//	
+//	
+//		///// creating occupation data wave /////
+//		
+//	
+//		///// saving occupation fit data from GFfit_XXX to fit_XXX this is same naming scheme with how charge transitions are saved
+//		wavenm = "GFit_" + stringfromlist(i,data.g_wvlist)
+//		newwavenm = "fit_" + stringfromlist(i,data.g_wvlist)
+//		duplicate /o $wavenm $newwavenm
+//	endfor
 	
-	
-		///// creating occupation data wave /////
-		
-	
-		///// saving occupation fit data from GFfit_XXX to fit_XXX this is same naming scheme with how charge transitions are saved
-		wavenm = "GFit_" + stringfromlist(i,data.g_wvlist)
-		newwavenm = "fit_" + stringfromlist(i,data.g_wvlist)
-		duplicate /o $wavenm $newwavenm
-	endfor
-	
-		
-	// Add NRG data on top
-	for(i=0;i<numwvs;i++)
-		wavenm="coef_" + stringfromlist(i,data.g_wvlist)
-		string cond_vs_occ_xnrg_wave_name = stringfromlist(i,data.g_wvlist) + "_occ_nrg"
-		string cond_vs_occ_ynrg_wave_name = stringfromlist(i,data.g_wvlist) + "_cond_nrg"
-		
-		wave g_coefs = $wavenm
-		wave g_nrg
-		wave occ_nrg
-		nrgline = scaletoindex(g_nrg, (g_coefs[0] + g_coefs[3]), 1)
-		wavenm = "g" + num2str(nrgline)
-		matrixop /o $wavenm=col(g_nrg, nrgline)
-		wave gnrg = $wavenm
-		gnrg *= g_coefs[4]
-
-		// save NRG conduction
-		duplicate /o gnrg, $cond_vs_occ_ynrg_wave_name
-		
-		// save x-wave (alrady saved above)
-		duplicate /RMD=[][nrgline] /o occ_nrg, $cond_vs_occ_xnrg_wave_name
-		
-		
-		appendtograph $cond_vs_occ_ynrg_wave_name vs $cond_vs_occ_xnrg_wave_name
-		wave cond_vs_occ_nrg_wave_y = $cond_vs_occ_ynrg_wave_name
-		
-		
-		///// calculate chi2 /////
-		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist)
-		wave cond_vs_occ_data_wave = $cond_vs_occ_data_wave_name
-		
-		duplicate /o cond_vs_occ_data_wave, cond_vs_occ_calc
-		wave cond_vs_occ_calc 
-		cond_vs_occ_calc = (cond_vs_occ_data_wave - cond_vs_occ_nrg_wave_y)^2
-		condocc_chisq += sum(cond_vs_occ_calc)
-	endfor
-	
+//		
+//	// Add NRG data on top
+//	for(i=0;i<numwvs;i++)
+//		wavenm="coef_" + stringfromlist(i,data.g_wvlist)
+//		string cond_vs_occ_xnrg_wave_name = stringfromlist(i,data.g_wvlist) + "_occ_nrg"
+//		string cond_vs_occ_ynrg_wave_name = stringfromlist(i,data.g_wvlist) + "_cond_nrg"
+//		
+//		wave g_coefs = $wavenm
+//		wave g_nrg
+//		wave occ_nrg
+//		nrgline = scaletoindex(g_nrg, (g_coefs[0] + g_coefs[3]), 1)
+//		wavenm = "g" + num2str(nrgline)
+//		matrixop /o $wavenm=col(g_nrg, nrgline)
+//		wave gnrg = $wavenm
+//		gnrg *= g_coefs[4]
+//
+//		// save NRG conduction
+//		duplicate /o gnrg, $cond_vs_occ_ynrg_wave_name
+//		
+//		// save x-wave (alrady saved above)
+//		duplicate /RMD=[][nrgline] /o occ_nrg, $cond_vs_occ_xnrg_wave_name
+//		
+//		
+//		appendtograph $cond_vs_occ_ynrg_wave_name vs $cond_vs_occ_xnrg_wave_name
+//		wave cond_vs_occ_nrg_wave_y = $cond_vs_occ_ynrg_wave_name
+//		
+//		
+//		///// calculate chi2 /////
+//		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist)
+//		wave cond_vs_occ_data_wave = $cond_vs_occ_data_wave_name
+//		
+//		duplicate /o cond_vs_occ_data_wave, cond_vs_occ_calc
+//		wave cond_vs_occ_calc 
+//		cond_vs_occ_calc = (cond_vs_occ_data_wave - cond_vs_occ_nrg_wave_y)^2
+//		condocc_chisq += sum(cond_vs_occ_calc)
+//	endfor
+//	
 	return [cond_chisq, occ_chisq, condocc_chisq/4]
 end
 
