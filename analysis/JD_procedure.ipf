@@ -115,7 +115,7 @@ function centerandaverage(variable datnum, string cs_data_name, string dot_data_
 
 	string cleaned_dot_name = "dat"
 	master_cond_clean_average($dot_wave_name, 1, cleaned_dot_name)
-	master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name, minx=1580, maxx=3050)
+	master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
 end
 
 
@@ -151,7 +151,8 @@ end
 function run_clean_average_procedure([string datnums])
 //	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102"
 //	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6094;6097;6100" // low field, low, mid, high gamma && high field, high gamma
-	string default_datnums = "6081;6090;6087;6084" 
+//	string default_datnums = "6081;6090;6087;6084" // low gamma
+	string default_datnums = "6079;6088;6085;6082" // high gamma
 	
 	datnums = selectString(paramisdefault(datnums), datnums, default_datnums) // e.g. "RAW"
 

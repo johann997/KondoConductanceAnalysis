@@ -177,7 +177,7 @@ function etemp_test()
 //	run_clean_average_procedure(datnums=datnums)
 	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 	
-	variable num_temperatures = 100
+	variable num_temperatures = 20
 	
 	make /o/n=(num_temperatures) e_temps
 	wave e_temps
@@ -206,7 +206,7 @@ function etemp_test()
 	display
 	AppendToGraph/L cond_chisq_wave vs e_temps
 	AppendToGraph/R occ_chisq_wave vs e_temps
-	AppendToGraph/R /L=l2, condocc_chisq_wave vs e_temps
+//	AppendToGraph/R /L=l2, condocc_chisq_wave vs e_temps
 	
 	Label bottom "Electron Temp (mK)"
 	Label left "Chi Squared Conductance"

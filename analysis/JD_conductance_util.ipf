@@ -410,6 +410,7 @@ function /wave fit_single_peak(wave current_array)
 	endif
 	
 	
+	// only fit to ±5% the number of points on either side of the peak
 	wavestats/q temp
 	variable min_fit_index = round(V_maxrowloc - V_npnts*0.050)
 	if (min_fit_index < 0)

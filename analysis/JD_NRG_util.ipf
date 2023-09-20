@@ -871,7 +871,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	// Perform global fit
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 
-	print "Gamma/T at",(data.temps[0]),"=",exp(GFin.CoefWave[0][0])
+	print "Gamma/T at",(data.temps[0]),"mK =",exp(GFin.CoefWave[0][0])
 	variable /g GF_chisq
 //	print "Chisqr on conductance fit is",GF_chisq
 	cond_chisq = GF_chisq
