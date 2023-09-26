@@ -211,6 +211,8 @@ function etemp_test()
 	Label bottom "Electron Temp (mK)"
 	Label left "Chi Squared Conductance"
 	Label right "Chi Squared Occupation"
+	ModifyGraph axRGB(left)=(65535,0,0),tlblRGB(left)=(65535,0,0),alblRGB(left)=(65535,0,0)
+	
 	ModifyGraph rgb(occ_chisq_wave)=(0,0,0), gFont="Calibri", gfSize=14
 end
 
