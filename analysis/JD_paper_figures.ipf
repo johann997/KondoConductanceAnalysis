@@ -237,25 +237,38 @@ function figure_C_separate([variable baset, string gamma_type, variable field_on
 	field_on = paramisdefault(field_on) ? 0 : field_on
 	
 	string datnums, gamma_over_temp_type
-	if ((StringMatch(gamma_type, "high") == 1) &&  (field_on == 0))
-		datnums = "6079;6088;6085;6082"; gamma_over_temp_type = "high" // high gamma
-	elseif ((StringMatch(gamma_type, "mid") == 1) && (field_on == 0))
-		datnums = "6080;6089;6086;6083"; gamma_over_temp_type = "mid" // mid gamma
-	elseif ((StringMatch(gamma_type, "low") == 1) && (field_on == 0))
-		datnums = "6081;6090;6087;6084"; gamma_over_temp_type = "low" // low gamma
-	elseif ((StringMatch(gamma_type, "high") == 1) && (field_on == 1))
-		datnums = "6100;6097;6094;6091"; gamma_over_temp_type = "high" // high gamma
+//	if ((StringMatch(gamma_type, "high") == 1) &&  (field_on == 0))
+//		datnums = "6079;6088;6085;6082"; gamma_over_temp_type = "high" // high gamma
+//	elseif ((StringMatch(gamma_type, "mid") == 1) && (field_on == 0))
+//		datnums = "6080;6089;6086;6083"; gamma_over_temp_type = "mid" // mid gamma
+//	elseif ((StringMatch(gamma_type, "low") == 1) && (field_on == 0))
+//		datnums = "6081;6090;6087;6084"; gamma_over_temp_type = "low" // low gamma
+//	elseif ((StringMatch(gamma_type, "high") == 1) && (field_on == 1))
+//		datnums = "6100;6097;6094;6091"; gamma_over_temp_type = "high" // high gamma
+//	endif
+
+
+	if (StringMatch(gamma_type, "high") == 1)
+		datnums = "699;695;691"; gamma_over_temp_type = "high" // high gamma
+	elseif (StringMatch(gamma_type, "high_mid") == 1)
+		datnums = "698;694;690"; gamma_over_temp_type = "mid" // mid gamma
+	elseif (StringMatch(gamma_type, "low_mid") == 1)
+		datnums = "697;693;689"; gamma_over_temp_type = "mid" // low gamma
+	elseif (StringMatch(gamma_type, "low") == 1)
+		datnums = "696;692;688"; gamma_over_temp_type = "low" // high gamma
 	endif
 	
-	string e_temps = num2str(baset) + ";100;300;500"
-	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+
+
+
+	string e_temps = num2str(baset) + ";275;500"
+	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	string colour, e_temp
 	variable red, green, blue
 	
-//	run_clean_average_procedure(datnums=datnums)
 	variable cond_chisq, occ_chisq, condocc_chisq
 	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type)
-//	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 	
 	variable num_dats = ItemsInList(datnums, ";")
 	
@@ -281,7 +294,7 @@ function figure_C_separate([variable baset, string gamma_type, variable field_on
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
 		occ_avg = trans_avg + "_occ"
 		
-		cond_avg_fit = "fit_" + cond_avg
+		cond_avg_fit = "GFit_" + cond_avg
 		trans_avg_fit = "fit_" + trans_avg
 		occ_avg_fit = "fit_" + occ_avg
 		
@@ -783,6 +796,10 @@ end
 
 function figure_D([variable baset])
 	baset = paramisdefault(baset) ? 15 : baset
+	
+	string low_gamma_datnumn = "697"
+	string mid_gamma_datnumn = "698"
+	string high_gamma_datnumn = "699"
 		
 	////// data names /////
 	string base_name_data_y = "_dot_cleaned_avg_figc"
@@ -803,12 +820,14 @@ function figure_D([variable baset])
 	///// FIGURE D.A /////
 	//////////////////////
 	
-	///// low gamma /////
-	figure_C_separate(baset = baset,  gamma_type = "low") // dat 6081
-	datnum = "6081"
+	////////////////////////////////////////////////////////////////////////
+	////////////////////// low gamma ///////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+	figure_C_separate(baset = baset,  gamma_type = "low_mid") // dat 6081
+	datnum = low_gamma_datnumn
 	data_y = "dat" + datnum + base_name_data_y
 	data_x = "dat" + datnum + base_name_data_x
-	fit_y = "fit_dat" + datnum + base_name_fit_y
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
 	fit_x = "fit_dat" + datnum + base_name_fit_x
 	marker_size = data_y + "_marker_size"
 	
@@ -827,33 +846,43 @@ function figure_D([variable baset])
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0,8*257) //(94*257,135*257,93*257)
 //	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(186*257,0,8*257) //(94*257,135*257,93*257)
 
-//	///// mid gamma /////
-//	figure_C_separate(baset = baset,  gamma_type = "mid") // dat 6080
-//	datnum = "6080"
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_x = "dat" + datnum + base_name_data_x
-////	fit_y = "dat" + datnum + base_name_fit_y
-//	fit_y = "GFit_dat" + datnum + base_name_fit_y
-//	fit_x = "dat" + datnum + base_name_fit_x
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
-//	
-////	AppendToGraph /W=figure_Da $data_y vs $data_x
-////	AppendToGraph /W=figure_Da $fit_y vs $fit_x
-//	AppendToGraph /W=figure_Da $data_y 
-//	AppendToGraph /W=figure_Da $fit_y 
-//	
-//	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(205*257,132*257,48*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-//	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(205*257,132*257,48*257)
-	
-	
-	///// high gamma /////
-	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
-	datnum = "6079"
+
+
+	////////////////////////////////////////////////////////////////////////
+//	////////////////////////// mid gamma ///////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+	figure_C_separate(baset = baset,  gamma_type = "high_mid") // dat 6080
+	datnum = mid_gamma_datnumn
 	data_y = "dat" + datnum + base_name_data_y
 	data_x = "dat" + datnum + base_name_data_x
-	fit_y = "fit_dat" + datnum + base_name_fit_y
+//	fit_y = "dat" + datnum + base_name_fit_y
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
+	fit_x = "dat" + datnum + base_name_fit_x
+	marker_size = data_y + "_marker_size"
+	
+	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
+	
+//	AppendToGraph /W=figure_Da $data_y vs $data_x
+//	AppendToGraph /W=figure_Da $fit_y vs $fit_x
+	translate_wave_by_occupation($data_y, $data_x) // NOW
+	AppendToGraph /W=figure_Da $data_y; //AppendToGraph /W=figure_Da /r $data_x 
+	translate_wave_by_occupation($fit_y, $fit_x) // NOW
+	AppendToGraph /W=figure_Da $fit_y; //AppendToGraph /W=figure_Da /r $fit_x 
+	
+	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(205*257,132*257,48*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
+	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(205*257,132*257,48*257)
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////
+	///////////////////////// high gamma ///////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
+	datnum = high_gamma_datnumn
+	data_y = "dat" + datnum + base_name_data_y
+	data_x = "dat" + datnum + base_name_data_x
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
 	fit_x = "fit_dat" + datnum + base_name_fit_x
 	
 	marker_size = data_y + "_marker_size"
@@ -873,7 +902,14 @@ function figure_D([variable baset])
 	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
 //	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
 	
-	SetAxis /W=figure_Da bottom -2, 5
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////
+	///////////////// figure final touches /////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+//	SetAxis /W=figure_Da bottom -2, 5
 //	SetAxis /W=figure_Da right 0, 1
 	
 	closeallGraphs(no_close_graphs="figure_Da;figure_Db")
@@ -882,7 +918,7 @@ function figure_D([variable baset])
 //	Label /W=figure_Da left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
 //	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6081_dot_cleaned_avgcondocc_nrg_y) Γ/T = 2\r\\s(dat6080_dot_cleaned_avgcondocc_nrg_y) Γ/T = 11 \r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) Γ/T = 28"
 //	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(fit_dat6081_dot_cleaned_avg_figc) Γ/T = 2\r\\s(fit_dat6080_dot_cleaned_avg_figc) Γ/T = 11 \r\\s(fit_dat6079_dot_cleaned_avg_figc) Γ/T = 28"
-	Legend /W=figure_Da/C/N=text0/A=RT/X=63.49/Y=5.56/J "\\s(fit_dat6081_dot_cleaned_avg_figc) Γ/T = low\r\\s(fit_dat6079_dot_cleaned_avg_figc) Γ/T = high"
+	Legend /W=figure_Da/C/N=text0/A=RT/X=63.49/Y=5.56/J "\\s(dat697_dot_cleaned_avg_figc) Γ/T = low\r\\s(dat698_dot_cleaned_avg_figc) Γ/T = mid\r\\s(dat699_dot_cleaned_avg_figc) Γ/T = high"
 
 	
 	ModifyGraph /W=figure_Da mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked

@@ -40,15 +40,19 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
 	endif
 
-	split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
-	
-	zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
-	zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
-	
-	avg_wav($split_pos) // pos average
-	avg_wav($split_neg) // neg average
-	
-	get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
+	// commentating out the splitting if we reverse bias
+//	split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
+//	
+//	zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
+//	zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
+//	
+//	avg_wav($split_pos) // pos average
+//	avg_wav($split_neg) // neg average
+//	
+//	get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
+
+	zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
+	avg_wav($cleaned_wave_name)
 	
 	plot_cond_figs(wavenum, N, kenner, kenner_out)
 
@@ -472,10 +476,10 @@ function plot_cond_figs(variable wavenum, variable N, string kenner, string kenn
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_dot_cleaned"
 	string avg_wave_name = cleaned_wave_name + "_avg"
 
-	string split_pos = cleaned_wave_name + "_pos"
-	string split_neg = cleaned_wave_name + "_neg"
-	string pos_avg = split_pos + "_avg"
-	string neg_avg = split_neg + "_avg"
+//	string split_pos = cleaned_wave_name + "_pos"
+//	string split_neg = cleaned_wave_name + "_neg"
+//	string pos_avg = split_pos + "_avg"
+//	string neg_avg = split_neg + "_avg"
 	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params" 
 //	closeallgraphs()
 
@@ -483,8 +487,8 @@ function plot_cond_figs(variable wavenum, variable N, string kenner, string kenn
 
 	plot2d_heatmap($dataset); // raw data
 	
-	plot2d_heatmap($split_pos) // positive bias
-	plot2d_heatmap($split_neg) // negative bias
+//	plot2d_heatmap($split_pos) // positive bias
+//	plot2d_heatmap($split_neg) // negative bias
 	
 	plot2d_heatmap($centered_wave_name) // plot centered traces
 	

@@ -853,7 +853,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 
 	make /o/n=4 temps
 	wave data.temps
-	data.temps={baset, 100, 300, 500}
+	data.temps={baset, 275, 500}  // change to number of temps
 	
 	strnm = runlabel + "temps"
 	duplicate /o data.temps $strnm
@@ -871,7 +871,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	// Perform global fit
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 
-	print "Gamma/T at",(data.temps[0]),"mK =",exp(GFin.CoefWave[0][0])
+	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ",exp(GFin.CoefWave[0][0])
 	variable /g GF_chisq
 //	print "Chisqr on conductance fit is",GF_chisq
 	cond_chisq = GF_chisq

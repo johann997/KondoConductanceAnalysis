@@ -5,34 +5,33 @@
 
 /////  This .ipf contains some high level functions that help stitch multiple steps into one function
 
-///// Procedure for creating the NRG waves
+///// Procedure for creating the NRG waves /////
+
+// 1) Start by adding the IGOR binary waves from the data folder.
 // Go to Data/Load Waves/Load Igor Binary...
 
+
+// 2) Create the large interpolated IGRO waves
 // Run :: master_build_nrg_data()
 
-///// The general procedure of going from RAW data to global fit with NRG data is:
-///// run_clean_average_procedure()
-///// run_nrg_procedure()
 
-
-// Start by copying the IGOR waves into the experiment
-// •Data/Load Wave/Load IGOR Binary
-
-// Create the Interpolated NRG
-//
-
-// Set the data path by running the below and choosing the Github data folder
+// 3) Set the data path by running the below and choosing the Github data folder
 // newpath data
 
-// Upload the relevant dat files
+
+// 4) Upload the relevant dat files
 // •udh5(dat_min_max="6079,6102")
 
 
-// Run the cleaning procedure
+// 5) Notch filter, resample, fit conductance centre and average. Use conductance centers to fit transition and average.
+// run_clean_average_procedure()
 
 
-// Run the fitting and plotting procedure
-// figure_C_separate
+// 6) Run the NRG process :: Simultaneous fitting conductance. Use gamma and leverarm from conductance to fit transition and to determine N=0.5.
+// run_nrg_procedure()
+
+
+
 
 ////////////////////// FUNCTION DATABASE //////////////////////////////
 // denoise 
@@ -124,7 +123,7 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 	plot = paramisdefault(plot) ? 1 : plot
 	
 	string cs_data_type = "cscurrent_2d"
-	string dot_data_type = "dotcurrent_2d"
+	string dot_data_type = "dotcurrentx_2d"
 	
 	string cs_data_name = "dat" + num2str(datnum) + cs_data_type
 	string dot_data_name = "dat" + num2str(datnum) + dot_data_type
@@ -149,10 +148,9 @@ end
 
 
 function run_clean_average_procedure([string datnums])
-//	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102"
-//	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6094;6097;6100" // low field, low, mid, high gamma && high field, high gamma
-//	string default_datnums = "6081;6090;6087;6084" // low gamma
-	string default_datnums = "6079;6088;6085;6082" // high gamma
+//	string default_datnums = "688;689;690;691;692;693;694;695;696;697;698;699"
+	string default_datnums = "699"
+
 	
 	datnums = selectString(paramisdefault(datnums), datnums, default_datnums) // e.g. "RAW"
 
@@ -188,7 +186,7 @@ function run_clean_average_procedure([string datnums])
 		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
 		
-		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
+//		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 		
 		// append to graphs 
 		AppendToGraph /W=conductance_vs_sweep $cond_avg;
