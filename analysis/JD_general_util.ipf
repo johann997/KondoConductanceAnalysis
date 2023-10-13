@@ -318,12 +318,84 @@ function stopalltimers()
 	while(i<9)
 end
 
+
+function demodulate(datnum, harmonic, wave_kenner, [append2hdf, demod_wavename])
+	///// if demod_wavename is use this name for demod wave. Otherwise default is "demod"
+	variable datnum, harmonic
+	string wave_kenner
+	variable append2hdf
+	string demod_wavename
+	demod_wavename = selectString(paramisdefault(demod_wavename), demod_wavename, "demod")
+	variable nofcycles, period, cols, rows
+	string wn="dat" + num2str(datnum) + wave_kenner;
+	wave wav=$wn
+	struct AWGVars AWGLI
+	fd_getoldAWG(AWGLI, datnum)
+
+//	print AWGLI
+
+	cols=dimsize(wav,0); print cols
+	rows=dimsize(wav,1); print rows
+	nofcycles=AWGLI.numCycles;
+	period=AWGLI.waveLen;
+	print "AWG num cycles  = " + num2str(nofcycles)
+	print "AWG wave len = " + num2str(period)
+	
+//	//Original Measurement Wave
+	make /o/n=(cols) sine1d
+	sine1d=sin(2*pi*(harmonic*p/period)) // create 1d sine wave with same frequency as AWG wave and specified harmonic
+
+	matrixop /o sinewave=colrepeat(sine1d, rows)
+	matrixop /o temp=wav * sinewave
+	copyscales wav, temp
+	temp=temp*pi/2;
 	
 	
-function udh5([dat_num, dat_list, dat_min_max, exclude_name])
+	
+	///// display steps of demod /////
+//	display
+//	appendimage temp
+//
+//	display
+//	appendimage sinewave
+//
+	Duplicate /o sine1d, wave0x
+	wave0x = x
+
+//	display wav vs wave0x
+//	appendtoGraph sine1d
+	
+	print "cols = " + num2str(cols)
+	print "rows = " + num2str(rows)
+	print "(cols/period/nofcycles) = " + num2str(cols/period/nofcycles)
+	ReduceMatrixSize(temp, 0, -1, (cols/period/nofcycles), 0,-1, rows, 1, demod_wavename)
+	
+	KillWindow /Z demod_window
+	Display
+	DoWindow/C demod_window
+	Appendimage /W=demod_window $demod_wavename
+	ModifyImage /W=demod_window $demod_wavename ctab = {*, *, RedWhiteGreen, 0}
+	
+
+	///// append to hdf /////
+//wn="demod"
+//	if (append2hdf)
+//		variable fileid
+//		fileid=get_hdfid(datnum) //opens the file
+//		HDF5SaveData/o /IGOR=-1 /TRAN=1 /WRIT=1 /Z $wn, fileid
+//		HDF5CloseFile/a fileid
+//	endif
+
+end
+
+	
+	
+function udh5([dat_num, dat_list, dat_min_max, exclude_name, upload_RAW])
 	// Loads HDF files back into Igor, if no optional paramters specified loads all dat in file path into IGOR
 	// NOTE: Assumes 'data' has been specified
 	string dat_num,dat_list, dat_min_max, exclude_name
+	variable upload_RAW
+	
 	dat_num = selectString(paramisdefault(dat_num), dat_num, "") // e.g. "302"
 	dat_list = selectString(paramisdefault(dat_list), dat_list, "") // e.g. "302,303,304,305,401"
 	dat_min_max = selectString(paramisdefault(dat_min_max), dat_min_max, "") // e.g. "302,310"
@@ -334,12 +406,19 @@ function udh5([dat_num, dat_list, dat_min_max, exclude_name])
 	string hdflist = indexedfile(data,-1,".h5") // get list of .h5 files
 	string currentHDF="", currentWav="", datasets="", currentDS
 	
+	string upload_raw_string = ""
+	if (upload_RAW == 0)
+		upload_raw_string = ""
+	else
+		upload_raw_string = "_RAW"
+	endif
+	
 	
 	////////////////////////////////////////////////////
 	///// Overwriting hdflist if dat_num specified /////
 	////////////////////////////////////////////////////
 	if (!stringmatch(dat_num, ""))
-		hdflist = "dat" + dat_num + ".h5"
+		hdflist = "dat" + dat_num + upload_raw_string + ".h5"
 	endif
 	
 	/////////////////////////////////////////////////////
@@ -349,7 +428,7 @@ function udh5([dat_num, dat_list, dat_min_max, exclude_name])
 	if (!stringmatch(dat_list, ""))
 		hdflist = ""
 		for(i=0; i<ItemsInList(dat_list, ";"); i+=1)
-			hdflist = hdflist + "dat" + StringFromList(i, dat_list, ";") + ".h5;"
+			hdflist = hdflist + "dat" + StringFromList(i, dat_list, ";") + upload_raw_string + ".h5;"
 		endfor
 	endif
 	
@@ -362,7 +441,7 @@ function udh5([dat_num, dat_list, dat_min_max, exclude_name])
 	if (!stringmatch(dat_min_max, ""))
 		hdflist = ""
 		for(i=dat_start; i<dat_end+1; i+=1)
-			hdflist = hdflist + "dat" + num2str(i) + ".h5;"
+			hdflist = hdflist + "dat" + num2str(i) + upload_raw_string + ".h5;"
 		endfor
 	endif
 	
@@ -385,7 +464,11 @@ function udh5([dat_num, dat_list, dat_min_max, exclude_name])
 		HDF5ListGroup /TYPE=2 /R=1 fileID, "/" // list datasets in root group
 		datasets = S_HDF5ListGroup
 		numWN = itemsinlist(datasets)  // number of waves in .h5
-		currentHDF = currentHDF[0, (strlen(currentHDF) - 4)]
+		if (upload_RAW == 0)
+			currentHDF = currentHDF[0, (strlen(currentHDF) - 4)]
+		else
+			currentHDF = currentHDF[0, (strlen(currentHDF) - 8)]
+		endif
 		for(j = 0; j < numWN; j += 1) // loop over datasets within h5 file
 	    	currentDS = StringFromList(j, datasets)
 			currentWav = currentHDF + currentDS
@@ -579,7 +662,7 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 	duplicate/o wave_not_centered $centered_wave_name
 	wave new2dwave=$centered_wave_name
 	copyscales wave_not_centered new2dwave
-	new2dwave=interp2d(wave_not_centered,(x+mids[q]),(y)) // mids is the shift in x
+	new2dwave=interp2d(wave_not_centered,(x + mids[q]),(y)) // mids is the shift in x
 end
 
 

@@ -218,18 +218,340 @@ end
 
 
 
-function run_global_fit_wrapper(variable baset, string datnums, string gamma_over_temp_type)
+function run_global_fit_wrapper(variable baset, string datnums, string gamma_over_temp_type, [variable fit_conductance])
 	variable cond_chisq, occ_chisq, condocc_chisq
 	
+	fit_conductance = paramisdefault(fit_conductance) ? 0 : fit_conductance // default is to fit to conductance data
 //	run_clean_average_procedure(datnums=datnums)
 //	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type)
+	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type, fit_conductance = fit_conductance)
 	
 	print "Conduction chisq = " + num2str(cond_chisq)
 	print "Occupation chisq = " + num2str(occ_chisq)
 end
 
 
+
+function fit_charge_transition_entropy([variable baset, string gamma_type])
+	baset = paramisdefault(baset) ? 22.5 : baset
+	gamma_type = selectString(paramisdefault(gamma_type), gamma_type, "low") 
+	
+//	closeallGraphs(); averaging_procedure(1109, 0); averaging_procedure(1121, 0); averaging_procedure(1115, 0)
+//
+//	string datnums = "1109;1121;1115"; gamma_type="mid"; averaging_procedure(1109, 0); averaging_procedure(1121, 0); averaging_procedure(1115, 0) // low gamma
+//	string datnums = "1111;1123;1117"; gamma_type="mid"; averaging_procedure(1111, 0); averaging_procedure(1123, 0); averaging_procedure(1117, 0) // mid gamma
+//	string datnums = "1113;1125;1119"; gamma_type="high"; averaging_procedure(1113, 0); averaging_procedure(1125, 0); averaging_procedure(1119, 0)  // high gamma
+
+//	string datnums = "1131;1121;1115"; gamma_type="mid"; averaging_procedure(1131, 1); averaging_procedure(1121, 1); averaging_procedure(1115, 1) // low gamma
+//	string datnums = "1133;1123;1117"; gamma_type="mid"; averaging_procedure(1133, 1); averaging_procedure(1123, 1); averaging_procedure(1117, 1) // mid gamma
+//	string datnums = "1135;1125;1119"; gamma_type="high"; averaging_procedure(1135, 1); averaging_procedure(1125, 1); averaging_procedure(1119, 1)  // high gamma
+
+//	string datnums = "1147;1121;1115"; gamma_type="high"; averaging_procedure(1147, 0, divide_data=1, num_points_in_entropy=122); averaging_procedure(1121, 0, num_points_in_entropy=25); averaging_procedure(1115, 0, num_points_in_entropy=25) // low gamma
+//	string datnums = "1149;1123;1117"; gamma_type="mid"; averaging_procedure(1149, 0, divide_data=1, num_points_in_entropy=122); averaging_procedure(1123, 0, num_points_in_entropy=25); averaging_procedure(1117, 0, num_points_in_entropy=25) // mid gamma
+	string datnums = "1151;1125;1119"; gamma_type="high"; averaging_procedure(1151, 0, divide_data=1, num_points_in_entropy=122); averaging_procedure(1125, 0, num_points_in_entropy=25); averaging_procedure(1119, 0, num_points_in_entropy=25)  // high gamma
+
+//	string datnums = "1233;1121;1115"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122); averaging_procedure(1121, 0, num_points_in_entropy=25); averaging_procedure(1115, 0, num_points_in_entropy=25) // low gamma
+//	string datnums = "1234;1123;1117"; gamma_type="mid"; averaging_procedure(1234, 0, divide_data=1, num_points_in_entropy=122); averaging_procedure(1123, 0, num_points_in_entropy=25); averaging_procedure(1117, 0, num_points_in_entropy=25) // mid gamma
+//	string datnums = "1235;1125;1119"; gamma_type="high"; averaging_procedure(1235, 0, divide_data=1000, num_points_in_entropy=122); averaging_procedure(1125, 0, num_points_in_entropy=25); averaging_procedure(1119, 0, num_points_in_entropy=25)  // high gamma
+
+	
+	string e_temps = num2str(baset) + ";275;500"
+	variable num_dats = ItemsInList(datnums, ";")
+
+//	closeallGraphs(); averaging_procedure(1109, 1)
+
+	variable cond_chisq, occ_chisq, condocc_chisq
+	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_type, fit_conductance=0)
+	
+	Display; KillWindow /Z figure_entropy_occupation; DoWindow/C/O figure_entropy_occupation
+	Display; KillWindow /Z figure_entropy_shift; DoWindow/C/O figure_entropy_shift
+
+	
+	string trans_avg, occ_avg, trans_avg_fit, occ_avg_fit
+	string entropy_cold_avg, entropy_hot_avg, entropy_avg
+	string colour, e_temp
+	variable red, green, blue
+	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+	
+	string legend_text = ""
+	variable i, datnum
+	for (i=0;i<num_dats;i+=1)
+		datnum = str2num(stringfromlist(i, datnums))
+		e_temp = stringfromlist(i, e_temps)
+		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
+		occ_avg = trans_avg + "_occ"
+		
+		trans_avg_fit = "GFit_" + trans_avg
+		occ_avg_fit = "GFit_" + occ_avg
+		
+		
+		// calculating entropy from cold and hot
+		entropy_cold_avg = trans_avg 
+		entropy_hot_avg =  "dat" + num2str(datnum) + "_cs_cleaned_avg_hot"
+		entropy_avg = "dat" + num2str(datnum) + "_entropy_avg"
+//		entropy_avg_fit = "GFit_" + entropy_avg
+
+//		duplicate /o $entropy_cold_avg $entropy_avg
+//		wave entropy_avg_wave = $entropy_avg
+//		wave entropy_hot_avg_wave = $entropy_hot_avg
+//		entropy_avg_wave[] = entropy_avg_wave[p] - entropy_hot_avg_wave
+		wave entropy_avg_wave = $entropy_avg
+
+		
+		legend_text = legend_text + "\\s(" + trans_avg_fit +  "_figc) " +  e_temp + "mK\r"
+		
+		
+		///// getting correct colour for plot /////
+		colour = stringfromlist(i, colours, ";")
+		red = str2num(stringfromlist(0, colour, ","))
+		green = str2num(stringfromlist(1, colour, ","))
+		blue = str2num(stringfromlist(2, colour, ","))
+		
+		
+		
+		//////////////////////////////////////////
+		///// ADDING ENTROPY VS SWEEPGATE /////
+		//////////////////////////////////////////
+		string entropy_avg_data_wave_name = entropy_avg + "_figc"
+//		string entropy_avg_fit_wave_name = entropy_avg_fit + "_figc"
+		
+		duplicate/o $entropy_avg $entropy_avg_data_wave_name
+//		duplicate/o $entropy_avg_fit $entropy_avg_fit_wave_name
+		
+		wave entropy_avg_data_wave = $entropy_avg_data_wave_name 
+//		wave entropy_avg_fit_wave = $entropy_avg_fit_wave_name 
+		
+//		wave entropy_avg_temp = $entropy_avg
+//		wave entropy_avg_fit_temp = $entropy_avg_fit
+
+		smooth 3000, entropy_avg_data_wave
+		
+		SetScale/I x pnt2x(entropy_avg_data_wave, 0)/200, pnt2x(entropy_avg_data_wave, dimsize(entropy_avg_data_wave, 0) - 1)/200, entropy_avg_data_wave // setting scale in real gate units (P*200)
+//		SetScale/I x pnt2x(entropy_avg_fit_wave, 0)/200, pnt2x(entropy_avg_fit_wave, dimsize(entropy_avg_fit_wave, 0) - 1)/200, entropy_avg_fit_wave  
+		
+		AppendToGraph /W=figure_entropy_occupation  /R, $entropy_avg_data_wave_name; // AppendToGraph /W=figure_entropy_occupation  $entropy_avg_fit_wave_name;
+		ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_data_wave_name)=0, lsize($entropy_avg_data_wave_name)=1, rgb($entropy_avg_data_wave_name)=(red,green,blue)
+//		ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_fit_wave_name)=0, lsize($entropy_avg_fit_wave_name)=2, rgb($entropy_avg_fit_wave_name)=(red,green,blue)
+		
+		
+		
+		//////////////////////////////////////////
+		///// ADDING OCCUPATION VS SWEEPGATE /////
+		//////////////////////////////////////////
+		///// adding occupation /////
+		string occ_avg_data_wave_name = occ_avg + "_figc"
+		string occ_avg_fit_wave_name = occ_avg_fit + "_figc"
+		
+		duplicate/o $occ_avg $occ_avg_data_wave_name
+		duplicate/o $occ_avg_fit $occ_avg_fit_wave_name
+		
+		wave occ_avg_data_wave = $occ_avg_data_wave_name 
+		wave occ_avg_fit_wave = $occ_avg_fit_wave_name 
+		
+		
+		SetScale/I x pnt2x(occ_avg_data_wave, 0)/200, pnt2x(occ_avg_data_wave, dimsize(occ_avg_data_wave, 0) - 1)/200, occ_avg_data_wave
+		SetScale/I x pnt2x(occ_avg_fit_wave, 0)/200, pnt2x(occ_avg_fit_wave, dimsize(occ_avg_fit_wave, 0) - 1)/200, occ_avg_fit_wave 
+		
+
+		///// Appending traces to graph ca /////
+		AppendToGraph /W=figure_entropy_occupation  occ_avg_data_wave; AppendToGraph /W=figure_entropy_occupation  occ_avg_fit_wave;
+		ModifyGraph /W=figure_entropy_occupation  mode($occ_avg_data_wave_name)=2, lsize($occ_avg_data_wave_name)=1, rgb($occ_avg_data_wave_name)=(red,green,blue)
+		ModifyGraph /W=figure_entropy_occupation  mode($occ_avg_fit_wave_name)=0, lsize($occ_avg_fit_wave_name)=2, rgb($occ_avg_fit_wave_name)=(red,green,blue)
+		
+		
+		
+		
+//		///// adding charge transition /////
+//		string trans_avg_data_wave_name = trans_avg + "_figc"
+//		string trans_avg_fit_wave_name = trans_avg_fit + "_figc"
+//		
+//		duplicate/o $trans_avg $trans_avg_data_wave_name
+//		duplicate/o $trans_avg_fit $trans_avg_fit_wave_name
+//		
+//		wave trans_avg_data_wave = $trans_avg_data_wave_name 
+//		wave trans_avg_fit_wave = $trans_avg_fit_wave_name 
+//		
+////		wave trans_avg_temp = $trans_avg
+////		wave trans_avg_fit_temp = $trans_avg_fit
+//		
+//		SetScale/I x pnt2x(trans_avg_data_wave, 0)/200, pnt2x(trans_avg_data_wave, dimsize(trans_avg_data_wave, 0) - 1)/200, trans_avg_data_wave
+//		SetScale/I x pnt2x(trans_avg_fit_wave, 0)/200, pnt2x(trans_avg_fit_wave, dimsize(trans_avg_fit_wave, 0) - 1)/200, trans_avg_fit_wave 
+//		
+//		///// Appending traces to graph cb /////
+//		AppendToGraph /R /W=figure_entropy_occupation  $trans_avg_data_wave_name; AppendToGraph /R /W=figure_entropy_occupation  $trans_avg_fit_wave_name;
+//		ModifyGraph /W=figure_entropy_occupation  mode($trans_avg_data_wave_name)=2, lsize($trans_avg_data_wave_name)=1, rgb($trans_avg_data_wave_name)=(red,green,blue)
+//		ModifyGraph /W=figure_entropy_occupation  mode($trans_avg_fit_wave_name)=0, lsize($trans_avg_fit_wave_name)=2, rgb($trans_avg_fit_wave_name)=(red,green,blue)
+//		
+//		
+		
+		
+//		///////////////////////////////////////////
+//		///// ADDING CONDUCTION VS OCCUPATION /////
+//		///////////////////////////////////////////
+////		string cond_vs_occ_data_wave_name_y = cond_avg + "_cond_data"
+////		string cond_vs_occ_data_wave_name_x = cond_avg + "_occ_nrg"
+//		string cond_vs_occ_data_wave_name_y = cond_avg
+//		string cond_vs_occ_data_wave_name_x = cond_avg + "_occ_nrg"
+//		
+////		///// START EXTRA /////
+//		duplicate /o trans_avg_data_wave $cond_vs_occ_data_wave_name_x
+//		SetScale/I x pnt2x($cond_vs_occ_data_wave_name_y, 0)/200, pnt2x($cond_vs_occ_data_wave_name_y, dimsize($cond_vs_occ_data_wave_name_y, 0) - 1)/200, $cond_vs_occ_data_wave_name_y
+////		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name_y, $cond_vs_occ_data_wave_name_x)
+////		///// END EXTRA /////
+//		
+//		AppendToGraph /W=figure_entropy_occupation_cc $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x;
+//		ModifyGraph /W=figure_entropy_occupation_cc mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
+//		
+//		string cond_vs_occ_fit_wave_name_y = cond_avg + "_cond_nrg"
+//		string cond_vs_occ_fit_wave_name_x = cond_avg + "_occ_nrg"
+//		AppendToGraph /W=figure_entropy_occupation_cc $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
+//		ModifyGraph /W=figure_entropy_occupation_cc mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
+		
+	endfor
+	
+end
+
+
+
+function make_figure_entropy_shift([variable baset])
+	baset = paramisdefault(baset) ? 22.5 : baset
+	
+	// first set
+//	string low_gamma_datnumn = "1109"
+//	string mid_gamma_datnumn = "1111"
+//	string high_gamma_datnumn = "1113"
+	
+//	// second set
+//	string low_gamma_datnumn = "1131"
+//	string mid_gamma_datnumn = "1133"
+//	string high_gamma_datnumn = "1135"
+
+//// third set (faster sampling)
+	string low_gamma_datnumn = "1147"
+	string mid_gamma_datnumn = "1149"
+	string high_gamma_datnumn = "1151"
+	
+//// fourth set (improved heating)
+//	string low_gamma_datnumn = "1233"
+//	string mid_gamma_datnumn = "1234"
+//	string high_gamma_datnumn = "1235"
+	
+			
+	////// data names /////
+	string base_name_data_y = "_entropy_avg_figc"
+	string base_name_data_x = "_cs_cleaned_avg_occ_figc"
+	
+	////// NRG names /////
+	string base_name_fit_y = "_dot_cleaned_avg_figc"
+	string base_name_fit_x = "_cs_cleaned_avg_occ_figc"
+	
+	string data_y, data_x, fit_y, fit_x, datnum, marker_size
+	
+	closeallGraphs()
+	
+	Display; KillWindow /Z figure_entropy_shift; DoWindow/C/O figure_entropy_shift
+	Display; KillWindow /Z figure_entropy_occupation; DoWindow/C/O figure_entropy_occupation
+	//////////////////////
+	///// FIGURE D.A /////
+	//////////////////////
+	
+	////////////////////////////////////////////////////////////////////////
+	////////////////////// low gamma ///////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+//	figure_C_separate(baset = baset,  gamma_type = "low_mid") // dat 6081
+	datnum = low_gamma_datnumn
+	data_y = "dat" + datnum + base_name_data_y
+	data_x = "dat" + datnum + base_name_data_x
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
+	fit_x = "GFit_dat" + datnum + base_name_fit_x
+	marker_size = data_y + "_marker_size"
+	
+	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
+	
+	translate_wave_by_occupation($data_y, $data_x) // NOW
+	AppendToGraph /W= figure_entropy_shift $data_y; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+//	translate_wave_by_occupation($fit_y, $fit_x) // NOW
+//	AppendToGraph /W= figure_entropy_shift $fit_y; //AppendToGraph /W= figure_entropy_shift /r $fit_x 
+//	
+	ModifyGraph /W= figure_entropy_shift mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(186*257,0,8*257)//(94*257,135*257,93*257)
+
+//	ModifyGraph /W= figure_entropy_shift mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0,8*257) //(94*257,135*257,93*257)
+
+	AppendToGraph /W= figure_entropy_occupation $data_y vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+	ModifyGraph /W= figure_entropy_occupation mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(186*257,0,8*257)//(94*257,135*257,93*257)
+
+
+	////////////////////////////////////////////////////////////////////////
+//	////////////////////////// mid gamma ///////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+//	figure_C_separate(baset = baset,  gamma_type = "high_mid") // dat 6080
+	datnum = mid_gamma_datnumn
+	data_y = "dat" + datnum + base_name_data_y
+	data_x = "dat" + datnum + base_name_data_x
+	fit_y = "GFit_dat" + datnum + base_name_fit_y
+	fit_x = "GFit_dat" + datnum + base_name_fit_x
+	marker_size = data_y + "_marker_size"
+	
+	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
+
+	translate_wave_by_occupation($data_y, $data_x) // NOW
+//	translate_wave_by_occupation($fit_y, $fit_x) // NOW
+	
+	AppendToGraph /W= figure_entropy_shift $data_y; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+
+	ModifyGraph /W= figure_entropy_shift mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(205*257,132*257,48*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
+//	ModifyGraph /W= figure_entropy_shift mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(205*257,132*257,48*257)
+	
+	
+	AppendToGraph /W= figure_entropy_occupation $data_y vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+	ModifyGraph /W= figure_entropy_occupation mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(205*257,132*257,48*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
+
+//	
+//	////////////////////////////////////////////////////////////////////////
+//	///////////////////////// high gamma ///////////////////////////////////
+//	////////////////////////////////////////////////////////////////////////
+////	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
+//	datnum = high_gamma_datnumn
+//	data_y = "dat" + datnum + base_name_data_y
+//	data_x = "dat" + datnum + base_name_data_x
+//	fit_y = "GFit_dat" + datnum + base_name_fit_y
+//	fit_x = "GFit_dat" + datnum + base_name_fit_x
+//	
+//	marker_size = data_y + "_marker_size"
+//	
+//	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
+//	
+//	translate_wave_by_occupation($data_y, $data_x) // NOW
+//	AppendToGraph /W= figure_entropy_shift $data_y; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+//	
+////	translate_wave_by_occupation($fit_y, $fit_x) // NOW
+////	AppendToGraph /W= figure_entropy_shift $fit_y; //AppendToGraph /W= figure_entropy_shift /r $fit_x 
+//	
+//	ModifyGraph /W= figure_entropy_shift mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
+//
+////	ModifyGraph /W= figure_entropy_shift mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
+//	
+//	
+//	AppendToGraph /W= figure_entropy_occupation $data_y vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+//	ModifyGraph /W= figure_entropy_occupation mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
+//
+//	
+	
+	////////////////////////////////////////////////////////////////////////
+	///////////////// figure final touches /////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+//	SetAxis /W= figure_entropy_shift bottom -2, 5
+//	SetAxis /W= figure_entropy_shift right 0, 1
+	
+	closeallGraphs(no_close_graphs="figure_entropy_shift;figure_entropy_occupation")
+	
+
+	Legend /W= figure_entropy_shift/C/N=text0/A=RT/X=63.49/Y=5.56/J "\\s(dat" + low_gamma_datnumn + "_entropy_avg_figc) Γ/T = low\r\\s(dat" + mid_gamma_datnumn + "_entropy_avg_figc) Γ/T = mid\r\\s(dat" + high_gamma_datnumn + "_entropy_avg_figc) Γ/T = high"
+
+	
+	ModifyGraph /W= figure_entropy_shift mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked
+
+end
 
 function figure_C_separate([variable baset, string gamma_type, variable field_on])
 	baset = paramisdefault(baset) ? 15 : baset

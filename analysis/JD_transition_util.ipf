@@ -49,6 +49,7 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 
 
 	// these are the new wave names to be made
+	duplicate /o wav $(kenner_out + num2str(wavenum))
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_cs_centered"
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_cs_cleaned"
 	string avg_wave_name = cleaned_wave_name + "_avg"

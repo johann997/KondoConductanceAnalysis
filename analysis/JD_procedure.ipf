@@ -41,10 +41,10 @@
 ///////////////////////////////////////////////////////////////////////
 
 
-function denoise(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on]) 
+function denoise(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on, variable conductance_data]) 
 
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
-	
+	conductance_data = paramisdefault(notch_on) ? 1 : conductance_data
 
 	///// Defining wave names /////
 	string cs_data_name_nf = cs_data_name + "_nf"
@@ -66,10 +66,12 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 		spectrum_analyzer($cs_data_name_nf, freq, plot_on = 0)
 	endif
 	
-	spectrum_analyzer($dot_data_name, freq)
-	if (notch_on == 1)
-		notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
-		spectrum_analyzer($dot_data_name_nf, freq, plot_on = 0)
+	if (conductance_data == 0)
+		spectrum_analyzer($dot_data_name, freq)
+		if (notch_on == 1)
+			notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
+			spectrum_analyzer($dot_data_name_nf, freq, plot_on = 0)
+		endif
 	endif
 	
 //	closeallGraphs()
@@ -77,19 +79,29 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	display 
 	AppendToGraph $cs_data_name_ps; ModifyGraph rgb($cs_data_name_ps)=(0,0,0)
 	AppendToGraph $dot_data_name_ps;
-
 	
-	string legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r\\s(" + dot_data_name_ps +  ")dot raw\r"
+	string legend_text
+
+	if (conductance_data == 0)
+		legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r"
+	else
+		legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r\\s(" + dot_data_name_ps +  ")dot raw\r"
+	endif
 	
 	if (notch_on == 1)
 		AppendToGraph $cs_data_name_nf_ps;
 		ModifyGraph rgb($cs_data_name_nf_ps)=(0,0,0)
 		ModifyGraph lstyle($cs_data_name_nf_ps)=1;
-	
-		AppendToGraph $dot_data_name_nf_ps;
-		ModifyGraph lstyle($dot_data_name_nf_ps)=1;
 		
-		legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r\\s(" + dot_data_name_nf_ps +  ")dot notch\r"
+		
+		if (conductance_data == 0)
+			legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r"
+		else
+			AppendToGraph $dot_data_name_nf_ps;
+			ModifyGraph lstyle($dot_data_name_nf_ps)=1;
+		
+			legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r\\s(" + dot_data_name_nf_ps +  ")dot notch\r"
+		endif
 	endif
 	
 	
@@ -98,9 +110,10 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 end
 
 
-function centerandaverage(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on]) 
+function centerandaverage(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on, variable conductance_data]) 
 
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
+	conductance_data = paramisdefault(conductance_data) ? 1 : conductance_data
 	
 	string cs_wave_name, dot_wave_name
 	
@@ -113,14 +126,20 @@ function centerandaverage(variable datnum, string cs_data_name, string dot_data_
 	endif
 
 	string cleaned_dot_name = "dat"
-	master_cond_clean_average($dot_wave_name, 1, cleaned_dot_name)
-	master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
+	
+	if (conductance_data == 0)
+		master_ct_clean_average($cs_wave_name, 1, 0, "dat", condfit_prefix=cleaned_dot_name)
+	else
+		master_cond_clean_average($dot_wave_name, 1, cleaned_dot_name)
+		master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
+	endif
 end
 
 
-function run_single_clean_average_procedure(variable datnum, [variable notch_on, variable plot])
+function run_single_clean_average_procedure(variable datnum, [variable notch_on, variable plot, variable conductance_data])
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
 	plot = paramisdefault(plot) ? 1 : plot
+	conductance_data = paramisdefault(conductance_data) ? 1 : conductance_data
 	
 	string cs_data_type = "cscurrent_2d"
 	string dot_data_type = "dotcurrentx_2d"
@@ -130,7 +149,7 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 	
 	
 	///// first denoise /////
-	denoise(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
+	denoise(datnum, cs_data_name, dot_data_name, notch_on=notch_on, conductance_data=conductance_data)
 	
 	///// resample /////
 //	if (datnum == 6084)
