@@ -145,10 +145,12 @@ function offset_2d_traces(wave wav)
 end
 
 
-function/wave sqw_analysis(wave wav, int delay, int wavelen)
+function/wave sqw_analysis(wave wav, int delay, int wavelen, [variable cold_awg_first])
 // this function separates hot (plus/minus) and cold(plus/minus) and returns  two waves for hot and cold //part of CT
 // CREATES wave numerical_entropy as a GLOBAL wave
 // ASSUMES [cold, hot, cold, hot] heating
+	cold_awg_first = paramisdefault(cold_awg_first) ? 1 : cold_awg_first // [cold, hot, cold, hot] default
+
 	variable nr, nc
 	nr = dimsize(wav,0)
 	nc = dimsize(wav,1)
@@ -167,10 +169,17 @@ function/wave sqw_analysis(wave wav, int delay, int wavelen)
 		reducematrixSize(slice, 0, -1, 1, 0, -1, 4, 1, "slice_new")
 		wave slice_new
 		
-		cold1[i][] = slice_new[0][1][q]
-		cold2[i][] = slice_new[0][3][q]
-		hot1[i][] = slice_new[0][0][q]
-		hot2[i][] = slice_new[0][2][q]
+		if (cold_awg_first == 1)
+			cold1[i][] = slice_new[0][0][q]
+			cold2[i][] = slice_new[0][2][q]
+			hot1[i][] = slice_new[0][1][q]
+			hot2[i][] = slice_new[0][3][q]
+		else
+			cold1[i][] = slice_new[0][1][q]
+			cold2[i][] = slice_new[0][3][q]
+			hot1[i][] = slice_new[0][0][q]
+			hot2[i][] = slice_new[0][2][q]
+		endif
 
 		i = i + 1
 	while(i < nc)

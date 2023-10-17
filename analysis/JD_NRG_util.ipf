@@ -299,8 +299,6 @@ function master_build_nrg_data()
 	
 	num_rows_narrow_fine = dimsize(cond_narrow_interp, 1)
 	
-	
-	///// NEW ///// 
 	 ///////////////////////////
 	///// COMBINING DATA  /////
 	///////////////////////////
@@ -327,7 +325,6 @@ function master_build_nrg_data()
 	endfor
 	
 	
-	
 	variable num_points_interp_x = 100000, num_points_interp_y = 500
 //	make /o/n=(num_points_interp_x, num_points_interp_y) g_nrg, occ_nrg, dndt_nrg 
 	
@@ -340,32 +337,6 @@ function master_build_nrg_data()
 	gammamax = wavemax(gammas_wide_ln)
 	gammamin = wavemin(calc_gamma_narrow_wave)
 	SetScale/I y gammamin, gammamax, "", g_nrg, occ_nrg, dndt_nrg 
-	
-	///// OLD /////
-//    ///////////////////////////
-//	///// COMBINING DATA  /////
-//	///////////////////////////
-//	variable num_rows_combined = num_rows_narrow_fine + num_rows_wide
-//	
-//	make /o/n=(num_cols_narrow_fine, num_rows_combined) cond_n_combined, occ_n_combined, dndt_n_combined 
-//	
-//
-//	for(i = 0; i < num_rows_narrow_fine; i++)
-//		cond_n_combined[][i] = cond_n_narrow_fine[p][i]
-//		occ_n_combined[][i] = occ_n_narrow_fine[p][i]
-//		dndt_n_combined[][i] = dndt_n_narrow_fine[p][i]
-//	endfor
-//	
-//	for(i = num_rows_narrow_fine; i < num_rows_combined; i++)
-//		cond_n_combined[][i] = cond_n_wide[p][i - num_rows_narrow_fine]
-//		occ_n_combined[][i] = occ_n_wide[p][i - num_rows_narrow_fine]
-//		dndt_n_combined[][i] = dndt_n_wide[p][i - num_rows_narrow_fine]
-//	endfor
-//	
-//	imageinterpolate/dest=g_nrg /resl={num_points_interp_x, num_points_interp_y} spline cond_n_combined; copyscales cond_n_combined g_nrg
-//	imageinterpolate/dest=occ_nrg /resl={num_points_interp_x, num_points_interp_y} spline occ_n_combined; copyscales occ_n_combined occ_nrg
-//	imageinterpolate/dest=dndt_nrg /resl={num_points_interp_x, num_points_interp_y} spline dndt_n_combined; copyscales dndt_n_combined dndt_nrg
-//	
 	
 	
 	/////////////////////////////////
@@ -467,7 +438,7 @@ function interpolate_nrg_narrow(variable musmax, variable musmin)
 	for(i=0;i<dimsize(mus_narrow_interp, 1); i++)
 		datx[] = mus_narrow_interp[p][i]
 		daty[] = dndt_narrow_raw[p][i]
-		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation
+		Interpolate2/T=1/E=2/Y=interpwv/I=3 datx,daty //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
 		dndt_narrow_interp[][i] = interpwv[p]
 		
 		daty[] = cond_narrow_raw[p][i]
@@ -529,14 +500,14 @@ end
 
 
 
-function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductance])
+function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_conductance])
 	STRUCT GFinputs &GFin
 	STRUCT g_occdata &data
 	string gamma_over_temp_type
-	variable fit_conductance
+	variable global_fit_conductance
 	
 	gamma_over_temp_type = selectString(paramisdefault(gamma_over_temp_type), gamma_over_temp_type, "high")
-	fit_conductance = paramisdefault(fit_conductance) ? 0 : fit_conductance // assuming repeats to average into 1 trace
+	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // assuming repeats to average into 1 trace
 		
 
 	variable counter = 0, numcoefs, i, j, numwvs = dimsize(data.temps, 0), numlinks, numunlinked, whichcoef
@@ -548,7 +519,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductanc
 	////////////////////////////
 	make /t/o/n=1 fitfuncs
 	wave /t GFin.fitfuncs
-	if (fit_conductance == 1)
+	if (global_fit_conductance == 1)
 		GFin.fitfuncs[0] = "fitfunc_nrgcondAAO"
 		// coef[0]: lnG/T for Tbase -- linked
 		// coef[1]: x-scaling -- linked
@@ -581,7 +552,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductanc
 	/////////////////////////////
 	///// ADDING DATA WAVES /////
 	/////////////////////////////
-	if (fit_conductance == 1) // add conductance data
+	if (global_fit_conductance == 1) // add conductance data
 		if (stringmatch(data.g_maskwvlist,""))
 			make /t/o/n=(numwvs, 2) fitdata
 		else
@@ -665,19 +636,19 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductanc
 	if (cmpstr(gamma_over_temp_type, "high") == 0)
 		coefwave[0][0] = 3 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.01 // x scaling (linked)
-		if (fit_conductance == 1)
+		if (global_fit_conductance == 1)
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-5 // linear
 		endif
 	elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 		coefwave[0][0] = 1.0 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.02 // x scaling (linked)
-		if (fit_conductance == 1)
+		if (global_fit_conductance == 1)
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-6 // linear
 		endif
 	elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 		coefwave[0][0] = 1E-6 // lnG/T for Tbase (linked)
 		coefwave[1][0] = 0.02 // x scaling (linked)
-		if (fit_conductance == 1)
+		if (global_fit_conductance == 1)
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-5 // linear
 		endif
 	endif
@@ -686,7 +657,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductanc
 		coefwave[2 + i*(numcoefs-numlinks)][0] = 0 // x offset
 		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
 		coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnG/T offsets
-		if (fit_conductance == 1)
+		if (global_fit_conductance == 1)
 			coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 		else
 			coefwave[4 + i*(numcoefs-numlinks)][0] = 1.2 // y offset
@@ -700,7 +671,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductanc
 	//////////////////////////////
 	///// ADDING CONSTRAINTS /////
 	//////////////////////////////
-	if (fit_conductance == 1)
+	if (global_fit_conductance == 1)
 		make /t/o/n=2 constraintwave
 		wave /t GFin.constraintwave
 		GFin.constraintwave[0] = "K0<4"
@@ -710,8 +681,6 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, fit_conductanc
 		wave /t GFin.constraintwave
 		GFin.constraintwave[0] = "K0<4"
 		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
-//		GFin.constraintwave[3] = "K6<=1e-15" 
-//		GFin.constraintwave[4] = "K6>=-1e-15" 
 	endif
 end
 
@@ -900,11 +869,13 @@ end
 
 
 
-function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(variable baset, string datnums, string gamma_over_temp_type, [variable fit_conductance])
+function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(variable baset, string datnums, string gamma_over_temp_type, [variable global_fit_conductance, variable fit_entropy])
 		
-	fit_conductance = paramisdefault(fit_conductance) ? 0 : fit_conductance // default is to fit to conductance data
+	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
+	fit_entropy = paramisdefault(fit_entropy) ? 0 : fit_entropy // default is to not fit to entropy
 
-	// build struct giving information on wave names (keep information tidy when passing around)
+
+	// build struct giving information on wave names
 	STRUCT g_occdata data
 	STRUCT GFinputs GFin
 	build_g_occdata_struct(datnums, data)
@@ -926,7 +897,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	
 	// checking length of conductance vs occupation
-	if (fit_conductance == 1)
+	if (global_fit_conductance == 1)
 		if(itemsinlist(data.g_wvlist) != numwvs)
 			print "Number of temps not consistent with number of waves"
 			abort
@@ -940,7 +911,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		
 	// Define inputs for global fit to conductance data
 	// (check out help in Global Fit 2 Help -- not Global Fit Help without the 2!)
-	build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, fit_conductance=fit_conductance)
+	build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance)
 	options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
 	// Perform global fit
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
@@ -956,13 +927,14 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	//////////////////////////////////////////////////////////////////////
 	// Use coefficients determined from conductance fit to fit charge transition data
 	// Create occupation data
-	string cs_data_name, cs_fit_name, occ_data_name, occ_fit_name
+	string cs_data_name, cs_fit_name, cs_coef_name
+	string occ_data_name, occ_fit_name
+	string entropy_coef_name, entropy_data_name, entropy_fit_name
 	variable total_cs_chisq
 	display
 	for(i=0; i<numwvs; i++)
-		string cs_coef_name
 		
-		if (fit_conductance == 1) // if fitting conductance, use conductance parameters to fit charge transitions
+		if (global_fit_conductance == 1) // if fitting conductance, use conductance parameters to fit charge transitions
 			cs_coef_name = "coef_" + stringfromlist(i,data.occ_wvlist)
 			make/o /n=8 $cs_coef_name = 0 // Make coefficient wave for occupation fits
 			wave curr_coef = $("coef_" + stringfromlist(i,data.g_wvlist))
@@ -973,8 +945,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			
 			// fit cs data using gamma and theta from conductance fits
 			cs_coef[0,3] = curr_coef[p]; wavestats /q cs_data; cs_coef[4]=v_avg;  cs_coef[7]=(v_min-v_max); // cs_coef[6]=0;
-			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D /M=$(stringfromlist(i,data.occ_maskwvlist))
+			create_x_wave(cs_data)
+			wave x_wave
+//			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data  /X=x_wave ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 			cs_fit_name = "fit_" + cs_data_name
 		else 
 			wave cs_coef = $("coef_" + stringfromlist(i,data.occ_wvlist))
@@ -1026,6 +1000,42 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		appendtograph /r $occ_fit_name
 		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(65535,0,0)
 		
+		
+		////////////////////////////////////
+		/////// Creating Entropy fit ///////
+		////////////////////////////////////
+		if (fit_entropy == 1)
+			entropy_coef_name = "coef_" + StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
+			make/o /n=8 $entropy_coef_name = 0 // Make coefficient wave for occupation fits
+			wave entropy_coef = $entropy_coef_name
+			
+			entropy_data_name = StringFromList(0, stringfromlist(i, data.occ_wvlist), "_") + "_numerical_entropy_avg"
+			entropy_fit_name = "fit_" + entropy_data_name
+			wave entropy_data = $entropy_data_name
+			
+			// fit entropy data using gamma and theta from conductance fits
+			// coef[0]: lnG/T for Tbase -- linked
+			// coef[1]: x-scaling -- linked
+			// coef[2]: x-offset
+			// coef[3]: ln(T/Tbase) for different waves
+			// coef[4]: const offset
+			// coef[5]: linear
+			// coef[6]: quadratic
+			// coef[7]: amplitude
+			entropy_coef[0,3] = cs_coef[p]; wavestats /q entropy_data; entropy_coef[4]=v_avg;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=(v_min-v_max);
+			duplicate /o $cs_fit_name $entropy_fit_name
+			wave entropy_fit = $entropy_fit_name
+			
+//			create_x_wave($cs_fit_name)
+//			wave x_wave
+			
+			Interpolate2/T=1/E=2/Y=entropy_fit/I=3 entropy_data //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+
+//			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_fit /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
+		
+		
+		endif
 	endfor
 	
 //	print "Chisqr on occupation fit is " + num2str(total_cs_chisq/4)
@@ -1116,98 +1126,6 @@ end
 
 
 
-//function josh_testpdata(baset)
-//	variable baset
-//	
-//	STRUCT g_occdata data	
-//	STRUCT GFinputs GFin
-//	variable i, numcoefs, counter, numwvs, options, nrgline
-//	
-//	string strnm, wavenm, runlabel="highG"
-//
-//	data.g_wvlist="dat6079_dot_cleaned_avg;dat6088_dot_cleaned_avg;dat6085_dot_cleaned_avg;dat6082_dot_cleaned_avg"
-//	strnm = runlabel+"g_wvlist"
-//	string /g $strnm=data.g_wvlist
-//
-//	data.occ_wvlist="dat6079_cs_cleaned_avg;dat6088_cs_cleaned_avg;dat6085_cs_cleaned_avg;dat6082_cs_cleaned_avg"
-//	strnm = runlabel+"occ_wvlist"
-//	string /g $strnm=data.occ_wvlist
-//
-//	data.g_maskwvlist="dat6079_dot_cleaned_avg_mask;dat6088_dot_cleaned_avg_mask;dat6085_dot_cleaned_avg_mask;dat6082_dot_cleaned_avg_mask"
-//	strnm = runlabel+"g_maskwvlist"
-//	string /g $strnm=data.g_maskwvlist
-//
-//	data.occ_maskwvlist="dat6079_cs_cleaned_avg_mask;dat6088_cs_cleaned_avg_mask;dat6085_cs_cleaned_avg_mask;dat6082_cs_cleaned_avg_mask"
-//	strnm = runlabel+"occ_maskwvlist"
-//	string /g $strnm=data.occ_maskwvlist
-//
-//	make /o/n=4 temps
-//	wave data.temps
-//	data.temps={baset,100,300,500}
-//	
-//	strnm = runlabel+"temps"
-//	duplicate /o data.temps $strnm
-//	numwvs = dimsize(data.temps,0)
-//	
-//	if(itemsinlist(data.g_wvlist)!=numwvs)
-//		print "Number of temps not consistent with number of waves"
-//		abort
-//	endif
-//		
-//	// Define inputs for global fit to conductance data
-//	// (check out help in Global Fit 2 Help -- not Global Fit Help without the 2!)
-//	build_GFinputs_struct(GFin, data)
-//	options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
-//	// Perform global fit
-//	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
-//
-//	print "Gamma/T at",(data.temps[0]),"=",exp(GFin.CoefWave[0][0])
-//	variable /g GF_chisq
-//	print "Chisqr is",GF_chisq
-//	
-//	// Use coefficients determined from conductance fit to fit occupation data
-//	display
-//	for(i=0;i<numwvs;i++)
-//		string occ_coef="coef_"+stringfromlist(i,data.occ_wvlist)
-//		make/o /n=8 $occ_coef=0 // Make coefficient wave for occupation fits
-//		wave curr_coef=$("coef_"+stringfromlist(i,data.g_wvlist))
-//		wave new_coef=$occ_coef
-//		wave currwv=$(stringfromlist(i,data.occ_wvlist))
-//		appendtograph currwv
-//		new_coef[0,3]=curr_coef[p];wavestats /q currwv;new_coef[4]=v_avg; new_coef[7]=(v_min-v_max) //
-//		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-//		FuncFit/Q/H="11010000" fitfunc_nrgctAAO new_coef currwv /D /M=$(stringfromlist(i,data.occ_maskwvlist))
-//	endfor
-//	
-//	// Use coefficients determined from occupations fit to find occupation(Vgate)
-//	display
-//	for(i=0;i<numwvs;i++)
-//		wavenm="nrgocc_"+stringfromlist(i,data.g_wvlist)
-//		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm
-//		wave nrg_occ=$wavenm
-//		wavenm="coef_"+stringfromlist(i,data.occ_wvlist)
-//		nrgocc($wavenm,nrg_occ)
-//		appendtograph $(stringfromlist(i,data.g_wvlist)) vs nrg_occ
-//	endfor
-//	
-//	// Add NRG data on top
-//	for(i=0;i<numwvs;i++)
-//		wavenm="coef_"+stringfromlist(i,data.g_wvlist)
-//		wave g_coefs=$wavenm
-//		wave g_nrg
-//		wave occ_nrg
-//		nrgline = scaletoindex(g_nrg,(g_coefs[0]+g_coefs[3]),1)
-//		wavenm = "g"+num2str(nrgline)
-//		matrixop /o $wavenm=col(g_nrg,nrgline)
-//		wave gnrg = $wavenm
-//		gnrg *= g_coefs[4]
-//		appendtograph gnrg vs occ_nrg[][nrgline]
-//	endfor
-//	
-//end
-
-
-
 
 
 /////////////////////////////////
@@ -1236,6 +1154,10 @@ Endstructure
 ////////////////////////////////////
 ///// FIT FUNCTION DEFINITIONS /////
 ////////////////////////////////////
+
+/////////////////////////////////
+///// conductance functions /////
+/////////////////////////////////
 Function fitfunc_nrgcond(w,x) : FitFunc
 	Wave w
 	Variable x
@@ -1258,6 +1180,9 @@ Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc // original negative
 end
 
 
+////////////////////////////////
+///// transition functions /////
+////////////////////////////////
 Function fitfunc_nrgctAAO(pw, yw, xw) : FitFunc
 	WAVE pw, yw, xw
 	wave nrg = occ_nrg
@@ -1295,5 +1220,23 @@ Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
 	xw[] = xw[p] + pw[2]
 	
 	SetScale/I x pnt2x(xw, 0), pnt2x(xw, dimsize(xw, 0) - 1), yw
+end
+
+
+/////////////////////////////
+///// entropy functions /////
+/////////////////////////////
+Function fitfunc_nrgentropyAAO(pw, yw, xw) : FitFunc
+	WAVE pw, yw, xw
+	wave nrg = dndt_nrg
+	// coef[0]: lnG/T for Tbase -- linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: ln(T/Tbase) for different waves
+	// coef[4]: const offset
+	// coef[5]: linear
+	// coef[6]: quadratic
+	// coef[7]: amplitude
 	
+	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
 end
