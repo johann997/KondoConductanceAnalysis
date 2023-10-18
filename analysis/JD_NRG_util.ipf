@@ -1013,6 +1013,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			entropy_fit_name = "fit_" + entropy_data_name
 			wave entropy_data = $entropy_data_name
 			
+			print StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
+			print cs_coef
 			// fit entropy data using gamma and theta from conductance fits
 			// coef[0]: lnG/T for Tbase -- linked
 			// coef[1]: x-scaling -- linked
@@ -1022,7 +1024,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			// coef[5]: linear
 			// coef[6]: quadratic
 			// coef[7]: amplitude
-			entropy_coef[0,3] = cs_coef[p]; wavestats /q entropy_data; entropy_coef[4]=v_avg;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=(v_min-v_max);
+			entropy_coef[0,3] = cs_coef[p]; wavestats /q entropy_data; entropy_coef[4]=0;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=(v_min-v_max);
 			duplicate /o $cs_fit_name $entropy_fit_name
 			wave entropy_fit = $entropy_fit_name
 			

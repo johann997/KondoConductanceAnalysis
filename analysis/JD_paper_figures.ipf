@@ -232,9 +232,10 @@ end
 
 
 
-function fit_charge_transition_entropy([variable baset, string gamma_type])
-	baset = paramisdefault(baset) ? 22.5 : baset
-	gamma_type = selectString(paramisdefault(gamma_type), gamma_type, "low") 
+function fit_charge_transition_entropy([global_temps, gamma_type])
+	string global_temps, gamma_type
+	global_temps = selectString(paramisdefault(global_temps), global_temps, "22.5;275;500") // temperatures used for global fitting
+	gamma_type = selectString(paramisdefault(gamma_type), gamma_type, "low") // used to define starting parameters for global fit
 	
 //	closeallGraphs(); averaging_procedure(1109, 0); averaging_procedure(1121, 0); averaging_procedure(1115, 0)
 //
@@ -251,14 +252,42 @@ function fit_charge_transition_entropy([variable baset, string gamma_type])
 //	string datnums = "1151;1125;1119"; gamma_type="high"; averaging_procedure(1151, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1125, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1119, 0, num_points_in_entropy=25, cold_awg_first=0)  // high gamma
 
 //	string datnums = "1233;1121;1115"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
-//	string datnums = "1234;1123;1117"; gamma_type="mid"; averaging_procedure(1234, 0, divide_data=1000, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1123, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1117, 0, num_points_in_entropy=25, cold_awg_first=0) // mid gamma
-	string datnums = "1235;1125;1119"; gamma_type="high"; averaging_procedure(1235, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1125, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1119, 0, num_points_in_entropy=25, cold_awg_first=0)  // high gamma
-
+	string datnums = "1234;1123;1117"; gamma_type="mid"; averaging_procedure(1234, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1123, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1117, 0, num_points_in_entropy=25, cold_awg_first=0) // mid gamma
+//	string datnums = "1235;1125;1119"; gamma_type="high"; averaging_procedure(1235, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1125, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1119, 0, num_points_in_entropy=25, cold_awg_first=0)  // high gamma
+//	string datnums = "1233;1121;1115"
 	
+//	string entropy_datnum = "1281", global_datnums = "1284;1296;1292;1288"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
+//	string entropy_datnum = "1282" global_datnums = "1285;1297;1293;1289"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
+//	string entropy_datnum = "1283" global_datnums = "1286;1298;1294;1290"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
+//	string entropy_datnum = "1284" global_datnums = "1287;1299;1295;1291"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
+	variable num_points_in_entropy = 122
+
+
+
+
+//	variable num_global_datnums = ItemsInList(global_datnums, ";")
+	string ct_datnum, ct_wavename
+	variable baset = 22.5
 	string e_temps = num2str(baset) + ";275;500"
 	variable num_dats = ItemsInList(datnums, ";")
 
-//	closeallGraphs(); averaging_procedure(1109, 1)
+	
+	
+	//////////////////////////////// NEW /////////////////////////////
+//	///// FIRST CREATE 1D DATA FROM TRANSITION /////
+//	int i 
+//	for (i=0; i<num_global_datnums; i++)
+//		ct_datnum = stringfromlist(i, global_datnums)
+//		ct_wavename = "dat" + ct_datnum + "cscurrent_2d"
+//		closeallGraphs(); master_ct_clean_average($ct_wavename, 1, 0, "dat")
+//	endfor
+//	
+	
+	///// CREATE 1D ENTROPY /////
+	//// do something here /////
+	////////////////////////// NEW END ////////////////////////////////////
+
+
 
 	variable cond_chisq, occ_chisq, condocc_chisq
 	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_type, global_fit_conductance=0, fit_entropy=1)
@@ -276,7 +305,7 @@ function fit_charge_transition_entropy([variable baset, string gamma_type])
 	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
 	
 	string legend_text = ""
-	variable i, datnum
+	variable  i, datnum
 	for (i=0;i<num_dats;i+=1)
 		datnum = str2num(stringfromlist(i, datnums))
 		e_temp = stringfromlist(i, e_temps)
@@ -315,13 +344,13 @@ function fit_charge_transition_entropy([variable baset, string gamma_type])
 		wave entropy_avg_data_wave = $entropy_avg_data_wave_name 
 		wave entropy_avg_fit_wave = $entropy_avg_fit_wave_name 
 		
-		smooth 200, entropy_avg_data_wave
+		smooth 600, $entropy_avg_data_wave_name
 		
 		SetScale/I x pnt2x(entropy_avg_data_wave, 0)/200, pnt2x(entropy_avg_data_wave, dimsize(entropy_avg_data_wave, 0) - 1)/200, entropy_avg_data_wave // setting scale in real gate units (P*200)
 		SetScale/I x pnt2x(entropy_avg_fit_wave, 0)/200, pnt2x(entropy_avg_fit_wave, dimsize(entropy_avg_fit_wave, 0) - 1)/200, entropy_avg_fit_wave  
 		
 		AppendToGraph /W=figure_entropy_occupation  /R, $entropy_avg_data_wave_name;  AppendToGraph /W=figure_entropy_occupation /R, $entropy_avg_fit_wave_name;
-		ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_data_wave_name)=0, lsize($entropy_avg_data_wave_name)=1, rgb($entropy_avg_data_wave_name)=(red,green,blue)
+		ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_data_wave_name)=2, lsize($entropy_avg_data_wave_name)=1, rgb($entropy_avg_data_wave_name)=(red,green,blue)
 		ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_fit_wave_name)=0, lsize($entropy_avg_fit_wave_name)=2, rgb($entropy_avg_fit_wave_name)=(red,green,blue)
 		
 		

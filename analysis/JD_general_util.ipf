@@ -334,12 +334,12 @@ function demodulate(datnum, harmonic, wave_kenner, [append2hdf, demod_wavename])
 
 //	print AWGLI
 
-	cols=dimsize(wav,0); print cols
-	rows=dimsize(wav,1); print rows
+	cols=dimsize(wav,0); //print cols
+	rows=dimsize(wav,1); //print rows
 	nofcycles=AWGLI.numCycles;
 	period=AWGLI.waveLen;
-	print "AWG num cycles  = " + num2str(nofcycles)
-	print "AWG wave len = " + num2str(period)
+//	print "AWG num cycles  = " + num2str(nofcycles)
+//	print "AWG wave len = " + num2str(period)
 	
 //	//Original Measurement Wave
 	make /o/n=(cols) sine1d
@@ -365,9 +365,9 @@ function demodulate(datnum, harmonic, wave_kenner, [append2hdf, demod_wavename])
 //	display wav vs wave0x
 //	appendtoGraph sine1d
 	
-	print "cols = " + num2str(cols)
-	print "rows = " + num2str(rows)
-	print "(cols/period/nofcycles) = " + num2str(cols/period/nofcycles)
+//	print "cols = " + num2str(cols)
+//	print "rows = " + num2str(rows)
+//	print "(cols/period/nofcycles) = " + num2str(cols/period/nofcycles)
 	ReduceMatrixSize(temp, 0, -1, (cols/period/nofcycles), 0,-1, rows, 1, demod_wavename)
 	
 	KillWindow /Z demod_window
