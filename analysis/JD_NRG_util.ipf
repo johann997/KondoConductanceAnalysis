@@ -635,21 +635,21 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 	// For fitfunc_nrgcondAAO with N input waves these are:
 	if (cmpstr(gamma_over_temp_type, "high") == 0)
 		coefwave[0][0] = 3 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.01 // x scaling (linked)
+		coefwave[1][0] = 0.2 // 0.01 // x scaling (linked)
 		if (global_fit_conductance == 1)
-			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-5 // linear
+			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 //1e-5 // linear
 		endif
 	elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 		coefwave[0][0] = 1.0 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.02 // x scaling (linked)
+		coefwave[1][0] = 0.2 // 0.02 // x scaling (linked)
 		if (global_fit_conductance == 1)
-			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-6 // linear
+			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 //1e-6 // linear
 		endif
 	elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 		coefwave[0][0] = 1E-6 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.02 // x scaling (linked)
+		coefwave[1][0] = 0.2 // 0.02 // x scaling (linked)
 		if (global_fit_conductance == 1)
-			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-5 // linear
+			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 //1e-5 // linear
 		endif
 	endif
 	
@@ -660,10 +660,10 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		if (global_fit_conductance == 1)
 			coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 		else
-			coefwave[4 + i*(numcoefs-numlinks)][0] = 1.2 // y offset
-//			coefwave[5 + i*(numcoefs-numlinks)][0] = 1e-5// 1e-6 // linear
+			coefwave[4 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
+			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
 			coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
-			coefwave[7 + i*(numcoefs-numlinks)][0] = -0.06 // amplitude
+			coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0]))) // amplitude
 		endif
 	endfor
 	
@@ -726,8 +726,13 @@ end
 
 
 
-function build_mask_waves(string datnums)
+function build_mask_waves(datnums, [global_fit_conductance])
+	string datnums
+	variable global_fit_conductance
+	
+	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 
+	
 	string dot_wave_name, dot_mask_wave_name
 	string cs_wave_name, cs_mask_wave_name
 	
@@ -737,7 +742,7 @@ function build_mask_waves(string datnums)
 	
 	for (i=0;i<num_dats;i+=1)
 		datnum = stringfromlist(i, datnums)
-		info_mask_waves(datnum)
+		info_mask_waves(datnum, global_fit_conductance=global_fit_conductance)
 	endfor
 
 end
@@ -745,8 +750,13 @@ end
 
 
 
-function info_mask_waves(string datnum)
+function info_mask_waves(datnum, [global_fit_conductance])
 	// create the masks for each individual datnum seperately
+	string datnum
+	variable global_fit_conductance
+	
+	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
+
 
 	string dot_wave_name, dot_mask_wave_name
 	string cs_wave_name, cs_mask_wave_name
@@ -820,30 +830,33 @@ function info_mask_waves(string datnum)
 	
 //	make /o/N=(dimsize($dot_wave_name, 0)) $dot_mask_wave_name = 1
 //	make /o/N=(dimsize($cs_wave_name, 0)) $cs_mask_wave_name = 1
-	duplicate /o $dot_wave_name $dot_mask_wave_name
+	if (global_fit_conductance == 1)
+		duplicate /o $dot_wave_name $dot_mask_wave_name
+		wave dot_mask_wave = $dot_mask_wave_name
+		dot_mask_wave = 1
+	endif
+	
 	duplicate /o $cs_wave_name $cs_mask_wave_name
-	
-	wave dot_mask_wave = $dot_mask_wave_name
 	wave cs_mask_wave = $cs_mask_wave_name
-	
-	dot_mask_wave = 1; cs_mask_wave = 1
+	cs_mask_wave = 1
 	
 	if (datnum_declared == 1)
 
-		///// CALCULATING MIN AND MAX INDEX /////
-		dot_min_index = x2pnt($dot_wave_name, dot_min_val)
-		if (dot_min_index < 0)
-			dot_min_index = 0
+		if (global_fit_conductance == 1)
+			///// CALCULATING MIN AND MAX INDEX /////
+			dot_min_index = x2pnt($dot_wave_name, dot_min_val)
+			if (dot_min_index < 0)
+				dot_min_index = 0
+			endif
+			
+			dot_max_index = x2pnt($dot_wave_name, dot_max_val)
+			if (dot_max_index >= dimsize($dot_wave_name, 0))
+				dot_max_index = dimsize($dot_wave_name, 0)
+			endif
+			
+			dot_mask_wave[0, dot_min_index] = 0
+			dot_mask_wave[dot_max_index, dimsize($dot_wave_name, 0) - 1] = 0
 		endif
-		
-		dot_max_index = x2pnt($dot_wave_name, dot_max_val)
-		if (dot_max_index >= dimsize($dot_wave_name, 0))
-			dot_max_index = dimsize($dot_wave_name, 0)
-		endif
-		
-		dot_mask_wave[0, dot_min_index] = 0
-		dot_mask_wave[dot_max_index, dimsize($dot_wave_name, 0) - 1] = 0
-		
 		
 		///// CALCULATING MIN AND MAX INDEX /////
 		cs_min_index = x2pnt($cs_wave_name, cs_min_val)
@@ -869,34 +882,43 @@ end
 
 
 
-function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(variable baset, string datnums, string gamma_over_temp_type, [variable global_fit_conductance, variable fit_entropy])
+function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(string global_temps, string datnums, string gamma_over_temp_type, [variable global_fit_conductance, variable fit_entropy, string fit_entropy_dats])
 		
 	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 	fit_entropy = paramisdefault(fit_entropy) ? 0 : fit_entropy // default is to not fit to entropy
+	fit_entropy_dats = selectString(paramisdefault(fit_entropy_dats), fit_entropy_dats, datnums) // fit to datnums if fit_entropy_dats not specified
 
 
-	// build struct giving information on wave names
+	/////// build struct giving information on wave names /////
 	STRUCT g_occdata data
 	STRUCT GFinputs GFin
 	build_g_occdata_struct(datnums, data)
 	
-	// build mask waves
-	build_mask_waves(datnums)
+	/////// build mask waves /////
+	build_mask_waves(datnums, global_fit_conductance=global_fit_conductance)
 	
 	
 	variable i, numcoefs, counter, numwvs, options, nrgline
 	string strnm, wavenm, newwavenm, runlabel = gamma_over_temp_type + "G"
 
-	make /o/n=3 temps
+	/////// creating a temp wave from global_temps string /////
+	int num_temps = ItemsInList(global_temps, ";")
+	make /o/n=(num_temps) temps
 	wave data.temps
-	data.temps={baset, 275, 500}  // change to number of temps
+	for (i=0; i<num_temps; i++)
+		data.temps[i]=str2num(stringfromlist(i, global_temps))
+	endfor
+//	wave data.temps
+//	data.temps={baset, 275, 500}  // change to number of temps
 	
 	strnm = runlabel + "temps"
 	duplicate /o data.temps $strnm
 	numwvs = dimsize(data.temps, 0)
 	
+	int num_entropy_dats = ItemsInList(fit_entropy_dats, ";")
 	
-	// checking length of conductance vs occupation
+	
+	/////// checking length of conductance vs occupation /////
 	if (global_fit_conductance == 1)
 		if(itemsinlist(data.g_wvlist) != numwvs)
 			print "Number of temps not consistent with number of waves"
@@ -909,11 +931,12 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		endif
 	endif
 		
-	// Define inputs for global fit to conductance data
-	// (check out help in Global Fit 2 Help -- not Global Fit Help without the 2!)
+	/////// Define inputs for global fit to conductance data /////
+	// (check out help in Global Fit 2 Help -- not Global Fit Help)
 	build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance)
 	options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
-	// Perform global fit
+	
+	/////// Perform global fit /////
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 
 	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ",exp(GFin.CoefWave[0][0])
@@ -929,8 +952,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	// Create occupation data
 	string cs_data_name, cs_fit_name, cs_coef_name
 	string occ_data_name, occ_fit_name
-	string entropy_coef_name, entropy_data_name, entropy_fit_name
-	variable total_cs_chisq
+	string entropy_base_name, entropy_coef_name, entropy_data_name, entropy_fit_name
+	variable total_cs_chisq, entropy_y_offset
 	display
 	for(i=0; i<numwvs; i++)
 		
@@ -1004,17 +1027,32 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		////////////////////////////////////
 		/////// Creating Entropy fit ///////
 		////////////////////////////////////
-		if (fit_entropy == 1)
-			entropy_coef_name = "coef_" + StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
+		if ((fit_entropy == 1) && (i < num_entropy_dats))
+			///// OLD /////
+//			entropy_coef_name = "coef_" + StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
+////			g_wvlist = g_wvlist + "dat" + datnum + "_dot_cleaned_avg;"
+//			make/o /n=8 $entropy_coef_name = 0 // Make coefficient wave for occupation fits
+//			wave entropy_coef = $entropy_coef_name
+//			
+//			entropy_data_name = StringFromList(0, stringfromlist(i, data.occ_wvlist), "_") + "_numerical_entropy_avg"
+//			entropy_fit_name = "fit_" + entropy_data_name
+//			wave entropy_data = $entropy_data_name
+			///// END OLD /////
+			
+			///// NEW /////
+			entropy_base_name = "dat" +  stringfromlist(i, fit_entropy_dats) + "_numerical_entropy_avg"
+			entropy_coef_name = "coef_" + entropy_base_name
+			
 			make/o /n=8 $entropy_coef_name = 0 // Make coefficient wave for occupation fits
 			wave entropy_coef = $entropy_coef_name
 			
-			entropy_data_name = StringFromList(0, stringfromlist(i, data.occ_wvlist), "_") + "_numerical_entropy_avg"
+			entropy_data_name = entropy_base_name
 			entropy_fit_name = "fit_" + entropy_data_name
 			wave entropy_data = $entropy_data_name
+			///// END NEW /////
 			
-			print StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
-			print cs_coef
+//			print StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
+//			print cs_coef
 			// fit entropy data using gamma and theta from conductance fits
 			// coef[0]: lnG/T for Tbase -- linked
 			// coef[1]: x-scaling -- linked
@@ -1024,7 +1062,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			// coef[5]: linear
 			// coef[6]: quadratic
 			// coef[7]: amplitude
-			entropy_coef[0,3] = cs_coef[p]; wavestats /q entropy_data; entropy_coef[4]=0;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=(v_min-v_max);
+			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, V_npnts/5))
+			
+			entropy_coef[0,3] = cs_coef[p]; wavestats /q entropy_data; entropy_coef[4]=entropy_y_offset;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=wavemax($entropy_data_name);
 			duplicate /o $cs_fit_name $entropy_fit_name
 			wave entropy_fit = $entropy_fit_name
 			
@@ -1034,7 +1074,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			Interpolate2/T=1/E=2/Y=entropy_fit/I=3 entropy_data //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
 
 //			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_fit /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
+			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO entropy_coef entropy_fit /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 		
 		
 		endif

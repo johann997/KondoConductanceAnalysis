@@ -4,10 +4,10 @@
 #include <Reduce Matrix Size>
 
 
-function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling, forced_theta, fit_width, divide_data])
+function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling, forced_theta, fit_width, divide_data, resample_before_centering])
 	int filenum, delay, wavelen
 	int centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling
-	variable forced_theta, fit_width, divide_data
+	variable forced_theta, fit_width, divide_data, resample_before_centering
 	
 	centre_repeats = paramisdefault(centre_repeats) ? 0 : centre_repeats // default is to not centre repeats based on cold trace
 	average_repeats = paramisdefault(average_repeats) ? 1 : average_repeats // default is to average repeats
@@ -16,8 +16,10 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	apply_scaling = paramisdefault(apply_scaling) ? 1 : apply_scaling // scaling ON is default
 	forced_theta = paramisdefault(forced_theta) ? 0 : forced_theta // default is forcing theta OFF for calculating the scaling. 0 assumes the theta needs to be calculated
 	fit_width = paramisdefault(fit_width) ? INF : fit_width // default is to fit entire transition
-	divide_data = paramisdefault(divide_data) ? 1 : divide_data // default not dicide the data. Use case: If input data is RAW we may need to re-scale data.
-	
+	divide_data = paramisdefault(divide_data) ? 1 : divide_data // default not divide the data. Use case: If input data is RAW we may need to re-scale data.
+	resample_before_centering = paramisdefault(resample_before_centering) ? 0 : resample_before_centering // default not resample the data
+
+
 	string raw_wavename = "dat" + num2str(filenum) + "cscurrent_2d"
 	string cs_cold_cleaned_name = "dat" + num2str(filenum) + "_cs_cleaned"
 	string cs_hot_cleaned_name = "dat" + num2str(filenum) + "_cs_cleaned_hot"
@@ -47,7 +49,14 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	///// CENTERING /////
 	if (centre_repeats == 1)
 		// fit cold transitions
-		master_ct_clean_average(cold, 1, 0, "dat")
+		if (resample_before_centering != 0)
+			duplicate /o cold cold_resampled
+			resampleWave(cold_resampled, resample_before_centering)
+			wave cold_resampled
+			master_ct_clean_average(cold_resampled, 1, 0, "dat")
+		else
+			master_ct_clean_average(cold, 1, 0, "dat")
+		endif
 		wave dat0_cs_cleaned
 		wave dat0_cs_cleaned_avg // if no num in wave then overwrites dat0 in experiment. 
 		duplicate /o dat0_cs_cleaned $cs_cold_cleaned_name
@@ -63,6 +72,16 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 		remove_bad_thetas(hot_centered, badthetasx, "hot_centered")
 //		zap_NaN_rows(hot_centered, overwrite = 1, percentage_cutoff_inf = 0.15)
 		duplicate /o hot_centered $cs_hot_cleaned_name
+		
+		if (resample_before_centering != 0)
+			duplicate /o cold dat0_cs_cleaned
+			centering(cold, "cold_centered", mids)
+			wave cold_centered
+			wave badthetasx
+			remove_bad_thetas(cold_centered, badthetasx, "cold_centered")
+	//		zap_NaN_rows(hot_centered, overwrite = 1, percentage_cutoff_inf = 0.15)
+			duplicate /o cold_centered $cs_cold_cleaned_name
+		endif
 
 		// create numerical entropy from centered cold and hot waves
 		duplicate /o $cs_cold_cleaned_name numerical_entropy
@@ -80,6 +99,9 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	///// AVERAGING /////
 	string cs_cleaned_cold_avg_name, cs_cleaned_hot_avg_name, cs_cleaned_name
 	if ((average_repeats == 1) && (centre_repeats == 1)) // use centred wave to average
+		if (resample_before_centering != 0)
+			avg_wav($cs_cold_cleaned_name)
+		endif
 		avg_wav($cs_hot_cleaned_name)
 		
 		wave cold_avg = $cs_cold_cleaned_avg_name
