@@ -543,6 +543,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		numcoefs = 8
 		make /o/n=(numcoefs) links
 		links={1,1,0,0,0,0,0,0}
+//		links={1,1,0,0,0,0,0,0}
 		numlinks = sum(links)
 	endif
 	
@@ -681,6 +682,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		wave /t GFin.constraintwave
 		GFin.constraintwave[0] = "K0<4"
 		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
+//		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
 	endif
 end
 
@@ -953,7 +955,12 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	string cs_data_name, cs_fit_name, cs_coef_name
 	string occ_data_name, occ_fit_name
 	string entropy_base_name, entropy_coef_name, entropy_data_name, entropy_fit_name
+	string cold_entropy_base_name, cold_entropy_coef_name, cold_entropy_data_name, cold_entropy_fit_name
+	string occ_cold_entropy_data_name, occ_cold_entropy_fit_name
+	string hot_entropy_base_name, hot_entropy_coef_name, hot_entropy_data_name, hot_entropy_fit_name
+	string int_entropy_data_name, int_entropy_fit_name
 	variable total_cs_chisq, entropy_y_offset
+	variable scaling_dt, scaling_amplitude, scaling_factor
 	display
 	for(i=0; i<numwvs; i++)
 		
@@ -1027,19 +1034,75 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		////////////////////////////////////
 		/////// Creating Entropy fit ///////
 		////////////////////////////////////
-		if ((fit_entropy == 1) && (i < num_entropy_dats))
-			///// OLD /////
-//			entropy_coef_name = "coef_" + StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
-////			g_wvlist = g_wvlist + "dat" + datnum + "_dot_cleaned_avg;"
-//			make/o /n=8 $entropy_coef_name = 0 // Make coefficient wave for occupation fits
-//			wave entropy_coef = $entropy_coef_name
-//			
-//			entropy_data_name = StringFromList(0, stringfromlist(i, data.occ_wvlist), "_") + "_numerical_entropy_avg"
-//			entropy_fit_name = "fit_" + entropy_data_name
-//			wave entropy_data = $entropy_data_name
-			///// END OLD /////
+		if ((fit_entropy == 1) && (i < num_entropy_dats)) 
 			
-			///// NEW /////
+			///////////////////////////////////////////////////////
+			///// FIRST FIT TO COLD TRANSITIONS FROM ENTROPY /////
+			///////////////////////////////////////////////////////
+			cold_entropy_base_name = "dat" +  stringfromlist(i, fit_entropy_dats) + "_cs_cleaned_avg"
+			cold_entropy_data_name = cold_entropy_base_name
+			cold_entropy_coef_name = "coef_" + cold_entropy_base_name
+			cold_entropy_fit_name = "fit_" + cold_entropy_base_name
+
+			make/o /n=8 $cold_entropy_coef_name = 0 // Make coefficient wave for occupation fits
+			wave cold_entropy_coef = $cold_entropy_coef_name
+			cold_entropy_coef[0,7] = cs_coef[p]
+			
+			duplicate /o $cold_entropy_data_name $cold_entropy_fit_name
+			
+			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
+			
+			
+			
+			//////////////////////////////////////////////////////
+			///// SECOND FIT TO HOT TRANSITIONS FROM ENTROPY //////
+			//////////////////////////////////////////////////////
+			hot_entropy_base_name = "dat" +  stringfromlist(i, fit_entropy_dats) + "_cs_cleaned_hot_avg"
+			hot_entropy_data_name = hot_entropy_base_name
+			hot_entropy_coef_name = "coef_" + hot_entropy_base_name
+			hot_entropy_fit_name = "fit_" + hot_entropy_base_name
+
+			make/o /n=8 $hot_entropy_coef_name = 0 // Make coefficient wave for occupation fits
+			wave hot_entropy_coef = $hot_entropy_coef_name
+			hot_entropy_coef[0,7] = cold_entropy_coef[p]
+			
+			duplicate /o $hot_entropy_data_name $hot_entropy_fit_name
+			
+			// hold everything except x-scaling and x-offset
+			FuncFit/Q/H="11001111" fitfunc_nrgctAAO hot_entropy_coef $hot_entropy_data_name /D=$hot_entropy_fit_name
+			
+			scaling_dt = (data.temps[0]/exp(hot_entropy_coef[3])) - (data.temps[0]/exp(cold_entropy_coef[3]))
+			scaling_amplitude = hot_entropy_coef[7] + cold_entropy_coef[7]
+			scaling_factor = abs(1 / scaling_dt / scaling_amplitude)
+			print "dt = " + num2str(scaling_dt)
+			print "percent T = " + num2str((data.temps[0]/exp(hot_entropy_coef[3]))/(data.temps[0]/exp(cold_entropy_coef[3])))
+			print "Amplitude = " + num2str(scaling_amplitude)
+			print "Scaling Factor = " + num2str(scaling_factor)
+			
+			
+			////////////////////////////////////////////////////////
+			///// THIRD TURN COLD TRANSITIONS INTO OCCUPATION //////
+			////////////////////////////////////////////////////////
+			occ_cold_entropy_data_name = cold_entropy_data_name + "_occ"
+			occ_cold_entropy_fit_name = cold_entropy_fit_name + "_occ"
+			
+			duplicate /o $cold_entropy_data_name $occ_cold_entropy_data_name
+			duplicate /o $cold_entropy_fit_name $occ_cold_entropy_fit_name
+			
+			// calculating occupation data
+			create_x_wave($cold_entropy_data_name)
+			wave x_wave
+			fitfunc_ct_to_occ(cold_entropy_coef, $occ_cold_entropy_data_name, x_wave)
+			
+			// calculating occupation fit
+			create_x_wave($occ_fit_name)
+			wave x_wave
+			fitfunc_nrgocc(cold_entropy_coef, $occ_cold_entropy_fit_name)	
+			
+			
+			////////////////////////////////////////////////////////////////////
+			///// FOURTH FIT ENTROPY USING FIT PARAMS FROM COLD TRANSITION /////
+			////////////////////////////////////////////////////////////////////
 			entropy_base_name = "dat" +  stringfromlist(i, fit_entropy_dats) + "_numerical_entropy_avg"
 			entropy_coef_name = "coef_" + entropy_base_name
 			
@@ -1049,34 +1112,54 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			entropy_data_name = entropy_base_name
 			entropy_fit_name = "fit_" + entropy_data_name
 			wave entropy_data = $entropy_data_name
-			///// END NEW /////
-			
-//			print StringFromList(0, stringfromlist(i, data.occ_wvlist), "_")
-//			print cs_coef
-			// fit entropy data using gamma and theta from conductance fits
-			// coef[0]: lnG/T for Tbase -- linked
+			// coef[0]: lnG/Tbase -- linked
 			// coef[1]: x-scaling -- linked
 			// coef[2]: x-offset
-			// coef[3]: ln(T/Tbase) for different waves
+			// coef[3]: ln(Tbase/T) for different waves
 			// coef[4]: const offset
 			// coef[5]: linear
 			// coef[6]: quadratic
 			// coef[7]: amplitude
-			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, V_npnts/5))
+			display $entropy_data_name
 			
-			entropy_coef[0,3] = cs_coef[p]; wavestats /q entropy_data; entropy_coef[4]=entropy_y_offset;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=wavemax($entropy_data_name);
-			duplicate /o $cs_fit_name $entropy_fit_name
+			smooth 300, entropy_data
+			
+			wavestats /q entropy_data;
+			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, V_npnts/4))
+			
+			entropy_data -= entropy_y_offset
+			entropy_data[] = entropy_data[p]/wavemax(entropy_data)
+			
+			entropy_coef[0,3] = cold_entropy_coef[p]; entropy_coef[4]=0;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=1;
+			duplicate /o $cold_entropy_fit_name $entropy_fit_name
 			wave entropy_fit = $entropy_fit_name
 			
 //			create_x_wave($cs_fit_name)
 //			wave x_wave
 			
-			Interpolate2/T=1/E=2/Y=entropy_fit/I=3 entropy_data //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+//			Interpolate2/T=1/E=2/Y=entropy_fit/I=3 entropy_data //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
 
 //			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO entropy_coef entropy_fit /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
+			FuncFit/Q/H="11111110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 		
-		
+			/////////////////////////////////////////////
+			///// FIFTH INTEGRATE ENTROPY AND SCALE /////
+			/////////////////////////////////////////////
+			
+			int_entropy_data_name = entropy_data_name + "_int"
+			int_entropy_fit_name = entropy_fit_name + "_int"
+			
+			duplicate /o $entropy_data_name $int_entropy_data_name
+			duplicate /o $entropy_fit_name $int_entropy_fit_name
+			
+			Integrate  $entropy_data_name /D = $int_entropy_data_name
+			Integrate  $entropy_fit_name /D = $int_entropy_fit_name
+			
+			wave int_entropy_data_wave = $int_entropy_data_name
+			int_entropy_data_wave *= scaling_factor
+			
+			wave int_entropy_fit_wave = $int_entropy_fit_name
+			int_entropy_fit_wave *= scaling_factor
 		endif
 	endfor
 	

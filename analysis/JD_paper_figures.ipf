@@ -271,7 +271,9 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "mid"
 //	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"
 
+//	global_temps = "10;90;275;400"
 	global_temps = "22.5;90;275;400"
+
 //	global_temps = "22.5;275;400"
 	variable num_points_in_entropy = 68
 	variable divide_all_data = 1
@@ -322,6 +324,7 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	string trans_avg, trans_avg_fit
 	string occ_avg, occ_avg_fit
 	string entropy_avg, entropy_avg_fit
+	string int_entropy_avg, int_entropy_avg_fit
 	
 	string colour, e_temp
 	variable red, green, blue
@@ -330,17 +333,25 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	
 	string legend_text = ""
 	variable  datnum
-	for (i=0;i<num_global_datnums;i+=1)
-		datnum = str2num(stringfromlist(i, global_datnums))
+//	for (i=0;i<num_global_datnums;i+=1)
+//		datnum = str2num(stringfromlist(i, global_datnums))
+	for (i=0;i<1;i+=1)
+		datnum = str2num(stringfromlist(i, entropy_datnums))
+
 		e_temp = stringfromlist(i, global_temps)
 		
 		// defining transition, occupation and entropy, data and fit names
+//		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
+//		trans_avg_fit = "GFit_" + trans_avg
+//		
+//		occ_avg = trans_avg + "_occ"
+//		occ_avg_fit = "GFit_" + occ_avg
+//		
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
-		trans_avg_fit = "GFit_" + trans_avg
+		trans_avg_fit = "fit_" + trans_avg
 		
 		occ_avg = trans_avg + "_occ"
-		occ_avg_fit = "GFit_" + occ_avg
-		
+		occ_avg_fit = "fit_" + occ_avg
 		
 		legend_text = legend_text + "\\s(" + trans_avg_fit +  "_figc) " +  e_temp + "mK\r"
 		
@@ -369,7 +380,7 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 			wave entropy_avg_data_wave = $entropy_avg_data_wave_name 
 			wave entropy_avg_fit_wave = $entropy_avg_fit_wave_name 
 			
-			smooth 600, $entropy_avg_data_wave_name
+//			smooth 600, $entropy_avg_data_wave_name
 			
 			SetScale/I x pnt2x(entropy_avg_data_wave, 0)/200, pnt2x(entropy_avg_data_wave, dimsize(entropy_avg_data_wave, 0) - 1)/200, entropy_avg_data_wave // setting scale in real gate units (P*200)
 			SetScale/I x pnt2x(entropy_avg_fit_wave, 0)/200, pnt2x(entropy_avg_fit_wave, dimsize(entropy_avg_fit_wave, 0) - 1)/200, entropy_avg_fit_wave  
@@ -377,6 +388,26 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 			AppendToGraph /W=figure_entropy_occupation  /R, $entropy_avg_data_wave_name;  AppendToGraph /W=figure_entropy_occupation /R, $entropy_avg_fit_wave_name;
 			ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_data_wave_name)=2, lsize($entropy_avg_data_wave_name)=1, rgb($entropy_avg_data_wave_name)=(red,green,blue)
 			ModifyGraph /W=figure_entropy_occupation  mode($entropy_avg_fit_wave_name)=0, lsize($entropy_avg_fit_wave_name)=2, rgb($entropy_avg_fit_wave_name)=(red,green,blue)
+			
+			
+			
+			////// calculating for integrated entropy dS /////
+			int_entropy_avg = entropy_avg + "_int"
+			int_entropy_avg_fit = entropy_avg_fit + "_int"
+			
+			string int_entropy_avg_data_wave_name = int_entropy_avg + "_figc"
+			string int_entropy_avg_fit_wave_name = int_entropy_avg_fit + "_figc"
+				
+			duplicate/o $int_entropy_avg $int_entropy_avg_data_wave_name
+			duplicate/o $int_entropy_avg_fit $int_entropy_avg_fit_wave_name
+			
+			wave int_entropy_avg_data_wave = $int_entropy_avg_data_wave_name 
+			wave int_entropy_avg_fit_wave = $int_entropy_avg_fit_wave_name 
+			
+//			smooth 600, $int_entropy_avg_data_wave_name
+			
+			SetScale/I x pnt2x(int_entropy_avg_data_wave, 0)/200, pnt2x(int_entropy_avg_data_wave, dimsize(int_entropy_avg_data_wave, 0) - 1)/200, int_entropy_avg_data_wave // setting scale in real gate units (P*200)
+			SetScale/I x pnt2x(int_entropy_avg_fit_wave, 0)/200, pnt2x(int_entropy_avg_fit_wave, dimsize(int_entropy_avg_fit_wave, 0) - 1)/200, int_entropy_avg_fit_wave  
 		endif
 		
 		
@@ -481,7 +512,8 @@ function make_figure_entropy_shift([variable baset])
 	
 	// newleverarm
 	string entropy_datnums = "1281;1282;1283;1284"
-	string occupation_datnums = "1285;1286;1287;1288"
+	string occupation_datnums = "1281;1282;1283;1284"
+//	string occupation_datnums = "1285;1286;1287;1288"
 //	string scale_y_amplitudes = "0.0001;0.05;1;1"
 	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
 //	string low_gamma_datnumn = "1282"
@@ -494,18 +526,24 @@ function make_figure_entropy_shift([variable baset])
 	string base_name_data_y = "_numerical_entropy_avg_figc"
 	string base_name_data_x = "_cs_cleaned_avg_occ_figc"
 	
+	string base_name_int_data_y = "_numerical_entropy_avg_int_figc"
+	
 	////// NRG names /////
 	string base_name_fit_y = "_numerical_entropy_avg_figc"
 	string base_name_fit_x = "_cs_cleaned_avg_occ_figc"
 	
+	string base_name_int_fit_y = "_numerical_entropy_avg_int_figc"
 
 	
 	string data_y, data_x, fit_y, fit_x, data_y_shift, fit_y_shift, data_y_interp, datnum, marker_size
+	string int_data_y, int_data_y_shift, int_data_y_interp, int_fit_y, int_fit_y_shift
 	
 	closeallGraphs()
 	
 	Display; KillWindow /Z figure_entropy_shift; DoWindow/C/O figure_entropy_shift
-	Display; KillWindow /Z figure_entropy_occupation; DoWindow/C/O figure_entropy_occupation
+	Display; KillWindow /Z figure_int_entropy_shift; DoWindow/C/O figure_int_entropy_shift
+
+//	Display; KillWindow /Z figure_entropy_occupation; DoWindow/C/O figure_entropy_occupation
 	
 	string colour, e_temp
 	variable red, green, blue
@@ -530,6 +568,8 @@ function make_figure_entropy_shift([variable baset])
 		entropy_datnum = stringfromlist(i, entropy_datnums)
 		occupation_datnum = stringfromlist(i, occupation_datnums)
 		
+		
+		// dndt wavenames 
 		data_y = "dat" + entropy_datnum + base_name_data_y
 		data_y_shift = data_y + "_shift"
 		data_y_interp = data_y + "_interp"
@@ -537,49 +577,99 @@ function make_figure_entropy_shift([variable baset])
 		
 		fit_y = "fit_dat" + entropy_datnum + base_name_fit_y
 		fit_y_shift = fit_y + "_shift"
-		fit_x = "GFit_dat" + occupation_datnum + base_name_fit_x
+		fit_x = "fit_dat" + occupation_datnum + base_name_fit_x
+		
+		// integrated wavenames
+		int_data_y = "dat" + entropy_datnum + base_name_int_data_y
+		int_data_y_shift = int_data_y + "_shift"
+		int_data_y_interp = int_data_y + "_interp"
+//		data_x = "dat" + occupation_datnum + base_name_data_x
+		
+		int_fit_y = "fit_dat" + entropy_datnum + base_name_int_fit_y
+		int_fit_y_shift = int_fit_y + "_shift"
+//		fit_x = "fit_dat" + occupation_datnum + base_name_fit_x
+		
 		marker_size = data_y + "_marker_size"
 		
 		create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
 		
-		
+		////////////////////
 		///// figure 1 /////
+		////////////////////
 		// shift and add data
 		duplicate /o $data_y $data_y_shift
-		wavestats /q $data_y_shift
-		scale_y_offset = mean($data_y_shift, pnt2x($data_y_shift, 0), pnt2x($data_y_shift, V_npnts/4))
-		wave dat_y_shift_wave = $data_y_shift
-		dat_y_shift_wave[] = dat_y_shift_wave[p] - scale_y_offset
+//		wavestats /q $data_y_shift
+//		scale_y_offset = mean($data_y_shift, pnt2x($data_y_shift, 0), pnt2x($data_y_shift, V_npnts/4))
+//		wave dat_y_shift_wave = $data_y_shift
+//		dat_y_shift_wave[] = dat_y_shift_wave[p] - scale_y_offset
 		
-		scale_y_multiplier = 1/(wavemax($data_y_shift))
+//		scale_y_multiplier = 1/(wavemax($data_y_shift))
 		translate_wave_by_occupation($data_y_shift, $data_x) 
 		AppendToGraph /W= figure_entropy_shift $data_y_shift; 
 		ModifyGraph /W= figure_entropy_shift mode($data_y_shift)=3, marker($data_y_shift)=41, lsize($data_y_shift)=2, zmrkSize($data_y_shift)={$marker_size,*,*,0.01,4}, rgb($data_y_shift)=(red,green,blue)
 //		ModifyGraph /W= figure_entropy_shift muloffset($data_y_shift)={0, scale_y_offset}
-		ModifyGraph /W= figure_entropy_shift muloffset($data_y_shift)={0, scale_y_multiplier}
+//		ModifyGraph /W= figure_entropy_shift muloffset($data_y_shift)={0, scale_y_multiplier}
 		
 		// shift and add fit
 		duplicate /o $fit_y $fit_y_shift
 		
-		wave fit_y_shift_wave = $fit_y_shift
-		fit_y_shift_wave[] = fit_y_shift_wave[p] - scale_y_offset
+//		wave fit_y_shift_wave = $fit_y_shift
+//		fit_y_shift_wave[] = fit_y_shift_wave[p] - scale_y_offset
 		translate_wave_by_occupation($fit_y_shift, $fit_x)
 		AppendToGraph /W= figure_entropy_shift $fit_y_shift;
 		ModifyGraph /W= figure_entropy_shift mode($fit_y_shift)=0, lsize($fit_y_shift)=2, rgb($fit_y_shift)=(red,green,blue)
 //		ModifyGraph /W= figure_entropy_shift muloffset($fit_y_shift)={0, scale_y_offset}
-		ModifyGraph /W= figure_entropy_shift muloffset($fit_y_shift)={0, scale_y_multiplier}
+//		ModifyGraph /W= figure_entropy_shift muloffset($fit_y_shift)={0, scale_y_multiplier}
 	
+	
+	
+		////////////////////
 //		///// figure 2 /////
-//		// append to entropy vs occupation
-		duplicate /o $data_x $data_y_interp
-//		wave data_y_interp_wave = $data_y_interp
-		Interpolate2/T=1/E=2/Y=$data_y_interp/I=3 $data_y //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
-
-		AppendToGraph /W= figure_entropy_occupation $data_y_interp vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-		ModifyGraph /W= figure_entropy_occupation mode($data_y_interp)=3, marker($data_y_interp)=41, lsize($data_y_interp)=2, zmrkSize($data_y_interp)={$marker_size,*,*,0.01,4}, rgb($data_y_interp)=(red,green,blue)
-//	
-		AppendToGraph /W= figure_entropy_occupation $fit_y vs $fit_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-		ModifyGraph /W= figure_entropy_occupation mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(red,green,blue)
+		////////////////////
+////		// append to entropy vs occupation
+//		duplicate /o $data_x $data_y_interp
+////		wave data_y_interp_wave = $data_y_interp
+//		Interpolate2/T=1/E=2/Y=$data_y_interp/I=3 $data_y //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+//
+//		AppendToGraph /W= figure_entropy_occupation $data_y_interp vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+//		ModifyGraph /W= figure_entropy_occupation mode($data_y_interp)=3, marker($data_y_interp)=41, lsize($data_y_interp)=2, zmrkSize($data_y_interp)={$marker_size,*,*,0.01,4}, rgb($data_y_interp)=(red,green,blue)
+////	
+//		AppendToGraph /W= figure_entropy_occupation $fit_y vs $fit_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
+//		ModifyGraph /W= figure_entropy_occupation mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(red,green,blue)
+		
+		
+		
+		///////////////////////////////
+//		///// integrated figure 1 /////
+		///////////////////////////////
+		// shift and add data
+		duplicate /o $int_data_y $int_data_y_shift
+//		wavestats /q $int_data_y_shift
+//		scale_y_offset = mean($int_data_y_shift, pnt2x($int_data_y_shift, 0), pnt2x($int_data_y_shift, V_npnts/4))
+//		wave dat_y_shift_wave = $data_y_shift
+//		dat_y_shift_wave[] = dat_y_shift_wave[p] - scale_y_offset
+		
+//		scale_y_multiplier = 1/(wavemax($data_y_shift))
+		translate_wave_by_occupation($int_data_y_shift, $data_x) 
+		AppendToGraph /W= figure_int_entropy_shift $int_data_y_shift; 
+		ModifyGraph /W= figure_int_entropy_shift mode($int_data_y_shift)=3, marker($int_data_y_shift)=41, lsize($int_data_y_shift)=2, zmrkSize($int_data_y_shift)={$marker_size,*,*,0.01,4}, rgb($int_data_y_shift)=(red,green,blue)
+//		ModifyGraph /W= figure_entropy_shift muloffset($data_y_shift)={0, scale_y_offset}
+//		ModifyGraph /W= figure_entropy_shift muloffset($data_y_shift)={0, scale_y_multiplier}
+		
+		// shift and add fit
+		duplicate /o $int_fit_y $int_fit_y_shift
+		
+//		wave int_fit_y_shift_wave = $int_fit_y_shift
+//		fit_y_shift_wave[] = fit_y_shift_wave[p] - scale_y_offset
+		translate_wave_by_occupation($int_fit_y_shift, $fit_x)
+		AppendToGraph /W= figure_int_entropy_shift $int_fit_y_shift;
+		ModifyGraph /W= figure_int_entropy_shift mode($int_fit_y_shift)=0, lsize($int_fit_y_shift)=2, rgb($int_fit_y_shift)=(red,green,blue)
+//		ModifyGraph /W= figure_entropy_shift muloffset($fit_y_shift)={0, scale_y_offset}
+//		ModifyGraph /W= figure_entropy_shift muloffset($fit_y_shift)={0, scale_y_multiplier}
+	
+		
+		
+		
 		
 		legend_string = legend_string + "\\s(dat" + entropy_datnum + "_numerical_entropy_avg_figc_shift) Γ/T = " + stringfromlist(i, entropy_couplings) + "\r"
 	endfor
