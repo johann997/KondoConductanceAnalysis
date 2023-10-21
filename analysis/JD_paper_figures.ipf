@@ -269,7 +269,11 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "mid"
-//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"
+//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 100uV bias
+//	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
+//	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
+//	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
+
 
 //	global_temps = "10;90;275;400"
 	global_temps = "22.5;90;275;400"
@@ -510,15 +514,19 @@ function make_figure_entropy_shift([variable baset])
 //	string mid_gamma_datnumn = "1234"
 //	string high_gamma_datnumn = "1235"
 	
-	// newleverarm
-	string entropy_datnums = "1281;1282;1283;1284"
-	string occupation_datnums = "1281;1282;1283;1284"
-//	string occupation_datnums = "1285;1286;1287;1288"
-//	string scale_y_amplitudes = "0.0001;0.05;1;1"
-	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
-//	string low_gamma_datnumn = "1282"
-//	string mid_gamma_datnumn = "1283"
-//	string high_gamma_datnumn = "1284"
+	// big entropy dataset
+//	string entropy_datnums = "1281;1282;1283;1284"
+//	string occupation_datnums = "1281;1282;1283;1284"
+//	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
+	string entropy_datnums = "1281;1282;1283"
+	string occupation_datnums = "1281;1282;1283"
+	string entropy_couplings = "weak;mid-weak;mid-strong"
+	
+	// varying the CS bias
+//	string entropy_datnums = "1372;1284;1373"
+//	string occupation_datnums = "1372;1284;1373"
+//	string entropy_couplings = "50uV;100uV;250uV;500uV"
+
 	
 
 	
@@ -682,144 +690,6 @@ function make_figure_entropy_shift([variable baset])
 	
 	ModifyGraph /W= figure_entropy_shift mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked
 
-	
-	//////////////////////
-	///// FIGURE D.A /////
-	//////////////////////
-	
-	////////////////////////////////////////////////////////////////////////
-	////////////////////// low gamma ///////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-////	figure_C_separate(baset = baset,  gamma_type = "low_mid") // dat 6081
-//	datnum = low_gamma_datnumn
-//	
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_y_shift = data_y + "_shift"
-//	data_x = "dat" + datnum + base_name_data_x
-//	
-//	fit_y = "fit_dat" + datnum + base_name_fit_y
-//	fit_y_shift = fit_y + "_shift"
-//	fit_x = "GFit_dat" + datnum + base_name_fit_x
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
-//	
-//	///// figure 1 /////
-//	// shift and add data
-//	duplicate /o $data_y $data_y_shift
-//	translate_wave_by_occupation($data_y_shift, $data_x) 
-//	AppendToGraph /W= figure_entropy_shift $data_y_shift; 
-//	ModifyGraph /W= figure_entropy_shift mode($data_y_shift)=3, marker($data_y_shift)=41, lsize($data_y_shift)=2, zmrkSize($data_y_shift)={$marker_size,*,*,0.01,4}, rgb($data_y_shift)=(186*257,0,8*257)//(94*257,135*257,93*257)
-//
-//	// shift and add fit
-//	duplicate /o $fit_y $fit_y_shift
-//	translate_wave_by_occupation($fit_y_shift, $fit_x)
-//	AppendToGraph /W= figure_entropy_shift $fit_y_shift;
-//	ModifyGraph /W= figure_entropy_shift mode($fit_y_shift)=0, lsize($fit_y_shift)=2, rgb($fit_y_shift)=(186*257,0,8*257) //(94*257,135*257,93*257)
-//
-//
-//	///// figure 2 /////
-//	// append to entropy vs occupation
-//	AppendToGraph /W= figure_entropy_occupation $data_y vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-//	ModifyGraph /W= figure_entropy_occupation mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(186*257,0,8*257)//(94*257,135*257,93*257)
-//
-//	AppendToGraph /W= figure_entropy_occupation $fit_y vs $fit_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-//	ModifyGraph /W= figure_entropy_occupation mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0,8*257)//(94*257,135*257,93*257)
-
-	////////////////////////////////////////////////////////////////////////
-//	////////////////////////// mid gamma ///////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-////	figure_C_separate(baset = baset,  gamma_type = "high_mid") // dat 6080
-//	datnum = mid_gamma_datnumn
-//		
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_y_shift = data_y + "_shift"
-//	data_x = "dat" + datnum + base_name_data_x
-//	
-//	fit_y = "fit_dat" + datnum + base_name_fit_y
-//	fit_y_shift = fit_y + "_shift"
-//	fit_x = "GFit_dat" + datnum + base_name_fit_x
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
-//	
-//	///// figure 1 /////
-//	// shift and add data
-//	duplicate /o $data_y $data_y_shift
-//	translate_wave_by_occupation($data_y_shift, $data_x) 
-//	AppendToGraph /W= figure_entropy_shift $data_y_shift; 
-//	ModifyGraph /W= figure_entropy_shift mode($data_y_shift)=3, marker($data_y_shift)=41, lsize($data_y_shift)=2, zmrkSize($data_y_shift)={$marker_size,*,*,0.01,4}, rgb($data_y_shift)=(205*257,132*257,48*257)//(94*257,135*257,93*257)
-//
-//	// shift and add fit
-//	duplicate /o $fit_y $fit_y_shift
-//	translate_wave_by_occupation($fit_y_shift, $fit_x)
-//	AppendToGraph /W= figure_entropy_shift $fit_y_shift;
-//	ModifyGraph /W= figure_entropy_shift mode($fit_y_shift)=0, lsize($fit_y_shift)=2, rgb($fit_y_shift)=(205*257,132*257,48*257) //(94*257,135*257,93*257)
-//
-//
-//	///// figure 2 /////
-//	// append to entropy vs occupation
-//	AppendToGraph /W= figure_entropy_occupation $data_y vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-//	ModifyGraph /W= figure_entropy_occupation mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(205*257,132*257,48*257)//(94*257,135*257,93*257)
-//
-//	AppendToGraph /W= figure_entropy_occupation $fit_y vs $fit_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-//	ModifyGraph /W= figure_entropy_occupation mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(205*257,132*257,48*257)//(94*257,135*257,93*257)
-
-//	
-//	////////////////////////////////////////////////////////////////////////
-//	///////////////////////// high gamma ///////////////////////////////////
-//	////////////////////////////////////////////////////////////////////////
-////	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
-//	datnum = high_gamma_datnumn
-//	
-//	
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_y_shift = data_y + "_shift"
-//	data_x = "dat" + datnum + base_name_data_x
-//	
-//	fit_y = "fit_dat" + datnum + base_name_fit_y
-//	fit_y_shift = fit_y + "_shift"
-//	fit_x = "GFit_dat" + datnum + base_name_fit_x
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
-//	
-//	///// figure 1 /////
-//	// shift and add data
-//	duplicate /o $data_y $data_y_shift
-//	translate_wave_by_occupation($data_y_shift, $data_x) 
-//	AppendToGraph /W= figure_entropy_shift $data_y_shift; 
-//	ModifyGraph /W= figure_entropy_shift mode($data_y_shift)=3, marker($data_y_shift)=41, lsize($data_y_shift)=2, zmrkSize($data_y_shift)={$marker_size,*,*,0.01,4}, rgb($data_y_shift)=(58*257,107*257,134*257)//(94*257,135*257,93*257)
-//
-//	// shift and add fit
-//	duplicate /o $fit_y $fit_y_shift
-//	translate_wave_by_occupation($fit_y_shift, $fit_x)
-//	AppendToGraph /W= figure_entropy_shift $fit_y_shift;
-//	ModifyGraph /W= figure_entropy_shift mode($fit_y_shift)=0, lsize($fit_y_shift)=2, rgb($fit_y_shift)=(58*257,107*257,134*257) //(94*257,135*257,93*257)
-//
-//
-//	///// figure 2 /////
-//	// append to entropy vs occupation
-//	AppendToGraph /W= figure_entropy_occupation $data_y vs $data_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-//	ModifyGraph /W= figure_entropy_occupation mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(58*257,107*257,134*257)//(94*257,135*257,93*257)
-//
-//	AppendToGraph /W= figure_entropy_occupation $fit_y vs $fit_x; //AppendToGraph /W= figure_entropy_shift /r $data_x 
-//	ModifyGraph /W= figure_entropy_occupation mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(58*257,107*257,134*257)//(94*257,135*257,93*257)
-
-
-	////////////////////////////////////////////////////////////////////////
-	///////////////// figure final touches /////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-//	SetAxis /W= figure_entropy_shift bottom -2, 5
-//	SetAxis /W= figure_entropy_shift right 0, 1
-	
-//	closeallGraphs(no_close_graphs="figure_entropy_shift;figure_entropy_occupation")
-//	
-//
-//	Legend /W= figure_entropy_shift/C/N=text0/A=RT/X=63.49/Y=5.56/J "\\s(dat" + low_gamma_datnumn + "_numerical_entropy_avg_figc_shift) Γ/T = low\r\\s(dat" + mid_gamma_datnumn + "_numerical_entropy_avg_figc_shift) Γ/T = mid\r\\s(dat" + high_gamma_datnumn + "_numerical_entropy_avg_figc_shift) Γ/T = high"
-//
-//	
-//	ModifyGraph /W= figure_entropy_shift mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked
 
 end
 

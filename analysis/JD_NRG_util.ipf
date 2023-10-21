@@ -531,6 +531,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		links={1,1,0,0,0}
 		numlinks = sum(links)
 	else 
+	// CHANGE
 		GFin.fitfuncs[0] = "fitfunc_nrgctAAO"
 		// coef[0]: lnG/T for Tbase -- linked
 		// coef[1]: x-scaling -- linked
@@ -545,6 +546,21 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		links={1,1,0,0,0,0,0,0}
 //		links={1,1,0,0,0,0,0,0}
 		numlinks = sum(links)
+		
+//		GFin.fitfuncs[0] = "fitfunc_nrgctAAO_tbasevary"
+//		// coef[0]: Tbase --linked
+//		// coef[1]: x-scaling -- linked
+//		// coef[2]: x-offset
+//		// coef[3]: gamma -- linked
+//		// coef[4]: const offset
+//		// coef[5]: linear
+//		// coef[6]: quadratic
+//		// coef[7]: amplitude
+//		// coef[8]: Tmeasure
+//		numcoefs = 9
+//		make /o/n=(numcoefs) links
+//		links={1,1,0,1,0,0,0,0,0}
+//		numlinks = sum(links)
 	endif
 	
 
@@ -613,6 +629,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			whichcoef += 1
 		endif
 	endfor
+//	preplinks[0][numcoefs - 1] = 0 // CHANGE link Tmeasure to Tbase for base T wave
 	numunlinked = numwvs * (numcoefs - numlinks)
 	for(i=0; i<numwvs; i++)
 		for(j=0; j<numcoefs; j++)
@@ -622,68 +639,109 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			endif
 		endfor
 	endfor
+	
 	// columns 4 through numcoefs+3 in 'linking' are the values from prelinks
-	GFin.linking[][4, (numcoefs+3)] = preplinks[p][q-4]
+	GFin.linking[][4, (numcoefs + 3)] = preplinks[p][q-4]
 		
 		
 	////////////////////////////////////////////////
 	///// ADDING INITIAL GUESS OF COEFFICIENTS /////
 	////////////////////////////////////////////////
-	make /o/n=(whichcoef,2) coefwave
+	make /o/n=((whichcoef), 2) coefwave // since we are holding the extra base temp || REMOVE
 	SetDimLabel 1, 1, Hold, coefwave
 	wave GFin.coefwave
 	coefwave = 0
 	// For fitfunc_nrgcondAAO with N input waves these are:
 	if (cmpstr(gamma_over_temp_type, "high") == 0)
-		coefwave[0][0] = 3 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.2 // 0.01 // x scaling (linked)
+		coefwave[0][0] = 3.4 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.15 // 0.01 // x scaling (linked)
+//		coefwave[0][0] = data.temps[0] //  Tbase (linked)
+//		coefwave[1][0] = 0.2  // x scaling (linked)
+//		coefwave[2][0] = 1e12  // gamma (linked)
 		if (global_fit_conductance == 1)
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 //1e-5 // linear
 		endif
 	elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
-		coefwave[0][0] = 1.0 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.2 // 0.02 // x scaling (linked)
+		coefwave[0][0] = 1 // lnG/T for Tbase (linked)
+		coefwave[1][0] = 0.16 // 0.02 // x scaling (linked)
+//		coefwave[0][0] = data.temps[0] //  Tbase (linked)
+//		coefwave[1][0] = 0.2  // x scaling (linked)
+//		coefwave[2][0] = 1e5  // gamma (linked)
 		if (global_fit_conductance == 1)
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 //1e-6 // linear
 		endif
 	elseif (cmpstr(gamma_over_temp_type, "low") == 0)
-		coefwave[0][0] = 1E-6 // lnG/T for Tbase (linked)
-		coefwave[1][0] = 0.2 // 0.02 // x scaling (linked)
+		coefwave[0][0] = 1e-3 // lnG/Tbase (linked)
+		coefwave[1][0] = 0.16 // 0.02 // x scaling (linked)
+//		coefwave[0][0] = data.temps[0] //  Tbase (linked)
+//		coefwave[1][0] = 0.2  // x scaling (linked)
+//		coefwave[2][0] = 10  // gamma (linked)
 		if (global_fit_conductance == 1)
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 //1e-5 // linear
 		endif
 	endif
 	
+	// Set index 1 == 1 to hold the value  
 	for(i=0; i<numwvs; i++)
 		coefwave[2 + i*(numcoefs-numlinks)][0] = 0 // x offset
-		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
-		coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnG/T offsets
+		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnTbase/T offest for various T's
+		coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnTbase/T offsets
+		
 		if (global_fit_conductance == 1)
 			coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 		else
 			coefwave[4 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
 			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
+			coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // 1e-6 // linear
 			coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
-			coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0]))) // amplitude
+			coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // quadratic
+			coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/2 // amplitude
+			
 		endif
 	endfor
-	
-	
+//
+//
+//	coefwave[3][0] = 0 // x offset
+//	coefwave[4][0] = mean($(GFin.fitdata[0][0])) // y offset
+//	coefwave[5][0] = 0 // 1e-6 // linear
+//	coefwave[6][0] = 0 // quadtratic
+//	coefwave[7][0] = -(wavemax($(GFin.fitdata[0][0])) - wavemin($(GFin.fitdata[0][0])))/2 // amplitude
+//
+//	// Usesd for tbase vary  
+//	for(i=1; i<numwvs; i++)
+//		coefwave[2 + i*(numcoefs-numlinks)][0] = 0 // x offset
+////		coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnG/T offest for various T's
+////		coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnG/T offsets
+//		if (global_fit_conductance == 1)
+////			coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
+//		else
+//			coefwave[3 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
+//			coefwave[4 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
+//			coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
+//			coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // quadtratic
+//			coefwave[6 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/2 // amplitude
+//			coefwave[7 + i*(numcoefs-numlinks)][0] = data.temps[i] // measure T
+//			coefwave[7 + i*(numcoefs-numlinks)][1] = 1 // hold the measured T
+//		endif
+//	endfor
+//		
 	//////////////////////////////
-	///// ADDING CONSTRAINTS /////
-	//////////////////////////////
-	if (global_fit_conductance == 1)
-		make /t/o/n=2 constraintwave
-		wave /t GFin.constraintwave
-		GFin.constraintwave[0] = "K0<4"
-		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
-	else
-		make /t/o/n=2 constraintwave
-		wave /t GFin.constraintwave
-		GFin.constraintwave[0] = "K0<4"
-		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
+////	///// ADDING CONSTRAINTS /////
+////	//////////////////////////////
+//	if (global_fit_conductance == 1)
+//		make /t/o/n=2 constraintwave
+//		wave /t GFin.constraintwave
+//		GFin.constraintwave[0] = "K0<4"
 //		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
-	endif
+//	else
+//		make /t/o/n=2 constraintwave
+//		wave /t GFin.constraintwave
+//		GFin.constraintwave[0] = "K0<4"
+//		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
+////		GFin.constraintwave[1] = "K0>1" // OLD JOSH LINE
+////		GFin.constraintwave[0] = "K0<30"
+////		GFin.constraintwave[1] = "K0>10" // OLD JOSH LINE
+//	endif
 end
 
 
@@ -825,6 +883,8 @@ function info_mask_waves(datnum, [global_fit_conductance])
 	elseif (cmpstr(datnum, "6091") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "1285") == 0)
+//		cs_min_val = -1000; cs_max_val = 313
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
@@ -910,8 +970,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	for (i=0; i<num_temps; i++)
 		data.temps[i]=str2num(stringfromlist(i, global_temps))
 	endfor
-//	wave data.temps
-//	data.temps={baset, 275, 500}  // change to number of temps
 	
 	strnm = runlabel + "temps"
 	duplicate /o data.temps $strnm
@@ -941,7 +999,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	/////// Perform global fit /////
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 
-	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ",exp(GFin.CoefWave[0][0])
+//	print "Base T = ",(GFin.CoefWave[0][0]),"mK :: Gamma/T = ", (GFin.CoefWave[3][0])/(GFin.CoefWave[0][0])
+	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ", (exp(GFin.CoefWave[0][0]))
+
 	variable /g GF_chisq
 //	print "Chisqr on conductance fit is",GF_chisq
 	cond_chisq = GF_chisq
@@ -1121,14 +1181,16 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			// coef[6]: quadratic
 			// coef[7]: amplitude
 			display $entropy_data_name
+			 
+			smooth 200, entropy_data
 			
-			smooth 300, entropy_data
 			
-			wavestats /q entropy_data;
-			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, V_npnts/4))
+//			wavestats /q entropy_data;
+			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, dimsize(entropy_data, 0)/4))
 			
 			entropy_data -= entropy_y_offset
-			entropy_data[] = entropy_data[p]/wavemax(entropy_data)
+			variable  entropy_y_mul = wavemax(entropy_data,  pnt2x(entropy_data, 9*dimsize(entropy_data, 0)/20), pnt2x(entropy_data, 19*dimsize(entropy_data, 0)/20))
+			entropy_data /= entropy_y_mul
 			
 			entropy_coef[0,3] = cold_entropy_coef[p]; entropy_coef[4]=0;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=1;
 			duplicate /o $cold_entropy_fit_name $entropy_fit_name
@@ -1142,6 +1204,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
 			FuncFit/Q/H="11111110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 		
+//			entropy_y_mul = wavemax(entropy_fit,  pnt2x(entropy_fit, 9*dimsize(entropy_fit, 0)/20), pnt2x(entropy_fit, 19*dimsize(entropy_fit, 0)/20))
+//			entropy_fit /= entropy_y_mul
 			/////////////////////////////////////////////
 			///// FIFTH INTEGRATE ENTROPY AND SCALE /////
 			/////////////////////////////////////////////
@@ -1322,6 +1386,25 @@ Function fitfunc_nrgctAAO(pw, yw, xw) : FitFunc
 	
 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
 end
+
+
+
+Function fitfunc_nrgctAAO_tbasevary(pw, yw, xw) : FitFunc
+	WAVE pw, yw, xw
+	wave nrg = occ_nrg
+	// coef[0]: Tbase --linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: gamma -- linked
+	// coef[4]: const offset
+	// coef[5]: linear
+	// coef[6]: quadratic
+	// coef[7]: amplitude
+	// coef[8]: Tmeasure
+	
+	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (ln(pw[3]/pw[0]) + ln(pw[0]/pw[8]))) + pw[4] + pw[5]*xw + pw[6]*xw^2
+end
+
 
 
 Function fitfunc_nrgocc(pw, yw) : FitFunc
