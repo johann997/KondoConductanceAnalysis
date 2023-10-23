@@ -266,10 +266,10 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	
 	
 	///// THINGS TO CHANGE /////
-	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"
+//	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
-//	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "mid"
-//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 100uV bias
+//	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "mid"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
+	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
 //	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
 //	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
 //	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
@@ -299,13 +299,28 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 		wave ct_wave = $ct_wavename
 		ct_wave[][] = ct_wave[p][q]/divide_all_data
 //		resampleWave($ct_wavename, 600)
+		string avg_ct_name = "dat" + ct_datnum + "_cs_cleaned_avg"
 		
 		if (centre_transition_repeats == 1)
 			closeallGraphs(); master_ct_clean_average($ct_wavename, 1, 0, "dat")
 		else
 			avg_wav($ct_wavename)
-			duplicate /o $(ct_wavename + "_avg") $("dat" + ct_datnum + "_cs_cleaned_avg")
+			duplicate /o $(ct_wavename + "_avg") $(avg_ct_name)
 		endif
+		
+		
+		// removing the first data point and re-scalign the x-axis as 'delepoints' does not hold same x-axis
+		variable num_points_to_delete = 1
+		wave avg_ct_wave = $avg_ct_name
+		create_x_wave(avg_ct_wave)
+		wave x_wave
+		
+		variable start_x = x_wave[num_points_to_delete]
+		variable num_x = dimsize(avg_ct_wave, 0) - 1
+		variable fin_x = x_wave[num_x]
+		
+		DeletePoints  0, num_points_to_delete, $avg_ct_name
+		setscale /I x start_x, fin_x, $avg_ct_name
 	endfor
 	
 	///// PROCESS ENTROPY DATA /////
@@ -515,16 +530,16 @@ function make_figure_entropy_shift([variable baset])
 //	string high_gamma_datnumn = "1235"
 	
 	// big entropy dataset
-//	string entropy_datnums = "1281;1282;1283;1284"
-//	string occupation_datnums = "1281;1282;1283;1284"
-//	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
-	string entropy_datnums = "1281;1282;1283"
-	string occupation_datnums = "1281;1282;1283"
-	string entropy_couplings = "weak;mid-weak;mid-strong"
+	string entropy_datnums = "1281;1282;1283;1284"
+	string occupation_datnums = "1281;1282;1283;1284"
+	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
+//	string entropy_datnums = "1281;1282;1283"
+//	string occupation_datnums = "1281;1282;1283"
+//	string entropy_couplings = "weak;mid-weak;mid-strong"
 	
 	// varying the CS bias
-//	string entropy_datnums = "1372;1284;1373"
-//	string occupation_datnums = "1372;1284;1373"
+//	string entropy_datnums = "1372;1284;1373;1374"
+//	string occupation_datnums = "1372;1284;1373;1374"
 //	string entropy_couplings = "50uV;100uV;250uV;500uV"
 
 	

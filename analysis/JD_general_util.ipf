@@ -9,6 +9,19 @@
 #include <Wave Arithmetic Panel>
 
 
+Function GetFreeMemory()
+    variable freeMem
+
+#if defined(IGOR64)
+    freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
+#else
+    freeMem = NumberByKey("FREEMEM", IgorInfo(0))
+#endif
+
+    return freeMem / 1024 / 1024 / 1024
+End
+
+
 
 function center_dSdN(int wavenum, string kenner)
 	//wav is input wave, for example demod
@@ -337,6 +350,7 @@ function demodulate(datnum, harmonic, wave_kenner, [append2hdf, demod_wavename])
 	cols=dimsize(wav,0); //print cols
 	rows=dimsize(wav,1); //print rows
 	nofcycles=AWGLI.numCycles;
+//	print nofcycles
 	period=AWGLI.waveLen;
 //	print "AWG num cycles  = " + num2str(nofcycles)
 //	print "AWG wave len = " + num2str(period)
