@@ -653,19 +653,30 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		wave GFin.coefwave
 //		coefwave[0][0] = 3.4103
 //		coefwave[1][0] = 0.0048856
-		coefwave[0][0] = 3.666
-		coefwave[1][0] = 0.002848
+//		coefwave[0][0] = 3.666
+//		coefwave[1][0] = 0.002848
+
+//		coefwave[0][0] = 3.9
+//		coefwave[0][1] = 1
+////		coefwave[1][0] = 0.004
+//		coefwave[1][1] = 0
+//		coefwave[1][0] = 0.158
 		
 			// Set index 1 == 1 to hold the value  
 		for(i=0; i<numwvs; i++)
 			coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnTbase/T offsets
+//			coefwave[4 + i*(numcoefs-numlinks)][1] = 0
+//			coefwave[5 + i*(numcoefs-numlinks)][1] = 0
+//			coefwave[6 + i*(numcoefs-numlinks)][1] = 0
+//			coefwave[7 + i*(numcoefs-numlinks)][1] = 0
+
 			
 			if (global_fit_conductance == 1)
 //				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 			else
 //				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
 				coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // 1e-6 // linear
-//				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
+				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
 				coefwave[6 + i*(numcoefs-numlinks)][1] = 0 // quadratic
 //				coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/2 // amplitude
 				
@@ -679,8 +690,9 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.4 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.15 // 0.01 // x scaling (linked)
+			coefwave[0][0] = 3.2 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.004 // 0.01 // x scaling (linked)
+//			coefwave[1][1] = 1 // 0.01 // x scaling (linked)
 	//		coefwave[0][0] = data.temps[0] //  Tbase (linked)
 	//		coefwave[1][0] = 0.2  // x scaling (linked)
 	//		coefwave[2][0] = 1e12  // gamma (linked)
@@ -930,6 +942,8 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_max_val = 2873
 	elseif (cmpstr(datnum, "1300") == 0)
 		cs_max_val = 2917
+	elseif (cmpstr(datnum, "1473") == 0)
+		cs_max_val = 1496
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
@@ -1169,8 +1183,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 				cold_entropy_mask_wave = 1
 			endif
 			
-			FuncFit/Q/H="11010110" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
-			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name /M=cold_entropy_mask_wave
+			
+			FuncFit/Q/TBOX=768/H="11010110" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
+			FuncFit/Q/TBOX=768/H="11010010" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
+			FuncFit/Q/TBOX=768/H="11010000" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name /M=cold_entropy_mask_wave
 			
 			
 			//////////////////////////////////////////////////////

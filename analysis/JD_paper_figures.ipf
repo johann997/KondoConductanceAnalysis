@@ -241,60 +241,57 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	global_temps = selectString(paramisdefault(global_temps), global_temps, "22.5;90;275;400") // temperatures used for global fitting
 	gamma_type = selectString(paramisdefault(gamma_type), gamma_type, "low") // used to define starting parameters for global fit
 	
-//	closeallGraphs(); averaging_procedure(1109, 0); averaging_procedure(1121, 0); averaging_procedure(1115, 0)
-//
-//	string datnums = "1109;1121;1115"; gamma_type="mid"; averaging_procedure(1109, 0, cold_awg_first=0); averaging_procedure(1121, 0, cold_awg_first=0); averaging_procedure(1115, 0, cold_awg_first=0) // low gamma
-//	string datnums = "1111;1123;1117"; gamma_type="mid"; averaging_procedure(1111, 0, cold_awg_first=0); averaging_procedure(1123, 0, cold_awg_first=0); averaging_procedure(1117, 0, cold_awg_first=0) // mid gamma
-//	string datnums = "1113;1125;1119"; gamma_type="high"; averaging_procedure(1113, 0, cold_awg_first=0); averaging_procedure(1125, 0, cold_awg_first=0); averaging_procedure(1119, 0, cold_awg_first=0)  // high gamma
 
-//	string datnums = "1131;1121;1115"; gamma_type="mid"; averaging_procedure(1131, 1, cold_awg_first=0); averaging_procedure(1121, 1, cold_awg_first=0); averaging_procedure(1115, 1, cold_awg_first=0) // low gamma
-//	string datnums = "1133;1123;1117"; gamma_type="mid"; averaging_procedure(1133, 1, cold_awg_first=0); averaging_procedure(1123, 1, cold_awg_first=0); averaging_procedure(1117, 1, cold_awg_first=0) // mid gamma
-//	string datnums = "1135;1125;1119"; gamma_type="high"; averaging_procedure(1135, 1, cold_awg_first=0); averaging_procedure(1125, 1, cold_awg_first=0); averaging_procedure(1119, 1, cold_awg_first=0)  // high gamma
+	// SPRING EXPERIMENT // 
+//	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high" // 1000uV bias
 
-//	string datnums = "1147;1121;1115"; gamma_type="high"; averaging_procedure(1147, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
-//	string datnums = "1149;1123;1117"; gamma_type="mid"; averaging_procedure(1149, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1123, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1117, 0, num_points_in_entropy=25, cold_awg_first=0) // mid gamma
-//	string datnums = "1151;1125;1119"; gamma_type="high"; averaging_procedure(1151, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1125, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1119, 0, num_points_in_entropy=25, cold_awg_first=0)  // high gamma
-
-//	string datnums = "1233;1121;1115"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
-//	string datnums = "1234;1123;1117"; //gamma_type="mid"; averaging_procedure(1234, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1123, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1117, 0, num_points_in_entropy=25, cold_awg_first=0) // mid gamma
-//	string datnums = "1235;1125;1119"; gamma_type="high"; averaging_procedure(1235, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1125, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1119, 0, num_points_in_entropy=25, cold_awg_first=0)  // high gamma
-//	string datnums = "1233;1121;1115"
 	
-//	string entropy_datnum = "1281", global_datnums = "1285;1297;1293;1289"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
-//	string entropy_datnum = "1282", global_datnums = "1286;1298;1294;1290"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
-//	string entropy_datnum = "1283", global_datnums = "1287;1299;1295;1291"; gamma_type="high"; averaging_procedure(1233, 0, divide_data=1, num_points_in_entropy=122, cold_awg_first=0); averaging_procedure(1121, 0, num_points_in_entropy=25, cold_awg_first=0); averaging_procedure(1115, 0, num_points_in_entropy=25, cold_awg_first=0) // low gamma
-	
-	
-	///// THINGS TO CHANGE /////
+	///// AUTUMN EXPERIMENT /////
 //	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "mid"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
-	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
+//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
 //	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
 //	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
 //	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
+//	string entropy_datnums = "1439"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 1000uV bias
+//	string entropy_datnums = "1473"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias :: symmetric
 
+	string entropy_datnums = "1505"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 1000uV bias
 
-//	global_temps = "10;90;275;400"
+//	global_temps = "22.5;100;300;500"
 	global_temps = "22.5;90;275;400"
 
 //	global_temps = "22.5;275;400"
-	variable num_points_in_entropy = 68
+	variable num_points_in_entropy = 68 //25
 	variable divide_all_data = 1
 	variable centre_transition_repeats = 0
+	variable global_fit_conductance = 0
 	///// DONT CHANGE ANYMORE ///// 
 
 
 
 	variable num_global_datnums = ItemsInList(global_datnums, ";")
 	string ct_datnum, ct_wavename
+	string dot_wavename
 
 
 	///// CREATE 1D DATA FROM TRANSITION /////
 	int i 
 	for (i=0; i<num_global_datnums; i++)
+	
 		ct_datnum = stringfromlist(i, global_datnums)
 		ct_wavename = "dat" + ct_datnum + "cscurrent_2d"
+		
+		
+		// average conductance data
+		if (global_fit_conductance == 1)
+			dot_wavename = "dat" + ct_datnum + "dotcurrent_2d"
+//			resampleWave($dot_wavename, 600)
+			master_cond_clean_average($dot_wavename, 0, "dat", alternate_bias=1)
+		endif
+		
+		closeallgraphs()
 		
 		wave ct_wave = $ct_wavename
 		ct_wave[][] = ct_wave[p][q]/divide_all_data
@@ -302,7 +299,7 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 		string avg_ct_name = "dat" + ct_datnum + "_cs_cleaned_avg"
 		
 		if (centre_transition_repeats == 1)
-			closeallGraphs(); master_ct_clean_average($ct_wavename, 1, 0, "dat")
+//			closeallGraphs(); master_ct_clean_average($ct_wavename, 1, 0, "dat")
 		else
 			avg_wav($ct_wavename)
 			duplicate /o $(ct_wavename + "_avg") $(avg_ct_name)
@@ -321,8 +318,10 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 		
 		DeletePoints  0, num_points_to_delete, $avg_ct_name
 		setscale /I x start_x, fin_x, $avg_ct_name
+		
 	endfor
 	
+
 	///// PROCESS ENTROPY DATA /////
 	int num_entropy_dats = ItemsInList(entropy_datnums, ";")
 	for (i=0; i<num_entropy_dats; i++)
@@ -332,7 +331,7 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	
 	///// RUN GLOBAL FIT /////
 	variable cond_chisq, occ_chisq, condocc_chisq
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, global_datnums, gamma_type, global_fit_conductance=0, fit_entropy=1, fit_entropy_dats=entropy_datnums)
+	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_entropy=1, fit_entropy_dats=entropy_datnums)
 	
 	
 	///// SETTING UP GRAAPHS TO PLOT TEMPERATURE DEPENDANCE /////
@@ -530,18 +529,31 @@ function make_figure_entropy_shift([variable baset])
 //	string high_gamma_datnumn = "1235"
 	
 	// big entropy dataset
-	string entropy_datnums = "1281;1282;1283;1284"
-	string occupation_datnums = "1281;1282;1283;1284"
-	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
+//	string entropy_datnums = "1281;1282;1283;1284"
+//	string occupation_datnums = "1281;1282;1283;1284"
+//	string entropy_couplings = "weak;mid-weak;mid-strong;strong"
 //	string entropy_datnums = "1281;1282;1283"
 //	string occupation_datnums = "1281;1282;1283"
 //	string entropy_couplings = "weak;mid-weak;mid-strong"
+//	string legend_axis = "Γ/T"
 	
 	// varying the CS bias
-//	string entropy_datnums = "1372;1284;1373;1374"
-//	string occupation_datnums = "1372;1284;1373;1374"
-//	string entropy_couplings = "50uV;100uV;250uV;500uV"
+//	string entropy_datnums = "1372;1284;1373;1374;1439"
+//	string occupation_datnums = "1372;1284;1373;1374;1439"
+//	string entropy_couplings = "50uV;100uV;250uV;500uV;1000uV"
+//	string legend_axis = "CS Bias"
+	
+	// symmetric vs non symmetric
+//	string entropy_datnums = "1372;1473"
+//	string occupation_datnums = "1372;1473"
+//	string entropy_couplings = "50uV (non sym);50uV (sym)"
+//	string legend_axis = "CS Bias"
 
+	// 1st plateau vs 2nd plateau
+	string entropy_datnums = "1372;1505"
+	string occupation_datnums = "1372;1505"
+	string entropy_couplings = "100uV 1st step; 150uV 2nd step"
+	string legend_axis = "CS Step"
 	
 
 	
@@ -570,8 +582,8 @@ function make_figure_entropy_shift([variable baset])
 	
 	string colour, e_temp
 	variable red, green, blue
-	string colours = "24158,34695,23901;47802,0,2056;52685,33924,12336;14906,27499,34438" // four temps
-
+//	string colours = "24158,34695,23901;47802,0,2056;52685,33924,12336;14906,27499,34438" // green, red, yellow, blue
+	string colours = "0,0,0;24158,34695,23901;52685,33924,12336;47802,0,2056;14906,27499,34438" // black, green, yellow, red
  	
 	int i
 	string entropy_datnum, occupation_datnum
@@ -694,7 +706,7 @@ function make_figure_entropy_shift([variable baset])
 		
 		
 		
-		legend_string = legend_string + "\\s(dat" + entropy_datnum + "_numerical_entropy_avg_figc_shift) Γ/T = " + stringfromlist(i, entropy_couplings) + "\r"
+		legend_string = legend_string + "\\s(dat" + entropy_datnum + "_numerical_entropy_avg_figc_shift) " + legend_axis + " = " + stringfromlist(i, entropy_couplings) + "\r"
 	endfor
 	
 	

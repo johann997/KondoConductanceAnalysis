@@ -4,10 +4,10 @@
 #include <Reduce Matrix Size>
 
 
-function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling, forced_theta, fit_width, divide_data, resample_before_centering])
+function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling, forced_theta, fit_width, divide_data, resample_before_centering, average_every_n, zero_offset_entropy])
 	int filenum, delay, wavelen
 	int centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling
-	variable forced_theta, fit_width, divide_data, resample_before_centering
+	variable forced_theta, fit_width, divide_data, resample_before_centering, average_every_n, zero_offset_entropy
 	
 	centre_repeats = paramisdefault(centre_repeats) ? 0 : centre_repeats // default is to not centre repeats based on cold trace
 	average_repeats = paramisdefault(average_repeats) ? 1 : average_repeats // default is to average repeats
@@ -17,18 +17,27 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	forced_theta = paramisdefault(forced_theta) ? 0 : forced_theta // default is forcing theta OFF for calculating the scaling. 0 assumes the theta needs to be calculated
 	fit_width = paramisdefault(fit_width) ? INF : fit_width // default is to fit entire transition
 	divide_data = paramisdefault(divide_data) ? 1 : divide_data // default not divide the data. Use case: If input data is RAW we may need to re-scale data.
-	resample_before_centering = paramisdefault(resample_before_centering) ? 0 : resample_before_centering // default not resample the data
+	resample_before_centering = paramisdefault(resample_before_centering) ? 0 : resample_before_centering // resample the data before centering. Useful if file size are large. Resampled data not used to calculate entropy
+	average_every_n = paramisdefault(average_every_n) ? 1 : average_every_n // average every n rows in a 2d data set. Useful if you have repeats at each setpoint
+	zero_offset_entropy = paramisdefault(zero_offset_entropy) ? 0 : zero_offset_entropy // offset entropy data so delta Ics starts at zero
 
 
 	string raw_wavename = "dat" + num2str(filenum) + "cscurrent_2d"
+	string notch_wavename = raw_wavename + "_nf"
 	string cs_cold_cleaned_name = "dat" + num2str(filenum) + "_cs_cleaned"
 	string cs_hot_cleaned_name = "dat" + num2str(filenum) + "_cs_cleaned_hot"
 	string cs_cold_cleaned_avg_name = cs_cold_cleaned_name + "_avg"
 	string cs_hot_cleaned_avg_name = cs_hot_cleaned_name + "_avg"
 	
 	wave raw_wave = $raw_wavename
-	raw_wave[][] = raw_wave[p][q]/divide_data
+	if (divide_data != 1)
+		raw_wave[][] = raw_wave[p][q]/divide_data
+	endif
 	
+	
+	//	notch filter
+//	notch_filters($raw_wavename, Hzs="60;180;300;420;540;900",  Qs="50;150;250;360;500;850",  notch_name=notch_wavename)
+
 	///// DEMODULATE /////
 	string demodx_wavename = "dat" + num2str(filenum) + "cscurrentx_2d";
 	wave demodx_wave = $demodx_wavename
@@ -40,8 +49,8 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	endif
 	duplicate /o $demodx_wavename demod_entropy
 	wave demod_entropy
-	
-	
+
+
 	///// SEPARATE HOT AND COLD (CREATES numerical_entropy, cold, cold_diff, hot, hot_diff) /////
 	sqw_analysis($raw_wavename, delay, wavelen, cold_awg_first=cold_awg_first)
 	wave hot, cold, cold_diff, hot_diff, numerical_entropy
@@ -129,12 +138,25 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 		// average demod entropy
 		avg_wav(demod_entropy)
 		wave demod_entropy_avg
+	elseif ((average_repeats == 0) && (average_every_n > 1))
+		average_every_n_rows(cold, average_every_n, overwrite=1)
+		average_every_n_rows(hot, average_every_n, overwrite=1)
+		average_every_n_rows(demod_entropy, average_every_n, overwrite=1)
+		average_every_n_rows(numerical_entropy, average_every_n, overwrite=1)
 	endif
+	
+	
+
 	
 	
 	///// INTEGRATE ///// 
 	duplicate /o demod_entropy demod_entropy_int
 	duplicate /o numerical_entropy numerical_entropy_int // big issue with nans will really mess with the data !!!!!
+	
+	if (zero_offset_entropy != 0)
+		offset_2d_traces(demod_entropy, use_average=0.2)
+		offset_2d_traces(numerical_entropy, use_average=0.2)
+	endif
 	
 	Integrate demod_entropy /D = demod_entropy_int
 	Integrate  numerical_entropy /D = numerical_entropy_int
@@ -230,12 +252,17 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	
 	
 	///// cold average and hot average /////
-	plot2d_heatmap($cs_cold_cleaned_name, x_label = "Gate (mV)", y_label = "Repeats") // cold transition 
-	plot2d_heatmap($cs_hot_cleaned_name, x_label = "Gate (mV)", y_label = "Repeats") // hot transition
-
-	display $cs_cold_cleaned_avg_name $cs_hot_cleaned_avg_name
-	ModifyGraph rgb($cs_cold_cleaned_avg_name)=(0,0,65535)
-	legend
+	if (average_repeats == 1)
+		plot2d_heatmap($cs_cold_cleaned_name, x_label = "Gate (mV)", y_label = "Repeats") // cold transition 
+		plot2d_heatmap($cs_hot_cleaned_name, x_label = "Gate (mV)", y_label = "Repeats") // hot transition
+	
+		display $cs_cold_cleaned_avg_name $cs_hot_cleaned_avg_name
+		ModifyGraph rgb($cs_cold_cleaned_avg_name)=(0,0,65535)
+		legend
+	else
+		plot2d_heatmap(cold, x_label = "Gate (mV)", y_label = "Repeats") // cold transition 
+		plot2d_heatmap(hot, x_label = "Gate (mV)", y_label = "Repeats") // hot transition
+	endif
 	
 	///// entropy 2d /////
 	plot2d_heatmap($entropy_demod_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // demod entropy 
@@ -351,8 +378,13 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 end
 
 
-function offset_2d_traces(wave wav)
+function offset_2d_traces(wav, [use_average])
 	// pass in a 2d wave and offset each trace so the first value is at set_y_point
+	wave wav
+	variable use_average // use first use_average percent of data to calculate how much to average
+	
+	use_average = paramisdefault(use_average) ? 0 : use_average // set in fraction. 0.1 = first 10% of data
+	
 	variable set_y_point = 0
 	variable row_value
 	
@@ -360,7 +392,12 @@ function offset_2d_traces(wave wav)
 	
 	variable i
 	for (i=0; i < num_rows; i++)
-		row_value = wav[0][i]
+		if (use_average == 0)
+			row_value = wav[0][i]
+		else
+			duplicate /o/RMD=[0][i] wav single_trace
+			row_value = mean(single_trace,  pnt2x(single_trace, 0), pnt2x(single_trace, dimsize(single_trace, 0)*use_average))
+		endif
 		wav[][i] = wav[p][i] - (row_value - set_y_point)
 	endfor
 end

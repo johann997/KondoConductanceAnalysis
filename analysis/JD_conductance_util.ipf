@@ -3,7 +3,7 @@
 #pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 #include <Reduce Matrix Size>
 
-function master_cond_clean_average(wave wav, int refit, string kenner_out)
+function master_cond_clean_average(wave wav, int refit, string kenner_out, [int alternate_bias])
 	// wav is the wave containing original dotcurrent data
 	// refit tells whether to do new fits to each CT line
 	// kenner_out is the prefix to replace dat for this analysis
@@ -38,23 +38,34 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 		duplicate/o/r=[][2] $fit_params_name mids
 		centering($datasetname, centered_wave_name, mids)// only need to center after redoing fits, centred plot; returns centered_wave_name
 		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
+		
+		split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
+		split_pos = cleaned_wave_name + "_pos"
+		split_neg = cleaned_wave_name + "_neg"
+		
+	else
+		split_wave($datasetname, 0) //makes condxxxxcentered
+		split_pos = datasetname + "_pos"
+		split_neg = datasetname + "_neg"
 	endif
 
 	// commentating out the splitting if we reverse bias
-//	split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
-//	
-//	zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
-//	zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
-//	
-//	avg_wav($split_pos) // pos average
-//	avg_wav($split_neg) // neg average
-//	
-//	get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
-
-	zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
-	avg_wav($cleaned_wave_name)
+	if (alternate_bias == 1)
+		pos_avg = split_pos + "_avg"
+		neg_avg = split_neg + "_avg"
+		zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
+		zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
+		
+		avg_wav($split_pos) // pos average
+		avg_wav($split_neg) // neg average
+		
+		get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
+	else
+		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
+		avg_wav($cleaned_wave_name)
+	endif
 	
-	plot_cond_figs(wavenum, N, kenner, kenner_out)
+	plot_cond_figs(wavenum, N, kenner, kenner_out, refit=refit)
 
 	ms=stopmstimer(refnum)
 	print "Cond: time taken = " + num2str(ms/1e6) + "s"
@@ -373,8 +384,12 @@ function/wave get_conductance_from_current(wave pos, wave neg, string newname)
 	temp = (pos-neg)
 	variable bias = (514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
 	duplicate/o temp cond
-	temp = (bias/temp)*1e9-21150;
-	temp = 1/temp/7.7483e-05
+//	temp = cond/(bias - cond * 21150)
+//	temp /= 7.7483e-05
+//	cond = bias - temp*21150
+//	temp = (temp/7.7483e-05)/cond
+//	temp = (bias/temp)*1e9-21150;
+//	temp = 1/temp/7.7483e-05
 end
 
 
@@ -470,7 +485,7 @@ end
 
 
 
-function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out)	
+function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out, [int refit])	
 	string dataset = "dat" + num2str(wavenum) + kenner
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_dot_centered"
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_dot_cleaned"
@@ -490,13 +505,14 @@ function plot_cond_figs(variable wavenum, variable N, string kenner, string kenn
 //	plot2d_heatmap($split_pos) // positive bias
 //	plot2d_heatmap($split_neg) // negative bias
 	
-	plot2d_heatmap($centered_wave_name) // plot centered traces
-	
-	plot_gammas(fit_params_name,N)	// plot gamma values (FWHM)
-	plot_badgammas($centered_wave_name) // plot traces with 'bad gammas'
-	 
-	plot2d_heatmap($cleaned_wave_name) // plot 2d with removed 'bad gamma' traces
-	
+	if (refit == 1)
+		plot2d_heatmap($centered_wave_name) // plot centered traces
+		
+		plot_gammas(fit_params_name,N)	// plot gamma values (FWHM)
+		plot_badgammas($centered_wave_name) // plot traces with 'bad gammas'
+		 
+		plot2d_heatmap($cleaned_wave_name) // plot 2d with removed 'bad gamma' traces
+	endif
 	
 	/////////////////// plot avg fit  //////////////////////////////////////
 	
