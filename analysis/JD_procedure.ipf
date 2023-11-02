@@ -66,7 +66,7 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 		spectrum_analyzer($cs_data_name_nf, freq, plot_on = 0)
 	endif
 	
-	if (conductance_data == 0)
+	if (conductance_data == 1)
 		spectrum_analyzer($dot_data_name, freq)
 		if (notch_on == 1)
 			notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
@@ -110,10 +110,14 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 end
 
 
-function centerandaverage(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on, variable conductance_data]) 
-
+function centerandaverage(datnum, cs_data_name, dot_data_name, [notch_on, conductance_data, fit_conductance]) 
+	variable datnum
+	string cs_data_name, dot_data_name
+	variable notch_on, conductance_data, fit_conductance
+	
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
 	conductance_data = paramisdefault(conductance_data) ? 1 : conductance_data
+	fit_conductance = paramisdefault(fit_conductance) ? 1 : fit_conductance
 	
 	string cs_wave_name, dot_wave_name
 	
@@ -130,7 +134,7 @@ function centerandaverage(variable datnum, string cs_data_name, string dot_data_
 	if (conductance_data == 0)
 		master_ct_clean_average($cs_wave_name, 1, 0, "dat", condfit_prefix=cleaned_dot_name)
 	else
-		master_cond_clean_average($dot_wave_name, 1, cleaned_dot_name)
+		master_cond_clean_average($dot_wave_name, fit_conductance, cleaned_dot_name, alternate_bias=1)
 		master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
 	endif
 end
@@ -142,7 +146,8 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 	conductance_data = paramisdefault(conductance_data) ? 1 : conductance_data
 	
 	string cs_data_type = "cscurrent_2d"
-	string dot_data_type = "dotcurrentx_2d"
+	string dot_data_type = "dotcurrent_2d"
+//	string dot_data_type = "dotcurrentx_2d"
 	
 	string cs_data_name = "dat" + num2str(datnum) + cs_data_type
 	string dot_data_name = "dat" + num2str(datnum) + dot_data_type
@@ -158,7 +163,7 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 //	endif
 	
 	//// center the charge transitions and conductions data then average
-	centerandaverage(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
+	centerandaverage(datnum, cs_data_name, dot_data_name, notch_on=notch_on, fit_conductance=0)
 	
 	if (plot == 0)
 		closeallGraphs()
@@ -166,16 +171,36 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 end
 
 
-function run_clean_average_procedure([string datnums])
+function run_clean_average_procedure([datnums, dat_min_max])
+	string datnums, dat_min_max
 //	string default_datnums = "688;689;690;691;692;693;694;695;696;697;698;699"
-	string default_datnums = "699"
+//	string default_datnums = "699"
 
+	datnums = selectString(paramisdefault(datnums), datnums, "") // e.g. "RAW"
+	dat_min_max = selectString(paramisdefault(dat_min_max), dat_min_max, "") // e.g. "302,310"
+
+	string dat_list = datnums
 	
-	datnums = selectString(paramisdefault(datnums), datnums, default_datnums) // e.g. "RAW"
-
+	int i
+	////////////////////////////////////////////////////////
+	///// Overwriting dat_list if dat_min_max specified /////
+	////////////////////////////////////////////////////////
+	variable dat_start = str2num(StringFromList(0, dat_min_max, ";"))
+	variable dat_end = str2num(StringFromList(1, dat_min_max, ";"))
+	
+	if (!stringmatch(dat_min_max, ""))
+		dat_list = ""
+		for(i=dat_start; i<dat_end+1; i+=1)
+			dat_list = dat_list + num2str(i) + ";"
+		endfor
+	endif
+	////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
+	
+	
 	variable notch_on = 1
 	
-	variable num_dats = ItemsInList(datnums, ";")
+	variable num_dats = ItemsInList(dat_list, ";")
 	
 	variable plot = 0
 	if (num_dats<2)
@@ -192,12 +217,12 @@ function run_clean_average_procedure([string datnums])
 //	DoWindow/C transition_vs_sweep
 	
 	string cond_avg, trans_avg
-	variable i, datnum
+	variable datnum
 	for (i=0;i<num_dats;i+=1)
-		datnum = str2num(stringfromlist(i, datnums))
+		datnum = str2num(stringfromlist(i, dat_list))
 		
 		try
-			run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on)
+			run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on, conductance_data=1)
 		catch
 			print "FAILED CLEAN AND AVERAGE :: DAT " + num2str(datnum)
 		endtry 
@@ -205,7 +230,7 @@ function run_clean_average_procedure([string datnums])
 		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
 		
-//		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
+		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 		
 		// append to graphs 
 		AppendToGraph /W=conductance_vs_sweep $cond_avg;

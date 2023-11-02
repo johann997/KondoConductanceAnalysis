@@ -33,11 +33,13 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out, [int 
 
 
 	if (refit==1)
-		get_cond_fit_params($datasetname, kenner_out)// finds fit_params
+//		get_cond_fit_params($datasetname, kenner_out)// finds fit_params
 		plot_gammas(fit_params_name, N) //need to do this to refind good and bad gammas
 		duplicate/o/r=[][2] $fit_params_name mids
 		centering($datasetname, centered_wave_name, mids)// only need to center after redoing fits, centred plot; returns centered_wave_name
-		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
+
+//		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
+		duplicate /o $centered_wave_name $cleaned_wave_name
 		
 		split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
 		split_pos = cleaned_wave_name + "_pos"
@@ -164,47 +166,69 @@ end
 
 
 function/wave split_wave(wave wav, variable flag)
-	// split the wave into positive and negative waves
-	wave kenner
-	redimension/n=-1 kenner
 	string base_wave_name = nameofwave(wav)
-
-	////////////////////////////
-	///// create _pos wave /////
-	////////////////////////////
-	Duplicate/o kenner, idx
-	idx = kenner[p] > flag ? p : NaN
-	WaveTransform zapnans idx
+	variable num_rows = dimsize(wav, 1)
+	int split_num_rows = round(num_rows/2)
+	int i
 	
 	string pos_wave_name = base_wave_name + "_pos"
-	duplicate/o wav $pos_wave_name
-	wave out_wav = $pos_wave_name
-	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav
-
-	variable i=0
-	do
-		out_wav[][i]=wav[p][idx[i]]
-		i=i+1
-	while(i<dimsize(idx,0))
-
-
-	////////////////////////////
-	///// create _neg wave /////
-	////////////////////////////
-	Duplicate/o kenner,idx
-	idx = kenner[p][q] < flag ? p : NaN
-	WaveTransform zapnans idx
-
+	duplicate /o /RMD=[][0, split_num_rows-1] wav $pos_wave_name
+	wave pos_wave = $pos_wave_name
+	
+	for (i=0; i<split_num_rows; i++)
+		pos_wave[][i] = wav[p][i*2 + flag]
+	endfor
+	
+	
 	string neg_wave_name = base_wave_name + "_neg"
-	duplicate/o wav $neg_wave_name
-	wave out_wav1 = $neg_wave_name
-	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav1
+	duplicate /o /RMD=[][0, split_num_rows-1] wav $neg_wave_name
+	wave neg_wave = $neg_wave_name
+	
+	for (i=0; i<split_num_rows; i++)
+		neg_wave[][i] = wav[p][i*2 + 1 + -1*flag]
+	endfor
 
-	i=0
-	do
-		out_wav1[][i]=wav[p][idx[i]]
-		i=i+1
-	while(i<dimsize(idx,0))
+//	// split the wave into positive and negative waves
+//	wave kenner
+//	redimension/n=-1 kenner // n = -1 :: convert to 1d with same rows (Python columns)
+//	string base_wave_name = nameofwave(wav)
+//
+//	////////////////////////////
+//	///// create _pos wave /////
+//	////////////////////////////
+//	Duplicate/o kenner, idx
+//	idx = kenner[p] > flag ? p : NaN
+//	WaveTransform zapnans idx
+//	
+//	string pos_wave_name = base_wave_name + "_pos"
+//	duplicate/o wav $pos_wave_name
+//	wave out_wav = $pos_wave_name
+//	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav
+//
+//	variable i=0
+//	do
+//		out_wav[][i]=wav[p][idx[i]]
+//		i=i+1
+//	while(i<dimsize(idx,0))
+//
+//
+//	////////////////////////////
+//	///// create _neg wave /////
+//	////////////////////////////
+//	Duplicate/o kenner,idx
+//	idx = kenner[p][q] < flag ? p : NaN
+//	WaveTransform zapnans idx
+//
+//	string neg_wave_name = base_wave_name + "_neg"
+//	duplicate/o wav $neg_wave_name
+//	wave out_wav1 = $neg_wave_name
+//	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav1
+//
+//	i=0
+//	do
+//		out_wav1[][i]=wav[p][idx[i]]
+//		i=i+1
+//	while(i<dimsize(idx,0))
 	
 end
 
