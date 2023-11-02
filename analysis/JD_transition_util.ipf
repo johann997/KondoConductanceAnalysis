@@ -106,7 +106,8 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 		duplicate/o/r=[][2] condfit_params mids
 
 		centering($datasetname, centered_wave_name, mids)
-		remove_bad_thetas($centered_wave_name, badgammasx, cleaned_wave_name)
+//		remove_bad_thetas($centered_wave_name, badgammasx, cleaned_wave_name)
+		duplicate /o $centered_wave_name $cleaned_wave_name
 		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
 	endif
 

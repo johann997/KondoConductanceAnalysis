@@ -647,7 +647,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 	////////////////////////////////////////////////
 	///// ADDING INITIAL GUESS OF COEFFICIENTS /////
 	////////////////////////////////////////////////
-	use_previous_coef = 1
+	use_previous_coef = 0
 	if (use_previous_coef == 1)
 		wave coefwave 
 		wave GFin.coefwave
@@ -1096,17 +1096,22 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_coef[0,3] = curr_coef[p]; wavestats /q cs_data; cs_coef[4]=v_avg;  cs_coef[7]=(v_min-v_max); // cs_coef[6]=0;
 			create_x_wave(cs_data)
 			wave x_wave
-//			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data  /X=x_wave ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
+			
 			cs_fit_name = "fit_" + cs_data_name
+			duplicate /o $cs_data_name $cs_fit_name
+			
+//			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
+//			FuncFit/Q/H="11010000"/X fitfunc_nrgctAAO cs_coef cs_data  /D=$cs_fit_name /M=$(stringfromlist(i,data.occ_maskwvlist))
+			FuncFit/Q/H="11010000"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+
 		else 
 			wave cs_coef = $("coef_" + stringfromlist(i,data.occ_wvlist))
 			cs_data_name = stringfromlist(i,data.occ_wvlist)
 			wave cs_data = $cs_data_name
 			cs_fit_name = "Gfit_" + cs_data_name
-			appendtograph $cs_fit_name
 		endif
 			appendtograph cs_data
+			appendtograph $cs_fit_name
 			ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(0,0,0)
 	
 			total_cs_chisq += V_chisq // sum the chisq from each fit
