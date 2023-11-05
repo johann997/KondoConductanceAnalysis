@@ -29,11 +29,11 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out, [int 
 	string neg_avg = split_neg + "_avg"
 	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params"
 	variable N
-	N=40  // how many sdevs in thetas are acceptable?
+	N=2  // how many sdevs in thetas are acceptable?
 
 
 	if (refit==1)
-//		get_cond_fit_params($datasetname, kenner_out)// finds fit_params
+		get_cond_fit_params($datasetname, kenner_out)// finds fit_params
 		plot_gammas(fit_params_name, N) //need to do this to refind good and bad gammas
 		duplicate/o/r=[][2] $fit_params_name mids
 		centering($datasetname, centered_wave_name, mids)// only need to center after redoing fits, centred plot; returns centered_wave_name
@@ -238,8 +238,8 @@ end
 function plot_gammas(string fit_params_name, variable N)
 
 	int wavenum =getfirstnum(fit_params_name)
-	variable gammamean
-	variable gammastd
+	variable gammamean, gammastd
+	variable cond_mid_mean, cond_mid_std
 	variable i
 	int nr
 
@@ -247,10 +247,14 @@ function plot_gammas(string fit_params_name, variable N)
 	nr = dimsize(fit_params,0)
 
 	duplicate /O/R =[0,nr][3] fit_params gammas
+	duplicate /O/R =[0,nr][2] fit_params cond_mids
 	duplicate /O/R =[0,nr][1] fit_params amp
 
 	gammamean = mean(gammas)
 	gammastd = sqrt(variance(gammas))
+	
+	cond_mid_mean = mean(cond_mids)
+	cond_mid_std = sqrt(variance(cond_mids))
 
 	make /o/n =(nr) meanwave
 	make /o/n =(nr) stdwave
@@ -259,23 +263,35 @@ function plot_gammas(string fit_params_name, variable N)
 	make /o/n = 0 goodgammasx
 	make /o/n = 0 badgammas
 	make /o/n = 0 badgammasx
+	
+	// good and bad mid waves
+	make /o/n = 0 good_cond_mids
+	make /o/n = 0 good_cond_midsx
+	make /o/n = 0 bad_cond_mids
+	make /o/n = 0 bad_cond_midsx
 
 	meanwave = gammamean
 	stdwave = gammamean - N * gammastd
 	stdwave2 = gammamean + N * gammastd
 
 	for (i=0; i < nr ; i+=1)
-
+	
+		// find bad gammas
 		if (abs(gammas[i] - gammamean) < (N * gammastd))
-
 			insertPoints /v = (gammas[i]) nr, 1, goodgammas // value of gamma
 			insertpoints /v = (i) nr, 1, goodgammasx        // the repeat
-
 		else
-
 			insertPoints /v = (gammas[i]) nr, 1, badgammas // value of gamma
 			insertpoints /v = (i) nr, 1, badgammasx        // repeat
-
+		endif
+		
+		// find bad mids
+		if (abs(cond_mids[i] - cond_mid_mean) < (N * cond_mid_std))
+			insertPoints /v = (cond_mids[i]) nr, 1, good_cond_mids // value of gamma
+			insertpoints /v = (i) nr, 1, good_cond_midsx        // the repeat
+		else
+			insertPoints /v = (cond_mids[i]) nr, 1, bad_cond_mids // value of gamma
+			insertpoints /v = (i) nr, 1, bad_cond_midsx        // repeat
 		endif
 
 	endfor
@@ -336,10 +352,8 @@ function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
 	wave badgammasx
 	duplicate/o center $cleaned_wave_name
 	
-	//////////////////////////////////////////
-	///// removing lines with bad gammas /////
-	//////////////////////////////////////////
-
+	wave bad_cond_midsx
+	
 	//////////////////////////////////////////
 	///// removing lines with bad gammas /////
 	//////////////////////////////////////////
@@ -352,9 +366,18 @@ function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
 		do
 			idx = badgammasx[i] - i // when deleting, I need the -i because if deleting in the loop the indeces of center change continously as points are deleted
 			DeletePoints/M=1 idx,1, $cleaned_wave_name
+			
+//			// check if bad gamma row is also a bad mid row
+//			FindValue /I=idx bad_cond_midsx
+//			if (V_value >= 1)
+//				DeletePoints/M=1 x2pnt(V_value), 0, bad_cond_midsx
+//				bad_cond_midsx[] = bad_cond_midsx[]
+//			endif
 			i += 1
 		while (i<nr)
 	endif
+	
+	
 	
 	
 	/////////////////////////////////////////////////

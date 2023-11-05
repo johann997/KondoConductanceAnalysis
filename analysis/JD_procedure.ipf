@@ -135,7 +135,9 @@ function centerandaverage(datnum, cs_data_name, dot_data_name, [notch_on, conduc
 		master_ct_clean_average($cs_wave_name, 1, 0, "dat", condfit_prefix=cleaned_dot_name)
 	else
 		master_cond_clean_average($dot_wave_name, fit_conductance, cleaned_dot_name, alternate_bias=1)
-		master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
+		duplicate /o $cs_wave_name $("dat" + num2str(datnum) + "_cs_cleaned")
+		avg_wav($("dat" + num2str(datnum) + "_cs_cleaned"))
+//		master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
 	endif
 end
 

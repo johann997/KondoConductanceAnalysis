@@ -291,7 +291,8 @@ function fd_getmeasfreq(datnum,[fastdac_num])
 	//	JSONXOP_GetValue/V fd_id, "/AWG/initialized"
 	//	S.initialized=V_value
 
-	JSONXOP_GetValue/V fd_id, "SamplingFreq"
+//	JSONXOP_GetValue/V fd_id, "SamplingFreq"
+	JSONXOP_GetValue/V fd_id, "MeasureFreq"
 	freq=V_value
 
 	JSONXOP_Release /A  //Clear all stored JSON strings

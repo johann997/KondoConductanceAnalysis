@@ -690,8 +690,14 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.2 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.004 // 0.01 // x scaling (linked)
+			coefwave[0][0] = 3.85
+			 // lnG/T for Tbase (linked)
+//			coefwave[1][0] = 0.004 // 0.01 // x scaling (linked)
+
+//			coefwave[0][0] = 2 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.00019 // 0.01 // x scaling (linked)
+			
+//			coefwave[0][1] = 1 // 0.01 // x scaling (linked)
 //			coefwave[1][1] = 1 // 0.01 // x scaling (linked)
 	//		coefwave[0][0] = data.temps[0] //  Tbase (linked)
 	//		coefwave[1][0] = 0.2  // x scaling (linked)
@@ -701,7 +707,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			endif
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] = 1 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.16 // 0.02 // x scaling (linked)
+			coefwave[1][0] = 0.002 //0.16 // 0.02 // x scaling (linked)
 	//		coefwave[0][0] = data.temps[0] //  Tbase (linked)
 	//		coefwave[1][0] = 0.2  // x scaling (linked)
 	//		coefwave[2][0] = 1e5  // gamma (linked)
@@ -930,6 +936,33 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	elseif (cmpstr(datnum, "6091") == 0)
 		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 2000
+////////// high gamma 2-3 transition ////////////////////////////////////////////////////
+	elseif (cmpstr(datnum, "6225") == 0)
+		dot_min_val = -6000; dot_max_val = -3200
+		cs_min_val = -7900; cs_max_val = -1425
+	elseif (cmpstr(datnum, "6234") == 0)
+		dot_min_val = -6000; dot_max_val = -3200
+		cs_min_val = -7900; cs_max_val = -1425
+	elseif (cmpstr(datnum, "6231") == 0)
+		dot_min_val = -6000; dot_max_val = -3200
+		cs_min_val = -7900; cs_max_val = -1425
+	elseif (cmpstr(datnum, "6228") == 0)
+		dot_min_val = -6000; dot_max_val = -3200
+		cs_min_val = -7900; cs_max_val = -1425
+////////// mid gamma 2-3 transition ////////////////////////////////////////////////////
+	elseif (cmpstr(datnum, "6226") == 0)
+		dot_min_val = -6000; dot_max_val = -3000
+		cs_min_val = -7900; cs_max_val = -1425
+	elseif (cmpstr(datnum, "6235") == 0)
+		dot_min_val = -6000; dot_max_val = -3000
+		cs_min_val = -7900; cs_max_val = -1425
+	elseif (cmpstr(datnum, "6232") == 0)
+		dot_min_val = -6000; dot_max_val = -3000
+		cs_min_val = -7900; cs_max_val = -1425
+	elseif (cmpstr(datnum, "6229") == 0)
+		dot_min_val = -6000; dot_max_val = -3000
+		cs_min_val = -7900; cs_max_val = -1425
+////////// autumn experiment ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "1287") == 0)
 		cs_max_val = 1230
 	elseif (cmpstr(datnum, "1283") == 0)

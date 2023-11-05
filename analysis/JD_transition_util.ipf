@@ -198,7 +198,7 @@ function /wave get_initial_params(sweep, [update_amp_only, update_theta_only, up
 	variable const = mean(sweep)
 	
 	///// guess of theta term /////
-	variable theta = 10
+	variable theta = 50
 
 	///// guess of mid term ////
 	duplicate /o sweep sweepsmooth
