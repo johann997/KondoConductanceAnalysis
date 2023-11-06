@@ -135,6 +135,86 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 	
 end
 
+function zap_NaNs(wave_1d, [overwrite])
+	// removes any datapoints with NaNs :: only removes NaNs from the end of the wave. Assumes NaNs are only at start and end and not within wave
+	// wave_1d: 2d wave to remove rows from
+	// overwrite: Default is overwrite = 1. overwrite = 0 will create new wave with "_zap" appended to the end
+	// percentage_cutoff_inf: Default is percentage_cutoff_inf = 0.15 :: 15%
+	wave wave_1d
+	int overwrite
+	
+	overwrite = paramisdefault(overwrite) ? 1 : overwrite
+	
+	// Duplicating 1d wave
+	if (overwrite == 0)
+		string wave_1d_name = nameofwave(wave_1d)
+		string wave_1d_name_new = wave_1d_name + "_zap"
+		duplicate /o wave_1d $wave_1d_name_new
+		wave wave_1d_new = $wave_1d_name_new 
+	endif
+	
+	
+	create_x_wave(wave_1d)
+	wave x_wave
+	
+	
+	variable num_rows = dimsize(wave_1d, 0)
+	int end_of_start_nan = 0
+	int start_of_end_nan = 0
+		
+	// find start and end of NaN rows
+	int i 
+	for (i = 0; i < num_rows; i++)
+	
+		if ((numtype(wave_1d[i]) == 0) && (end_of_start_nan == 0))
+			end_of_start_nan = i
+		endif
+		
+		
+		if ((numtype(wave_1d[i]) != 0) && (end_of_start_nan != 0) && (start_of_end_nan == 0))
+			start_of_end_nan = i
+		endif
+		
+	endfor
+	
+	if (numtype(wave_1d[0]) == 0)
+		end_of_start_nan = 0
+	endif
+	
+	if (numtype(wave_1d[num_rows-1]) == 0)
+		start_of_end_nan = num_rows
+	endif
+	
+	
+	
+	// delete NaN rows
+	if (end_of_start_nan > 0)
+		if (overwrite == 1)
+			deletePoints /M=0 0, end_of_start_nan, wave_1d
+		else 
+			deletePoints /M=0 0, end_of_start_nan, wave_1d_new
+		endif
+	endif
+	
+	if (start_of_end_nan < num_rows)
+		if (overwrite == 1)
+			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan, wave_1d
+		else
+			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan, wave_1d_new
+		endif
+	endif
+	
+	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
+		if (overwrite == 1)
+			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan), wave_1d
+		else
+			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan), wave_1d_new
+		endif
+	endif
+	
+end
+
+
 
 function resampleWave(wave wav,variable targetFreq )
 	// resamples wave w from measureFreq
@@ -262,7 +342,11 @@ function spectrum_analyzer(wave data, variable samp_freq, [variable create_new_w
 	if (plot_on == 1)
 		appendtoGraph /r=l2 powerspec_int
 		ModifyGraph freePos(l2)={inf,bottom}
-		ModifyGraph rgb(powerspec_int)=(0,0,0)
+		if (create_new_wave == 1)
+			ModifyGraph rgb($wav_name_int)=(0,0,0)
+		else
+			ModifyGraph rgb(powerspec_int)=(0,0,0)
+		endif
 		ModifyGraph log(left)=1
 		
 		Label left "nA^2/Hz"
