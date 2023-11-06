@@ -27,31 +27,41 @@ end
 
 
 function figure_C()
+	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
 //	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
 //	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
-	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
+//	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 	
 //	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
-
+//	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
 
 	string e_temps = "23;100;300;500"
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	string colour, e_temp
 	variable red, green, blue
 	
-//	run_clean_average_procedure(datnums=datnums)
+	int global_fit_conductance = 1
 	
+	variable num_dats = ItemsInList(datnums, ";")
+	
+	///// ZAP NANs /////
+	string ct_datnum, ct_wavename
+	int i 
+	for (i=0; i<num_dats; i++)
+		ct_datnum = stringfromlist(i, datnums)
+		ct_wavename = "dat" + ct_datnum + "_cs_cleaned_avg"
+		zap_NaNs($ct_wavename, overwrite=1)
+	endfor
 	
 	///// RUN GLOBAL FIT /////
 	variable cond_chisq, occ_chisq, condocc_chisq
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=1, fit_entropy=0, fit_entropy_dats="")
-	
+	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=1, fit_entropy=0, fit_entropy_dats="")
+
 	
 //	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 	
-	variable num_dats = ItemsInList(datnums, ";")
 	
 	
 	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
@@ -66,18 +76,26 @@ function figure_C()
 	string occupation_coef_name
 	
 	string legend_text = ""
-	variable i, datnum
+	variable datnum
 	for (i=0;i<num_dats;i+=1)
 		datnum = str2num(stringfromlist(i, datnums))
 		e_temp = stringfromlist(i, e_temps)
 		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
-		cond_avg_fit = "GFit_" + cond_avg
+		if (global_fit_conductance == 1)
+			cond_avg_fit = "GFit_" + cond_avg
+		else
+			cond_avg_fit = "fit_" + cond_avg
+		endif
 		
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
-		trans_avg_fit = "fit_" + trans_avg
+		if (global_fit_conductance == 1)
+			trans_avg_fit = "fit_" + trans_avg
+		else
+			trans_avg_fit = "GFit_" + trans_avg
+		endif
 		
 		occ_avg = trans_avg + "_occ"
-		occ_avg_fit = "fit_" + occ_avg
+		occ_avg_fit = trans_avg_fit + "_occ"
 		
 		legend_text = legend_text + "\\s(" + trans_avg_fit +  ") " +  e_temp + "mK\r"
 		
@@ -123,16 +141,45 @@ function figure_C()
 		///////////////////////////////////////////
 //		///// ADDING CONDUCTION VS OCCUPATION /////
 //		///////////////////////////////////////////
+		variable numpts_occupation = 10000
+//		wave occ_avg_wave = $occ_avg
+		create_x_wave($occ_avg)
+		wave x_wave
+		
+		///// interpolating data waves /////
+		variable minx, maxx
+		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
+		// interpolating occupation to have higher density of points
+		string cond_vs_occ_data_wave_name_x = occ_avg + "_interp"
+		make /o /N=(numpts_occupation) cond_vs_occ_data_wave_x
+		duplicate /o cond_vs_occ_data_wave_x $cond_vs_occ_data_wave_name_x
+		setscale /I x x_wave[0], x_wave[INF], $cond_vs_occ_data_wave_name_x
+		Interpolate2/T=1/E=2/Y=$cond_vs_occ_data_wave_name_x/I=3 $occ_avg //cubic interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+
+		// interpolating conduction to have data at same x points as occuptaion data
 		string cond_vs_occ_data_wave_name_y = cond_avg + "_interp"
-		duplicate /o $occ_avg $cond_vs_occ_data_wave_name_y
+		duplicate /o $cond_vs_occ_data_wave_name_x $cond_vs_occ_data_wave_name_y
 		Interpolate2/T=1/E=2/Y=$cond_vs_occ_data_wave_name_y/I=3 $cond_avg //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
+		delete_points_from_x($cond_vs_occ_data_wave_name_y, minx, maxx)
+		
+		///// interpolating fit waves /////
+//		[minx, maxx] = find_overlap_mask($occ_avg_fit, $occ_avg_fit)
+		create_x_wave($occ_avg_fit)
+		wave x_wave
+		string cond_vs_occ_fit_wave_name_x = occ_avg_fit + "_interp"
+		make /o /N=(numpts_occupation) cond_vs_occ_fit_wave_x
+		duplicate /o cond_vs_occ_fit_wave_x $cond_vs_occ_fit_wave_name_x
+		setscale /I x x_wave[0], x_wave[INF], $cond_vs_occ_fit_wave_name_x
+		Interpolate2/T=1/E=2/Y=$cond_vs_occ_fit_wave_name_x/I=3 $occ_avg_fit //cubic interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
 
 		string cond_vs_occ_fit_wave_name_y = cond_avg_fit + "_interp"
-		duplicate /o $occ_avg_fit $cond_vs_occ_fit_wave_name_y
+		duplicate /o $cond_vs_occ_fit_wave_name_x $cond_vs_occ_fit_wave_name_y
 		Interpolate2/T=1/E=2/Y=$cond_vs_occ_fit_wave_name_y/I=3 $cond_avg_fit //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+		delete_points_from_x($cond_vs_occ_fit_wave_name_x, minx, maxx)
+		delete_points_from_x($cond_vs_occ_fit_wave_name_y, minx, maxx)
 
-
-		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $occ_avg; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $occ_avg_fit;
+		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
 		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=1, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
 		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
 	endfor
@@ -145,6 +192,8 @@ function figure_C()
 	ModifyGraph /W = figure_ca axisEnab(l3)={0.72, 1.0}
 	ModifyGraph /W = figure_ca axisEnab(l2)={0.43, 0.71}
 	ModifyGraph /W = figure_ca axisEnab(left)={0.0, 0.28}
+	SetAxis /W=figure_ca left 0,*
+	SetAxis /W=figure_ca bottom 0,1
 	
 //	ModifyGraph /W = figure_ca axisEnab(l4)={0.57-0.05, 0.57+0.05}
 //	ModifyGraph /W = figure_ca axisEnab(b4)={0.1,0.4}
@@ -186,13 +235,249 @@ function figure_C()
 	///// adding legend /////
 	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
 //	print legend_text
+
+	beautify_figure("figure_ca")
 end
 
 
 
-macro figure_D()
+function delete_points_from_x(wave1, minx, maxx)
+	// assumes minx and maxx are in the x values in wave1
+	wave wave1
+	variable minx, maxx
+	variable min_index = x2pnt(wave1, minx)
+	variable max_index = x2pnt(wave1, maxx)
+	variable numpts = dimsize(wave1, 0)
+	
+	if (min_index > 0)
+		deletePoints /M=0 0, min_index+1, wave1
+	endif
+	
+	if (max_index < numpts)
+		deletePoints /M=0 max_index-min_index, numpts-max_index, wave1
+	endif
+	
+	setscale /I x, minx, maxx, wave1
+end
 
-endmacro
+
+function [variable minx, variable maxx] find_overlap_mask(wave wave1, wave wave2)
+	// assumes both wave1 and wave2 are 1d will return minx and maxx when both masks are 1
+	
+	// find minx and maxx for wave 1
+	int numpts = dimsize(wave1, 0)
+	int min_check = 0, max_check = 0
+	
+	create_x_wave(wave1)
+	wave x_wave
+	
+	int i
+	for (i=0; i<numpts; i++)
+		if ((wave1[i] == 1) && (min_check == 0))
+			minx = x_wave[i]
+			min_check = 1
+		endif
+		
+		if ((wave1[i] == 0) && (min_check == 1) && (max_check == 0))
+			maxx = x_wave[i]
+			max_check = 1
+		endif
+	endfor
+	
+	
+	
+	// find minx and maxx for wave 2
+	numpts = dimsize(wave2, 0)
+	min_check = 0
+	max_check = 0
+	
+	create_x_wave(wave2)
+	wave x_wave
+	
+	for (i=0; i<numpts; i++)
+		if ((wave2[i] == 1) && (min_check == 0))
+			if (x_wave[i]> minx)
+				minx = x_wave[i]
+			endif
+			min_check = 1
+		endif
+		
+		if ((wave2[i] == 0) && (min_check == 1) && (max_check == 0))
+			if (x_wave[i] < maxx)
+				maxx = x_wave[i]
+			endif
+			max_check = 1
+		endif
+	endfor
+	
+//print minx, maxx
+return [minx, maxx]
+	
+end
+
+function figure_D()
+	string low_gamma_low_field = "6081"
+	string mid_gamma_low_field = "6080"
+	string high_gamma_low_field = "6079"
+	
+	string high_gamma_high_field = "6100"
+	string high_gamma_23_transition = "6225"
+	
+	string base_y_data_name = "_dot_cleaned_avg_interp"
+	string base_x_data_name = "_cs_cleaned_avg_occ"
+	
+
+
+	Display; KillWindow /Z figure_da; DoWindow/C/O figure_da
+
+	string y_data_name, x_data_name
+	string y_fit_name, x_fit_name
+	
+	// black :: "0,0,0"
+	// green :: "24158,34695,23901"
+	// yellow :: "52685,33924,12336"
+	// red :: "47802,0,2056"
+	// blue :: "14906,27499,34438"
+	variable red, green, blue
+	string datnum
+	///////////////////////////////
+	///// low gamma low field /////
+	///////////////////////////////
+	datnum = low_gamma_low_field
+	y_data_name = "dat" + datnum + base_y_data_name
+	y_fit_name = "Gfit_dat" + datnum + base_y_data_name
+	
+	x_data_name = "dat" + datnum + base_x_data_name
+	x_fit_name = "fit_dat" + datnum + base_x_data_name
+	
+	red = 24158; green = 34695; blue = 23901
+	AppendToGraph /W=figure_da /L=l2/B=b2 $y_data_name vs $x_data_name; AppendToGraph /W=figure_da /L=l2/B=b2 $y_fit_name vs $x_fit_name;
+	ModifyGraph /W=figure_da mode($y_data_name)=2, lsize($y_data_name)=1, rgb($y_data_name)=(red,green,blue)
+	ModifyGraph /W=figure_da mode($y_fit_name)=0, lsize($y_fit_name)=2, rgb($y_fit_name)=(red,green,blue)
+	
+	
+	///////////////////////////////
+	///// mid gamma low field /////
+	///////////////////////////////
+	datnum = mid_gamma_low_field
+	y_data_name = "dat" + datnum + base_y_data_name
+	y_fit_name = "Gfit_dat" + datnum + base_y_data_name
+	
+	x_data_name = "dat" + datnum + base_x_data_name
+	x_fit_name = "fit_dat" + datnum + base_x_data_name
+	
+	red = 52685; green = 33924; blue = 12336
+	AppendToGraph /W=figure_da /L=l2/B=b2 $y_data_name vs $x_data_name; AppendToGraph /W=figure_da /L=l2/B=b2 $y_fit_name vs $x_fit_name;
+	ModifyGraph /W=figure_da mode($y_data_name)=2, lsize($y_data_name)=1, rgb($y_data_name)=(red,green,blue)
+	ModifyGraph /W=figure_da mode($y_fit_name)=0, lsize($y_fit_name)=2, rgb($y_fit_name)=(red,green,blue)
+	
+	
+	///////////////////////////////
+	///// high gamma low field fig a/////
+	///////////////////////////////
+	datnum = high_gamma_low_field
+	y_data_name = "dat" + datnum + base_y_data_name
+	y_fit_name = "Gfit_dat" + datnum + base_y_data_name
+	
+	x_data_name = "dat" + datnum + base_x_data_name
+	x_fit_name = "fit_dat" + datnum + base_x_data_name
+	
+	red = 47802; green = 0; blue = 2056
+	AppendToGraph /W=figure_da /L=l2/B=b2 $y_data_name vs $x_data_name; AppendToGraph /W=figure_da /L=l2/B=b2 $y_fit_name vs $x_fit_name;
+	ModifyGraph /W=figure_da mode($y_data_name)=2, lsize($y_data_name)=1, rgb($y_data_name)=(red,green,blue)
+	ModifyGraph /W=figure_da mode($y_fit_name)=0, lsize($y_fit_name)=2, rgb($y_fit_name)=(red,green,blue)
+	
+	
+	///////////////////////////////
+	///// high gamma low field figb /////
+	///////////////////////////////
+	datnum = high_gamma_low_field
+	y_data_name = "dat" + datnum + base_y_data_name
+	y_fit_name = "Gfit_dat" + datnum + base_y_data_name
+	
+	x_data_name = "dat" + datnum + base_x_data_name
+	x_fit_name = "fit_dat" + datnum + base_x_data_name
+	
+	AppendToGraph /W=figure_da /L=left/B=bottom $y_data_name vs $x_data_name; AppendToGraph /W=figure_da /L=left/B=bottom $y_fit_name vs $x_fit_name;
+
+	y_data_name = y_data_name + "#1"
+	y_fit_name = y_fit_name + "#1"
+	
+	x_data_name = x_data_name + "#1"
+	x_fit_name = x_fit_name + "#1"
+	
+	
+	ModifyGraph /W=figure_da mode($y_data_name)=2, lsize($y_data_name)=1, rgb($y_data_name)=(red,green,blue)
+	ModifyGraph /W=figure_da mode($y_fit_name)=0, lsize($y_fit_name)=2, rgb($y_fit_name)=(red,green,blue)
+	
+	///////////////////////////////
+	///// high gamma low field fig c/////
+	///////////////////////////////
+	datnum = high_gamma_low_field
+	y_data_name = "dat" + datnum + base_y_data_name
+	y_fit_name = "Gfit_dat" + datnum + base_y_data_name
+	
+	x_data_name = "dat" + datnum + base_x_data_name
+	x_fit_name = "fit_dat" + datnum + base_x_data_name
+	
+	AppendToGraph /W=figure_da /L=l1/B=b1 $y_data_name vs $x_data_name; AppendToGraph /W=figure_da /L=l1/B=b1 $y_fit_name vs $x_fit_name;
+	
+	y_data_name = y_data_name + "#2"
+	y_fit_name = y_fit_name + "#2"
+	
+	x_data_name = x_data_name + "#2"
+	x_fit_name = x_fit_name + "#2"
+	
+	ModifyGraph /W=figure_da mode($y_data_name)=2, lsize($y_data_name)=1, rgb($y_data_name)=(red,green,blue)
+	ModifyGraph /W=figure_da mode($y_fit_name)=0, lsize($y_fit_name)=2, rgb($y_fit_name)=(red,green,blue)
+	
+	///////////////////////////////
+	///// high gamma high field /////
+	///////////////////////////////
+	datnum = high_gamma_high_field
+	y_data_name = "dat" + datnum + base_y_data_name
+	y_fit_name = "Gfit_dat" + datnum + base_y_data_name
+	
+	x_data_name = "dat" + datnum + base_x_data_name
+	x_fit_name = "fit_dat" + datnum + base_x_data_name
+	
+	red = 14906; green = 27499; blue = 34438
+	AppendToGraph /W=figure_da /L=left/B=bottom $y_data_name vs $x_data_name; AppendToGraph /W=figure_da /L=left/B=bottom $y_fit_name vs $x_fit_name;
+	ModifyGraph /W=figure_da mode($y_data_name)=2, lsize($y_data_name)=1, rgb($y_data_name)=(red,green,blue)
+	ModifyGraph /W=figure_da mode($y_fit_name)=0, lsize($y_fit_name)=2, rgb($y_fit_name)=(red,green,blue)
+	
+	//////////////////////////////
+	///// beautifying figure /////
+	//////////////////////////////
+	///// setting figure a)
+	SetAxis /W=figure_da b2 0,1
+	SetAxis /W=figure_da l2 0,*
+	ModifyGraph /W = figure_da axisEnab(l2)={0.55, 1.0}
+	ModifyGraph /W = figure_da freePos(l2)={0,bottom},freePos(b2)={0,l2}
+	
+	
+	///// setting figure b)
+	SetAxis /W=figure_da bottom 0,1
+	SetAxis /W=figure_da left 0,*
+	ModifyGraph /W = figure_da axisEnab(left)={0, 0.5}
+	ModifyGraph /W = figure_da axisEnab(bottom)={0, 0.45}
+	
+	///// setting figure c)
+	SetAxis /W=figure_da b1 0,1
+	SetAxis /W=figure_da l1 0,*
+	ModifyGraph /W = figure_da axisEnab(l1)={0,0.45},axisEnab(b1)={0.55,1}
+	ModifyGraph /W = figure_da freePos(l1)={0,b1},freePos(b1)={0,l1}
+
+	///// off-setting labels from the axis /////
+	ModifyGraph /W=figure_da lblPos(l2)=50
+	ModifyGraph /W=figure_da lblPos(l1)=50
+	ModifyGraph /W=figure_da lblPos(left)=50
+//	ModifyGraph /W=figure_ca lblPos(bottom)=80
+//	ModifyGraph /W=figure_ca lblPos(b3)=80
+
+	beautify_figure("figure_da")
+//	save_figure("figure_da")
+end
 
 
 
@@ -268,8 +553,8 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	
 
 	// SPRING EXPERIMENT // 
-	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high" // 1000uV bias
-
+//	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high" // 1000uV bias
+	string entropy_datnums = "6385"; string global_datnums = "6081;6090;6087;6084"; gamma_type = "low" // 1000uV bias
 	
 	///// AUTUMN EXPERIMENT /////
 //	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"
@@ -1307,188 +1592,6 @@ function figure_dummy_conductance_occupation()
 	ModifyGraph /W=figure_nrg_combined_dummy tick(l2)=0
 end
 
-//
-//
-//function figure_D([variable baset])
-//	baset = paramisdefault(baset) ? 15 : baset
-//	
-//	string low_gamma_datnumn = "697"
-//	string mid_gamma_datnumn = "698"
-//	string high_gamma_datnumn = "699"
-//		
-//	////// data names /////
-//	string base_name_data_y = "_dot_cleaned_avg_figc"
-//	string base_name_data_x = "_cs_cleaned_avg_occ_figc"
-//	
-//	////// NRG names /////
-//	string base_name_fit_y = "_dot_cleaned_avg_figc"
-//	string base_name_fit_x = "_cs_cleaned_avg_occ_figc"
-//	
-//	string data_y, data_x, fit_y, fit_x, datnum, marker_size
-//	
-//	closeallGraphs()
-//	
-//	Display; KillWindow /Z figure_Da; DoWindow/C/O figure_Da
-//	Display; KillWindow /Z figure_Db; DoWindow/C/O figure_Db
-//	
-//	//////////////////////
-//	///// FIGURE D.A /////
-//	//////////////////////
-//	
-//	////////////////////////////////////////////////////////////////////////
-//	////////////////////// low gamma ///////////////////////////////////////
-//	////////////////////////////////////////////////////////////////////////
-//	figure_C_separate(baset = baset,  gamma_type = "low_mid") // dat 6081
-//	datnum = low_gamma_datnumn
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_x = "dat" + datnum + base_name_data_x
-//	fit_y = "GFit_dat" + datnum + base_name_fit_y
-//	fit_x = "fit_dat" + datnum + base_name_fit_x
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
-//	
-////	AppendToGraph /W=figure_Da $data_y vs $data_x
-////	AppendToGraph /W=figure_Da $fit_y vs $fit_x
-//	translate_wave_by_occupation($data_y, $data_x) // NOW
-//	AppendToGraph /W=figure_Da $data_y; //AppendToGraph /W=figure_Da /r $data_x 
-//	translate_wave_by_occupation($fit_y, $fit_x) // NOW
-//	AppendToGraph /W=figure_Da $fit_y; //AppendToGraph /W=figure_Da /r $fit_x 
-////	
-//	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(186*257,0,8*257)//(94*257,135*257,93*257)
-////	ModifyGraph /W=figure_Da mode($data_x)=3, marker($data_x)=41, lsize($data_x)=2, zmrkSize($data_x)={$marker_size,*,*,0.01,4}, rgb($data_x)=(186*257,0,8*257)//(94*257,135*257,93*257)
-//
-//	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0,8*257) //(94*257,135*257,93*257)
-////	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(186*257,0,8*257) //(94*257,135*257,93*257)
-//
-//
-//
-//	////////////////////////////////////////////////////////////////////////
-////	////////////////////////// mid gamma ///////////////////////////////////
-//	////////////////////////////////////////////////////////////////////////
-//	figure_C_separate(baset = baset,  gamma_type = "high_mid") // dat 6080
-//	datnum = mid_gamma_datnumn
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_x = "dat" + datnum + base_name_data_x
-////	fit_y = "dat" + datnum + base_name_fit_y
-//	fit_y = "GFit_dat" + datnum + base_name_fit_y
-//	fit_x = "dat" + datnum + base_name_fit_x
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 3, min_marker=0.01, max_marker=2)
-//	
-////	AppendToGraph /W=figure_Da $data_y vs $data_x
-////	AppendToGraph /W=figure_Da $fit_y vs $fit_x
-//	translate_wave_by_occupation($data_y, $data_x) // NOW
-//	AppendToGraph /W=figure_Da $data_y; //AppendToGraph /W=figure_Da /r $data_x 
-//	translate_wave_by_occupation($fit_y, $fit_x) // NOW
-//	AppendToGraph /W=figure_Da $fit_y; //AppendToGraph /W=figure_Da /r $fit_x 
-//	
-//	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(205*257,132*257,48*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-//	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(205*257,132*257,48*257)
-//	
-//	
-//	
-//	
-//	////////////////////////////////////////////////////////////////////////
-//	///////////////////////// high gamma ///////////////////////////////////
-//	////////////////////////////////////////////////////////////////////////
-//	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
-//	datnum = high_gamma_datnumn
-//	data_y = "dat" + datnum + base_name_data_y
-//	data_x = "dat" + datnum + base_name_data_x
-//	fit_y = "GFit_dat" + datnum + base_name_fit_y
-//	fit_x = "fit_dat" + datnum + base_name_fit_x
-//	
-//	marker_size = data_y + "_marker_size"
-//	
-//	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
-//	
-////	AppendToGraph /W=figure_Da $data_y vs $data_x
-////	AppendToGraph /W=figure_Da $fit_y vs $fit_x
-//	translate_wave_by_occupation($data_y, $data_x) // NOW
-//	AppendToGraph /W=figure_Da $data_y; //AppendToGraph /W=figure_Da /r $data_x 
-//	translate_wave_by_occupation($fit_y, $fit_x) // NOW
-//	AppendToGraph /W=figure_Da $fit_y; //AppendToGraph /W=figure_Da /r $fit_x 
-//	
-//	ModifyGraph /W=figure_Da mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, zmrkSize($data_y)={$marker_size,*,*,0.01,4}, rgb($data_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-////	ModifyGraph /W=figure_Da mode($data_x)=3, marker($data_x)=41, lsize($data_x)=2, zmrkSize($data_x)={$marker_size,*,*,0.01,4}, rgb($data_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}
-//
-//	ModifyGraph /W=figure_Da mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
-////	ModifyGraph /W=figure_Da mode($fit_x)=0, lsize($fit_x)=2, rgb($fit_x)=(58*257,107*257,134*257) //(186*257,0*257,8*257)
-//	
-//	
-//	
-//	
-//	
-//	////////////////////////////////////////////////////////////////////////
-//	///////////////// figure final touches /////////////////////////////////
-//	////////////////////////////////////////////////////////////////////////
-////	SetAxis /W=figure_Da bottom -2, 5
-////	SetAxis /W=figure_Da right 0, 1
-//	
-//	closeallGraphs(no_close_graphs="figure_Da;figure_Db")
-//	
-////	Label /W=figure_Da bottom "Occupation"
-////	Label /W=figure_Da left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
-////	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6081_dot_cleaned_avgcondocc_nrg_y) Γ/T = 2\r\\s(dat6080_dot_cleaned_avgcondocc_nrg_y) Γ/T = 11 \r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) Γ/T = 28"
-////	Legend /W=figure_Da/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(fit_dat6081_dot_cleaned_avg_figc) Γ/T = 2\r\\s(fit_dat6080_dot_cleaned_avg_figc) Γ/T = 11 \r\\s(fit_dat6079_dot_cleaned_avg_figc) Γ/T = 28"
-//	Legend /W=figure_Da/C/N=text0/A=RT/X=63.49/Y=5.56/J "\\s(dat697_dot_cleaned_avg_figc) Γ/T = low\r\\s(dat698_dot_cleaned_avg_figc) Γ/T = mid\r\\s(dat699_dot_cleaned_avg_figc) Γ/T = high"
-//
-//	
-//	ModifyGraph /W=figure_Da mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14 // Mirror unticked
-//
-//	
-//	//////////////////////
-//	///// FIGURE D.B /////
-//	//////////////////////
-//	
-////	///// high gamma low field /////
-////	figure_C_separate(baset = baset,  gamma_type = "high") // dat 6079
-////	datnum = "6079"
-////	data_y = "dat" + datnum + base_name_data_y
-////	data_x = "nrgocc_dat" + datnum + base_name_data_x
-////	fit_y = "dat" + datnum + base_name_fit_y
-////	fit_x = "dat" + datnum + base_name_fit_x
-////	marker_size = data_y + "_marker_size"
-////	
-////	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
-////	
-////	AppendToGraph /W=figure_Db $data_y vs $data_x
-//////	AppendToGraph /W=figure_Db $fit_y vs $fit_x
-////	ModifyGraph /W=figure_Db mode($data_y)=3, marker($data_y)=41, lsize($data_y)=2, rgb($data_y)=(186*257,0*257,8*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}, gFont="Calibri", gfSize=14
-//////	ModifyGraph /W=figure_Db mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
-////	
-////	///// high gamma high field /////
-////	figure_C_separate(baset = baset,  gamma_type = "high", field_on = 1) // dat 6100
-////	datnum = "6100"
-////	data_y = "dat" + datnum + base_name_data_y
-////	data_x = "nrgocc_dat" + datnum + base_name_data_x
-////	fit_y = "dat" + datnum + base_name_fit_y
-////	fit_x = "dat" + datnum + base_name_fit_x
-////	marker_size = data_y + "_marker_size"
-////	
-////	create_marker_size($data_y, 6, min_marker=0.01, max_marker=2)
-////	
-////	AppendToGraph /W=figure_Db $data_y vs $data_x
-//////	AppendToGraph /W=figure_Db $fit_y vs $fit_x
-////	ModifyGraph /W=figure_Db mode($data_y)=3, marker($data_y)=13,  lsize($data_y)=2, rgb($data_y)=(159*257,139*257,193*257), zmrkSize($data_y)={$marker_size,*,*,0.01,4}, gFont="Calibri", gfSize=14
-//////	ModifyGraph /W=figure_Db mode($fit_y)=0, lsize($fit_y)=2, rgb($fit_y)=(186*257,0*257,8*257)
-////	
-////	closeallGraphs(no_close_graphs="figure_Da;figure_Db")	
-////	
-//////	Label /W=figure_Db bottom "Occupation"
-//////	Label /W=figure_Db left "Conductance (\\$WMTEX$ 2e^2/ℏ \\$/WMTEX$)"
-////	
-////	
-////	Legend /W=figure_Db/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6079_dot_cleaned_avgcondocc_data) Data 70mT\r\\s(dat6100_dot_cleaned_avgcondocc_data) Data 2000mT"
-////	ModifyGraph /W=figure_Db mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14
-////
-//////	Legend /W=figure_Db/C/N=text0/A=LT/X=4.62/Y=6.37/J "\\s(dat6079_dot_cleaned_avgcondocc_data) Data 70mT\r\\s(dat6100_dot_cleaned_avgcondocc_data) Data 2000mT\r\\s(dat6079_dot_cleaned_avgcondocc_nrg_y) NRG"
-//
-//end
-
-
 
 function figure_tim_gamma()	
 	// SavePICT/P=home/E=-5/RES=1000/o
@@ -1586,8 +1689,6 @@ function figure_tim_gamma()
 	ModifyGraph /W=figure_poster_gamma_entropy mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
 
 end
-
-
 
 
 
