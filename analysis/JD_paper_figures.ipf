@@ -4,6 +4,27 @@
 #include <Global Fit 2>
 
 
+function beautify_figure(figure_name)
+	string figure_name
+	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+end
+
+
+function save_figure(figure_name)
+	string figure_name
+	
+	string png_name = figure_name + ".png"
+//	string data
+	
+//	PathInfo data
+//	print ParseFilePath(1, S_path, ":", 1, 0)
+//	string /G S_path
+//	string file_path = ParseFilePath(1, S_path, ":", 1, 0) + "Figures:"
+	string file_path = "Macintosh HD:Users:johanndrayne:Documents:Work:QDEV:_EntropyConductancePaper:IGORAnalysis:Figures:"
+	
+	SavePICT/P=file_path/E=-5/RES=1000/o as png_name
+end
+
 
 function figure_C()
 //	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
