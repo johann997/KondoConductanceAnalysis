@@ -117,6 +117,7 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 		
 //		wavetransform/o zapnans $avg_wave_name
 //		zapnan_scaling_overwrite($avg_wave_name)
+		zap_NaNs($avg_wave_name, overwrite=1)
 		get_initial_params($avg_wave_name); //print W_coef
 		
 		fit_transition($avg_wave_name, minx, maxx, fit_width = fit_width)
@@ -365,7 +366,7 @@ function zap_bad_params(wave_2d, params, num_params, [overwrite, zap_bad_mids, z
 end
 
 
-function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width])
+function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width, plot_fit])
 	// fits the wave_to_fit, If condition is 0 it will get initial params, If 1:
 	// define a variable named W_coef_guess = {} with the correct number of arguments
 	// outputs wave named "fit_" + wave_to_fit
@@ -376,8 +377,10 @@ function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width])
 	wave wave_to_fit
 	variable minx, maxx
 	// optional param
-	variable fit_width
+	variable fit_width, plot_fit
 	fit_width = paramisdefault(fit_width) ? INF : fit_width // averaging ON is default
+	plot_fit = paramisdefault(plot_fit) ? 0 : plot_fit // averaging ON is default
+
 	
 	// update the minx and maxx based on the mid value and fit_width 
 	wave W_coef
@@ -395,7 +398,11 @@ function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width])
 //	string hold_string = "000001"; W_coef[5] = 0 // holding quadterm 0
 	string hold_string = "000000"; // not holding any terms fixed
 	
-	FuncFit/q /H=(hold_string) /TBOX=768 ct_fit_function W_coef wave_to_fit[minx,maxx][0] /D
+	if (plot_fit == 1)
+		FuncFit /H=(hold_string) /TBOX=768 ct_fit_function W_coef wave_to_fit[minx,maxx][0] /D
+	else
+		FuncFit/q /H=(hold_string) /TBOX=768 ct_fit_function W_coef wave_to_fit[minx,maxx][0] /D
+	endif
 end
 
 
