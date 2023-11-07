@@ -9,6 +9,333 @@
 #include <Wave Arithmetic Panel>
 
 
+
+///////////////////////////
+///// NEW FUNCTIONS ///////
+///////////////////////////
+
+
+function zap_NaNs(wave_1d, [overwrite])
+	// removes any datapoints with NaNs :: only removes NaNs from the end of the wave. Assumes NaNs are only at start and end and not within wave
+	// wave_1d: 2d wave to remove rows from
+	// overwrite: Default is overwrite = 1. overwrite = 0 will create new wave with "_zap" appended to the end
+	// percentage_cutoff_inf: Default is percentage_cutoff_inf = 0.15 :: 15%
+	wave wave_1d
+	int overwrite
+	
+	overwrite = paramisdefault(overwrite) ? 1 : overwrite
+	
+	// Duplicating 1d wave
+	if (overwrite == 0)
+		string wave_1d_name = nameofwave(wave_1d)
+		string wave_1d_name_new = wave_1d_name + "_zap"
+		duplicate /o wave_1d $wave_1d_name_new
+		wave wave_1d_new = $wave_1d_name_new 
+	endif
+	
+	
+	create_x_wave(wave_1d)
+	wave x_wave
+	
+	
+	variable num_rows = dimsize(wave_1d, 0)
+	int end_of_start_nan = 0
+	int start_of_end_nan = 0
+		
+	// find start and end of NaN rows
+	int i 
+	for (i = 0; i < num_rows; i++)
+	
+		if ((numtype(wave_1d[i]) == 0) && (end_of_start_nan == 0))
+			end_of_start_nan = i
+		endif
+		
+		
+		if ((numtype(wave_1d[i]) != 0) && (end_of_start_nan != 0) && (start_of_end_nan == 0))
+			start_of_end_nan = i
+		endif
+		
+	endfor
+	
+	if (numtype(wave_1d[0]) == 0)
+		end_of_start_nan = 0
+	endif
+	
+	if (numtype(wave_1d[num_rows-1]) == 0)
+		start_of_end_nan = num_rows
+	endif
+	
+	
+	
+	// delete NaN rows
+	if (end_of_start_nan > 0)
+		if (overwrite == 1)
+			deletePoints /M=0 0, end_of_start_nan, wave_1d
+		else 
+			deletePoints /M=0 0, end_of_start_nan, wave_1d_new
+		endif
+	endif
+	
+	if (start_of_end_nan < num_rows)
+		if (overwrite == 1)
+			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d
+		else
+			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d_new
+		endif
+	endif
+	
+	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
+		if (overwrite == 1)
+			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d
+		else
+			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d_new
+		endif
+	endif
+	
+end
+
+
+function delete_points_from_x(wave1, minx, maxx)
+	// assumes minx and maxx are in the x values in wave1
+	wave wave1
+	variable minx, maxx
+	variable min_index = x2pnt(wave1, minx)
+	variable max_index = x2pnt(wave1, maxx)
+	variable numpts = dimsize(wave1, 0)
+	
+	if (min_index > 0)
+		deletePoints /M=0 0, min_index+1, wave1
+	endif
+	
+	if (max_index < numpts)
+		deletePoints /M=0 max_index-min_index, numpts-max_index, wave1
+	endif
+	
+	setscale /I x, minx, maxx, wave1
+end
+
+
+function [variable minx, variable maxx] find_overlap_mask(wave wave1, wave wave2)
+	// assumes both wave1 and wave2 are 1d will return minx and maxx when both masks are 1
+	
+	// find minx and maxx for wave 1
+	int numpts = dimsize(wave1, 0)
+	int min_check = 0, max_check = 0
+	
+	create_x_wave(wave1)
+	wave x_wave
+	
+	int i
+	for (i=0; i<numpts; i++)
+		if ((wave1[i] == 1) && (min_check == 0))
+			minx = x_wave[i]
+			min_check = 1
+		endif
+		
+		if ((wave1[i] == 0) && (min_check == 1) && (max_check == 0))
+			maxx = x_wave[i]
+			max_check = 1
+		endif
+	endfor
+	
+	
+	
+	// find minx and maxx for wave 2
+	numpts = dimsize(wave2, 0)
+	min_check = 0
+	max_check = 0
+	
+	create_x_wave(wave2)
+	wave x_wave
+	
+	for (i=0; i<numpts; i++)
+		if ((wave2[i] == 1) && (min_check == 0))
+			if (x_wave[i]> minx)
+				minx = x_wave[i]
+			endif
+			min_check = 1
+		endif
+		
+		if ((wave2[i] == 0) && (min_check == 1) && (max_check == 0))
+			if (x_wave[i] < maxx)
+				maxx = x_wave[i]
+			endif
+			max_check = 1
+		endif
+	endfor
+	
+//print minx, maxx
+return [minx, maxx]
+	
+end
+
+
+function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_interp, wave_to_duplicate])
+	string wavename_to_interp
+	wave base_wave_to_interp
+	variable numpts_to_interp
+	wave wave_to_duplicate
+	// interpolates wave_to_interp and adds "_interp" to the end
+	// if numpts_to_interp is used then more points of wave_to_interp are increased
+	// if wave_to_duplicate is used then x wave from this wave is used for wavename_to_interp
+	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
+	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
+	
+	numpts_to_interp = paramisdefault(numpts_to_interp) ? 0 : numpts_to_interp // default 0 :: i.e. turned off
+
+
+	
+	create_x_wave(base_wave_to_interp)
+	wave x_wave
+		
+	if (numpts_to_interp != 0)
+		make /o /N=(numpts_to_interp) $wavename_to_interp
+		setscale /I x x_wave[0], x_wave[INF], $wavename_to_interp
+		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
+	else
+		duplicate /o wave_to_duplicate $wavename_to_interp
+		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
+	endif
+end
+
+
+
+
+
+
+function prune_waves(wave1, wave2)
+	// this function removes points from both waves if there is a NaN in either wave
+	// assumes each wave has the same length
+	wave wave1, wave2
+	
+	string wave1_name = nameofwave(wave1)
+	string wave2_name = nameofwave(wave2)
+
+	wave wave1_ref = $wave1_name
+	wave wave2_ref = $wave2_name
+	
+	variable num_rows_wave1 = dimsize(wave1_ref, 0)
+
+	int num_bad_rows = 0	
+	int i 
+	for (i = 0; i < num_rows_wave1; i++)
+
+		if (numtype(wave1_ref[i - num_bad_rows]) == 2) // checking if its a NaN
+			DeletePoints (i - num_bad_rows), 1, wave1_ref // delete row
+			DeletePoints(i - num_bad_rows), 1, wave2_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+	
+	
+	variable num_rows_wave2 = dimsize(wave2_ref, 0)
+
+	num_bad_rows = 0	
+	for (i = 0; i < num_rows_wave2; i++)
+	
+		if (numtype(wave2_ref[i - num_bad_rows]) == 2)
+			DeletePoints/M=0 (i - num_bad_rows), 1, wave1_ref // delete row
+			DeletePoints/M=0 (i - num_bad_rows), 1, wave2_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+end
+
+
+function crop_waves_by_x_scaling(wave1, wave2)
+	// this function removes points from both waves if x point is not equal
+	// assumes each wave has the same length
+	wave wave1, wave2
+	
+	// create wave references
+	string wave1_name = nameofwave(wave1)
+	string wave2_name = nameofwave(wave2)
+
+	wave wave1_ref = $wave1_name
+	wave wave2_ref = $wave2_name
+	
+	// create x wave references
+	create_x_wave(wave1_ref)
+	wave wave1_x_wave = x_wave
+	
+	create_x_wave(wave2_ref)
+	wave wave2_x_wave = x_wave
+	
+	
+	// removing bad rows from wave1
+	variable num_rows_wave1 = dimsize(wave1_ref, 0)
+	variable x1, x2
+
+	int num_bad_rows = 0	
+	int i 
+	for (i = 0; i < num_rows_wave1; i++)
+	
+		x1 = wave1_x_wave[i]
+		
+		FindValue /V=(x1) wave2_x_wave
+
+		if (V_row == -1) // value from x1 is not in x2
+			DeletePoints (i - num_bad_rows), 1, wave1_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+	
+	
+	// removing bad rows from wave2
+	variable num_rows_wave2 = dimsize(wave2_ref, 0)
+
+	num_bad_rows = 0	
+	for (i = 0; i < num_rows_wave2; i++)
+	
+		x2 = wave2_x_wave[i]
+		
+		FindValue /V=(x2) wave1_x_wave
+	
+		if (V_row == -1) // value from x2 is not in x1
+			DeletePoints (i - num_bad_rows), 1, wave2_ref // delete row
+			num_bad_rows += 1
+		endif
+	endfor
+	
+end
+
+
+function translate_wave_by_occupation(wave1, wave2)
+	// overwrites x scaling of wave1 by shifting it using wave2
+	// assumes both waves have correct x scaling
+	// does not assume each wave has same delta x
+	// hard coded to shift x-axis of wave1 when wave2 = 0.5
+	
+	wave wave1, wave2
+	
+	// create wave references
+	string wave1_name = nameofwave(wave1)
+	string wave2_name = nameofwave(wave2)
+	
+	wave wave1_ref = $wave1_name
+	wave wave2_ref = $wave2_name
+	
+	// create x wave references
+	create_x_wave(wave1_ref)
+	wave wave1_x_wave = x_wave
+	
+	FindLevel /Q $wave2_name, 0.5
+	variable gate_val_half = V_LevelX
+	
+	variable num_rows_wave1 = dimsize(wave1_ref, 0)
+	
+	print wave1_name, gate_val_half
+	
+	SetScale/I x (wave1_x_wave[0] - gate_val_half), (wave1_x_wave[num_rows_wave1 - 1] - gate_val_half), $wave1_name
+
+
+end
+
+///////////////////////////
+///// END FUNCTIONS ///////
+///////////////////////////
+
+
 Function GetFreeMemory()
     variable freeMem
 
@@ -137,113 +464,6 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name, vari
 	copyscales wav, temp_ifft
 	duplicate /o temp_ifft $notch_name
 	
-end
-
-function zap_NaNs(wave_1d, [overwrite])
-	// removes any datapoints with NaNs :: only removes NaNs from the end of the wave. Assumes NaNs are only at start and end and not within wave
-	// wave_1d: 2d wave to remove rows from
-	// overwrite: Default is overwrite = 1. overwrite = 0 will create new wave with "_zap" appended to the end
-	// percentage_cutoff_inf: Default is percentage_cutoff_inf = 0.15 :: 15%
-	wave wave_1d
-	int overwrite
-	
-	overwrite = paramisdefault(overwrite) ? 1 : overwrite
-	
-	// Duplicating 1d wave
-	if (overwrite == 0)
-		string wave_1d_name = nameofwave(wave_1d)
-		string wave_1d_name_new = wave_1d_name + "_zap"
-		duplicate /o wave_1d $wave_1d_name_new
-		wave wave_1d_new = $wave_1d_name_new 
-	endif
-	
-	
-	create_x_wave(wave_1d)
-	wave x_wave
-	
-	
-	variable num_rows = dimsize(wave_1d, 0)
-	int end_of_start_nan = 0
-	int start_of_end_nan = 0
-		
-	// find start and end of NaN rows
-	int i 
-	for (i = 0; i < num_rows; i++)
-	
-		if ((numtype(wave_1d[i]) == 0) && (end_of_start_nan == 0))
-			end_of_start_nan = i
-		endif
-		
-		
-		if ((numtype(wave_1d[i]) != 0) && (end_of_start_nan != 0) && (start_of_end_nan == 0))
-			start_of_end_nan = i
-		endif
-		
-	endfor
-	
-	if (numtype(wave_1d[0]) == 0)
-		end_of_start_nan = 0
-	endif
-	
-	if (numtype(wave_1d[num_rows-1]) == 0)
-		start_of_end_nan = num_rows
-	endif
-	
-	
-	
-	// delete NaN rows
-	if (end_of_start_nan > 0)
-		if (overwrite == 1)
-			deletePoints /M=0 0, end_of_start_nan, wave_1d
-		else 
-			deletePoints /M=0 0, end_of_start_nan, wave_1d_new
-		endif
-	endif
-	
-	if (start_of_end_nan < num_rows)
-		if (overwrite == 1)
-			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d
-		else
-			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d_new
-		endif
-	endif
-	
-	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
-		if (overwrite == 1)
-			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d
-		else
-			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d_new
-		endif
-	endif
-	
-end
-
-function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_interp, wave_to_duplicate])
-	string wavename_to_interp
-	wave base_wave_to_interp
-	variable numpts_to_interp
-	wave wave_to_duplicate
-	// interpolates wave_to_interp and adds "_interp" to the end
-	// if numpts_to_interp is used then more points of wave_to_interp are increased
-	// if wave_to_duplicate is used then x wave from this wave is used for wavename_to_interp
-	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
-	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
-	
-	numpts_to_interp = paramisdefault(numpts_to_interp) ? 0 : numpts_to_interp // default 0 :: i.e. turned off
-
-
-	
-	create_x_wave(base_wave_to_interp)
-	wave x_wave
-		
-	if (numpts_to_interp != 0)
-		make /o /N=(numpts_to_interp) $wavename_to_interp
-		setscale /I x x_wave[0], x_wave[INF], $wavename_to_interp
-		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
-	else
-		duplicate /o wave_to_duplicate $wavename_to_interp
-		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
-	endif
 end
 
 
@@ -1216,132 +1436,3 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 end
 
 
-
-function prune_waves(wave1, wave2)
-	// this function removes points from both waves if there is a NaN in either wave
-	// assumes each wave has the same length
-	wave wave1, wave2
-	
-	string wave1_name = nameofwave(wave1)
-	string wave2_name = nameofwave(wave2)
-
-	wave wave1_ref = $wave1_name
-	wave wave2_ref = $wave2_name
-	
-	variable num_rows_wave1 = dimsize(wave1_ref, 0)
-
-	int num_bad_rows = 0	
-	int i 
-	for (i = 0; i < num_rows_wave1; i++)
-
-		if (numtype(wave1_ref[i - num_bad_rows]) == 2) // checking if its a NaN
-			DeletePoints (i - num_bad_rows), 1, wave1_ref // delete row
-			DeletePoints(i - num_bad_rows), 1, wave2_ref // delete row
-			num_bad_rows += 1
-		endif
-	endfor
-	
-	
-	variable num_rows_wave2 = dimsize(wave2_ref, 0)
-
-	num_bad_rows = 0	
-	for (i = 0; i < num_rows_wave2; i++)
-	
-		if (numtype(wave2_ref[i - num_bad_rows]) == 2)
-			DeletePoints/M=0 (i - num_bad_rows), 1, wave1_ref // delete row
-			DeletePoints/M=0 (i - num_bad_rows), 1, wave2_ref // delete row
-			num_bad_rows += 1
-		endif
-	endfor
-end
-
-
-function crop_waves_by_x_scaling(wave1, wave2)
-	// this function removes points from both waves if x point is not equal
-	// assumes each wave has the same length
-	wave wave1, wave2
-	
-	// create wave references
-	string wave1_name = nameofwave(wave1)
-	string wave2_name = nameofwave(wave2)
-
-	wave wave1_ref = $wave1_name
-	wave wave2_ref = $wave2_name
-	
-	// create x wave references
-	create_x_wave(wave1_ref)
-	wave wave1_x_wave = x_wave
-	
-	create_x_wave(wave2_ref)
-	wave wave2_x_wave = x_wave
-	
-	
-	// removing bad rows from wave1
-	variable num_rows_wave1 = dimsize(wave1_ref, 0)
-	variable x1, x2
-
-	int num_bad_rows = 0	
-	int i 
-	for (i = 0; i < num_rows_wave1; i++)
-	
-		x1 = wave1_x_wave[i]
-		
-		FindValue /V=(x1) wave2_x_wave
-
-		if (V_row == -1) // value from x1 is not in x2
-			DeletePoints (i - num_bad_rows), 1, wave1_ref // delete row
-			num_bad_rows += 1
-		endif
-	endfor
-	
-	
-	// removing bad rows from wave2
-	variable num_rows_wave2 = dimsize(wave2_ref, 0)
-
-	num_bad_rows = 0	
-	for (i = 0; i < num_rows_wave2; i++)
-	
-		x2 = wave2_x_wave[i]
-		
-		FindValue /V=(x2) wave1_x_wave
-	
-		if (V_row == -1) // value from x2 is not in x1
-			DeletePoints (i - num_bad_rows), 1, wave2_ref // delete row
-			num_bad_rows += 1
-		endif
-	endfor
-	
-end
-
-
-
-function translate_wave_by_occupation(wave1, wave2)
-	// overwrites x scaling of wave1 by shifting it using wave2
-	// assumes both waves have correct x scaling
-	// does not assume each wave has same delta x
-	// hard coded to shift x-axis of wave1 when wave2 = 0.5
-	
-	wave wave1, wave2
-	
-	// create wave references
-	string wave1_name = nameofwave(wave1)
-	string wave2_name = nameofwave(wave2)
-	
-	wave wave1_ref = $wave1_name
-	wave wave2_ref = $wave2_name
-	
-	// create x wave references
-	create_x_wave(wave1_ref)
-	wave wave1_x_wave = x_wave
-	
-	FindLevel /Q $wave2_name, 0.5
-	variable gate_val_half = V_LevelX
-	
-	variable num_rows_wave1 = dimsize(wave1_ref, 0)
-	
-	print wave1_name, gate_val_half
-	
-	SetScale/I x (wave1_x_wave[0] - gate_val_half), (wave1_x_wave[num_rows_wave1 - 1] - gate_val_half), $wave1_name
-
-
-end

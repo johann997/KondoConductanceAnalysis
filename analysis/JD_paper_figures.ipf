@@ -60,22 +60,14 @@ function figure_C()
 	
 	///// RUN GLOBAL FIT /////
 	variable cond_chisq, occ_chisq, condocc_chisq
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=1, fit_entropy=0, fit_entropy_dats="")
-
-	
-//	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
-	
-	
+	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=1, fit_entropy=0, fit_entropy_dats="")	
 	
 	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
-//	Display; KillWindow /Z figure_cb; DoWindow/C/O figure_cb
 
 	string cond_avg, cond_avg_fit
 	string trans_avg, trans_avg_fit
 	string occ_avg, occ_avg_fit
 	
-//	variable mid_occupation_x, mid_occupation_y, y_offset_diff, y_offset_setpoint = 0.2
-//	variable quadratic_occupation_coef, linear_occupation_coef
 	string occupation_coef_name
 	
 	string legend_text = ""
@@ -110,7 +102,6 @@ function figure_C()
 		blue = str2num(stringfromlist(2, colour, ","))
 		
 		
-		
 		//////////////////////////////////////////
 		///// ADDING CONDUCTION VS SWEEPGATE /////
 		//////////////////////////////////////////
@@ -119,26 +110,18 @@ function figure_C()
 		ModifyGraph /W=figure_ca mode($cond_avg_fit)=0, lsize($cond_avg_fit)=2, rgb($cond_avg_fit)=(red,green,blue)
 		
 		
-		
 		//////////////////////////////////////////
 		///// ADDING OCCUPATION VS SWEEPGATE /////
 		//////////////////////////////////////////
-		///// Re-offsetting and removing quadratic and linear terms /////
-//		string trans_avg_data_wave_name = trans_avg + "_figc"
-//		string trans_avg_fit_wave_name = trans_avg_fit + "_figc"
-		
-		
-		///// Appending traces to graph ca /////
+		///// Appending traces to panel ca /////
 		AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg; AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg_fit;
 		ModifyGraph /W=figure_ca mode($trans_avg)=2, lsize($trans_avg)=1, rgb($trans_avg)=(red,green,blue)
 		ModifyGraph /W=figure_ca mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(red,green,blue)
 		
-		///// Appending traces to graph cb /////
+		///// Appending traces to panel cb /////
 		AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg; AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg_fit;
 		ModifyGraph /W=figure_ca mode($occ_avg)=2, lsize($occ_avg)=1, rgb($occ_avg)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(red,green,blue)
-//		ModifyGraph /W=figure_ca freePos(l4)={-inf,b4}
-//		ModifyGraph /W=figure_ca  axisEnab(l4)={0.6,0.7},freePos(l4)=-20
+		ModifyGraph /W=figure_ca mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(red,green,blue)		
 		
 		
 		///////////////////////////////////////////
@@ -204,9 +187,7 @@ function figure_C()
 	///// setting x-axis in line with y-axis /////
 	ModifyGraph /W = figure_ca freePos(b2)={0,l3}
 	ModifyGraph /W = figure_ca freePos(b3)={0,l2}
-	
-//	ModifyGraph /W = figure_ca freePos(b4)={0,l4}
-	
+		
 	///// remove label from b2 /////
 	ModifyGraph /W = figure_ca noLabel(b2)=2
 	
@@ -234,86 +215,11 @@ function figure_C()
 	
 	///// adding legend /////
 	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
-//	print legend_text
 
 	beautify_figure("figure_ca")
 end
 
 
-
-function delete_points_from_x(wave1, minx, maxx)
-	// assumes minx and maxx are in the x values in wave1
-	wave wave1
-	variable minx, maxx
-	variable min_index = x2pnt(wave1, minx)
-	variable max_index = x2pnt(wave1, maxx)
-	variable numpts = dimsize(wave1, 0)
-	
-	if (min_index > 0)
-		deletePoints /M=0 0, min_index+1, wave1
-	endif
-	
-	if (max_index < numpts)
-		deletePoints /M=0 max_index-min_index, numpts-max_index, wave1
-	endif
-	
-	setscale /I x, minx, maxx, wave1
-end
-
-
-function [variable minx, variable maxx] find_overlap_mask(wave wave1, wave wave2)
-	// assumes both wave1 and wave2 are 1d will return minx and maxx when both masks are 1
-	
-	// find minx and maxx for wave 1
-	int numpts = dimsize(wave1, 0)
-	int min_check = 0, max_check = 0
-	
-	create_x_wave(wave1)
-	wave x_wave
-	
-	int i
-	for (i=0; i<numpts; i++)
-		if ((wave1[i] == 1) && (min_check == 0))
-			minx = x_wave[i]
-			min_check = 1
-		endif
-		
-		if ((wave1[i] == 0) && (min_check == 1) && (max_check == 0))
-			maxx = x_wave[i]
-			max_check = 1
-		endif
-	endfor
-	
-	
-	
-	// find minx and maxx for wave 2
-	numpts = dimsize(wave2, 0)
-	min_check = 0
-	max_check = 0
-	
-	create_x_wave(wave2)
-	wave x_wave
-	
-	for (i=0; i<numpts; i++)
-		if ((wave2[i] == 1) && (min_check == 0))
-			if (x_wave[i]> minx)
-				minx = x_wave[i]
-			endif
-			min_check = 1
-		endif
-		
-		if ((wave2[i] == 0) && (min_check == 1) && (max_check == 0))
-			if (x_wave[i] < maxx)
-				maxx = x_wave[i]
-			endif
-			max_check = 1
-		endif
-	endfor
-	
-//print minx, maxx
-return [minx, maxx]
-	
-end
 
 function figure_D()
 	string low_gamma_low_field = "6081"
@@ -324,7 +230,7 @@ function figure_D()
 	string high_gamma_23_transition = "6225"
 	
 	string base_y_data_name = "_dot_cleaned_avg_interp"
-	string base_x_data_name = "_cs_cleaned_avg_occ"
+	string base_x_data_name = "_cs_cleaned_avg_occ_interp"
 	
 
 
@@ -545,7 +451,6 @@ end
 //end
 
 
-
 function fit_charge_transition_entropy([global_temps, gamma_type])
 	string global_temps, gamma_type
 	global_temps = selectString(paramisdefault(global_temps), global_temps, "22.5;90;275;400") // temperatures used for global fitting
@@ -760,54 +665,6 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 		ModifyGraph /W=figure_entropy_occupation  mode($occ_avg_data_wave_name)=2, lsize($occ_avg_data_wave_name)=1, rgb($occ_avg_data_wave_name)=(red,green,blue)
 		ModifyGraph /W=figure_entropy_occupation  mode($occ_avg_fit_wave_name)=0, lsize($occ_avg_fit_wave_name)=2, rgb($occ_avg_fit_wave_name)=(red,green,blue)
 		
-		
-		
-		
-//		///// adding charge transition /////
-//		string trans_avg_data_wave_name = trans_avg + "_figc"
-//		string trans_avg_fit_wave_name = trans_avg_fit + "_figc"
-//		
-//		duplicate/o $trans_avg $trans_avg_data_wave_name
-//		duplicate/o $trans_avg_fit $trans_avg_fit_wave_name
-//		
-//		wave trans_avg_data_wave = $trans_avg_data_wave_name 
-//		wave trans_avg_fit_wave = $trans_avg_fit_wave_name 
-//		
-////		wave trans_avg_temp = $trans_avg
-////		wave trans_avg_fit_temp = $trans_avg_fit
-//		
-//		SetScale/I x pnt2x(trans_avg_data_wave, 0)/200, pnt2x(trans_avg_data_wave, dimsize(trans_avg_data_wave, 0) - 1)/200, trans_avg_data_wave
-//		SetScale/I x pnt2x(trans_avg_fit_wave, 0)/200, pnt2x(trans_avg_fit_wave, dimsize(trans_avg_fit_wave, 0) - 1)/200, trans_avg_fit_wave 
-//		
-//		///// Appending traces to graph cb /////
-//		AppendToGraph /R /W=figure_entropy_occupation  $trans_avg_data_wave_name; AppendToGraph /R /W=figure_entropy_occupation  $trans_avg_fit_wave_name;
-//		ModifyGraph /W=figure_entropy_occupation  mode($trans_avg_data_wave_name)=2, lsize($trans_avg_data_wave_name)=1, rgb($trans_avg_data_wave_name)=(red,green,blue)
-//		ModifyGraph /W=figure_entropy_occupation  mode($trans_avg_fit_wave_name)=0, lsize($trans_avg_fit_wave_name)=2, rgb($trans_avg_fit_wave_name)=(red,green,blue)
-//		
-//		
-		
-		
-//		///////////////////////////////////////////
-//		///// ADDING CONDUCTION VS OCCUPATION /////
-//		///////////////////////////////////////////
-////		string cond_vs_occ_data_wave_name_y = cond_avg + "_cond_data"
-////		string cond_vs_occ_data_wave_name_x = cond_avg + "_occ_nrg"
-//		string cond_vs_occ_data_wave_name_y = cond_avg
-//		string cond_vs_occ_data_wave_name_x = cond_avg + "_occ_nrg"
-//		
-////		///// START EXTRA /////
-//		duplicate /o trans_avg_data_wave $cond_vs_occ_data_wave_name_x
-//		SetScale/I x pnt2x($cond_vs_occ_data_wave_name_y, 0)/200, pnt2x($cond_vs_occ_data_wave_name_y, dimsize($cond_vs_occ_data_wave_name_y, 0) - 1)/200, $cond_vs_occ_data_wave_name_y
-////		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name_y, $cond_vs_occ_data_wave_name_x)
-////		///// END EXTRA /////
-//		
-//		AppendToGraph /W=figure_entropy_occupation_cc $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x;
-//		ModifyGraph /W=figure_entropy_occupation_cc mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
-//		
-//		string cond_vs_occ_fit_wave_name_y = cond_avg + "_cond_nrg"
-//		string cond_vs_occ_fit_wave_name_x = cond_avg + "_occ_nrg"
-//		AppendToGraph /W=figure_entropy_occupation_cc $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
-//		ModifyGraph /W=figure_entropy_occupation_cc mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
 		
 	endfor
 	
