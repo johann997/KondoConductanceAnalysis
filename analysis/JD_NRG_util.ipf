@@ -500,16 +500,18 @@ end
 
 
 
-function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_conductance, use_previous_coef])
+function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_conductance, use_previous_coef, linear_term, quadratic_term])
 	STRUCT GFinputs &GFin
 	STRUCT g_occdata &data
 	string gamma_over_temp_type
-	variable global_fit_conductance, use_previous_coef
+	variable global_fit_conductance, use_previous_coef, linear_term, quadratic_term
 	
 	gamma_over_temp_type = selectString(paramisdefault(gamma_over_temp_type), gamma_over_temp_type, "high")
 	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // assuming repeats to average into 1 trace
 	use_previous_coef = paramisdefault(use_previous_coef) ? 0 : use_previous_coef // assuming repeats to average into 1 trace	
-
+	linear_term = paramisdefault(linear_term) ? 0 : linear_term // if linear_term not zero then let it go free. Default is to hold it at 0 
+	quadratic_term = paramisdefault(quadratic_term) ? 0 : quadratic_term // if quadratic_term not zero then let it go free. Default is to hold it at 0 
+	
 	variable counter = 0, numcoefs, i, j, numwvs = dimsize(data.temps, 0), numlinks, numunlinked, whichcoef
 	wave data.temps
 	
@@ -631,7 +633,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 	////////////////////////////////////////////////
 	///// ADDING INITIAL GUESS OF COEFFICIENTS /////
 	////////////////////////////////////////////////
-	use_previous_coef = 0
+//	use_previous_coef = 0
 	if (use_previous_coef == 1)
 		wave coefwave 
 		wave GFin.coefwave
@@ -644,10 +646,15 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			if (global_fit_conductance == 1)
 //				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 			else
-//				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
-				coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // 1e-6 // linear
-				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
-				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // quadratic
+				if (linear_term != 0)
+					coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
+					coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // 1e-6 // linear
+				endif
+				
+				if (quadratic_term != 0)
+					coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
+					coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // quadratic
+				endif
 ////				coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/2 // amplitude
 				
 			endif
@@ -669,7 +676,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			
 		elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 			coefwave[0][0] = 1e-4 // lnG/Tbase (linked)
-			coefwave[1][0] = 0.13 // 0.02 // x scaling (linked)
+			coefwave[1][0] = 0.3 //0.13 // 0.02 // x scaling (linked)
 		endif
 		
 		// Set index 1 == 1 to hold the value  
@@ -1045,11 +1052,27 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		
 	/////// Define inputs for global fit to conductance data /////
 	// (check out help in Global Fit 2 Help -- not Global Fit Help)
-	build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1)
+	build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=0)
 	options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
-	
-	/////// Perform global fit /////
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
+	
+	// if fitting charge transitions :: let linear and then quadratic term go free.
+	// set linear_term or quadratic_term to 0 to keep them at zero and hold them 
+	int linear_term = 1, quadratic_term = 1
+	if (global_fit_conductance == 0)
+		if (linear_term != 0)
+			build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1, linear_term=linear_term, quadratic_term=0)
+			options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
+			DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
+		endif
+		
+		if (quadratic_term != 0)
+			build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1, linear_term=0, quadratic_term=quadratic_term)
+			options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
+			DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
+		endif
+	endif
+	
 	ModifyGraph lsize=2,rgb(FitY)=(65535,16385,55749),rgb(FitY#1)=(65535,16385,55749),rgb(FitY#2)=(65535,16385,55749),rgb(FitY#3)=(65535,16385,55749)
 
 //	print "Base T = ",(GFin.CoefWave[0][0]),"mK :: Gamma/T = ", (GFin.CoefWave[3][0])/(GFin.CoefWave[0][0])
