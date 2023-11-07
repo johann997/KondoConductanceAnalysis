@@ -218,27 +218,53 @@ function zap_NaNs(wave_1d, [overwrite])
 	
 end
 
+function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_interp, wave_to_duplicate])
+	string wavename_to_interp
+	wave base_wave_to_interp
+	variable numpts_to_interp
+	wave wave_to_duplicate
+	// interpolates wave_to_interp and adds "_interp" to the end
+	// if numpts_to_interp is used then more points of wave_to_interp are increased
+	// if wave_to_duplicate is used then x wave from this wave is used for wavename_to_interp
+	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
+	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
+	
+	numpts_to_interp = paramisdefault(numpts_to_interp) ? 0 : numpts_to_interp // default 0 :: i.e. turned off
 
 
-function resampleWave(wave wav,variable targetFreq )
+	
+	create_x_wave(base_wave_to_interp)
+	wave x_wave
+		
+	if (numpts_to_interp != 0)
+		make /o /N=(numpts_to_interp) $wavename_to_interp
+		setscale /I x x_wave[0], x_wave[INF], $wavename_to_interp
+		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
+	else
+		duplicate /o wave_to_duplicate $wavename_to_interp
+		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
+	endif
+end
+
+
+function resampleWave(wave wav, variable targetFreq, [variable measure_freq])
 	// resamples wave w from measureFreq
 	// to targetFreq (which should be lower than measureFreq)	
+	
+	measure_freq = paramisdefault(measure_freq) ? 0 : measure_freq // default is to find measure freq from scanvars unless specified
+
 	string wn=nameOfWave(wav)
 	int wavenum=getfirstnum(wn)
 	string temp_name="dat"+num2str(wavenum)+"x_array"
 	
-	variable measureFreq
-//	struct ScanVars S
-//	fd_getScanVars(S,wavenum)
-//	struct AWGVars S
-//	fd_getoldAWG(S,wavenum)
-//
-//	measureFreq=S.measureFreq
-	measureFreq = fd_getmeasfreq(wavenum)
-	variable N=measureFreq/targetFreq
+	if (measure_freq == 0)
+		measure_freq = fd_getmeasfreq(wavenum)
+	endif
+	
+	variable N = measure_freq/targetFreq
 
 	
-	RatioFromNumber (targetFreq / measureFreq)
+	RatioFromNumber (targetFreq / measure_freq)
 	if (V_numerator > V_denominator)
 		string cmd
 		printf cmd "WARNING[scfd_resampleWaves]: Resampling will increase number of datapoints, not decrease! (ratio = %d/%d)\r", V_numerator, V_denominator

@@ -20,10 +20,13 @@ function save_figure(figure_name)
 //	print ParseFilePath(1, S_path, ":", 1, 0)
 //	string /G S_path
 //	string file_path = ParseFilePath(1, S_path, ":", 1, 0) + "Figures:"
-	string file_path = "Macintosh HD:Users:johanndrayne:Documents:Work:QDEV:_EntropyConductancePaper:IGORAnalysis:Figures:"
+	string file_path = "Macintosh HD:Users:johanndrayne:Documents:Work:QDEV:_EntropyConductancePaper:IGORAnalysis:IGOR_Figures:"
 	
 	SavePICT/P=file_path/E=-5/RES=1000/o as png_name
 end
+
+
+
 
 
 function figure_C()
@@ -142,40 +145,37 @@ function figure_C()
 //		///// ADDING CONDUCTION VS OCCUPATION /////
 //		///////////////////////////////////////////
 		variable numpts_occupation = 10000
-//		wave occ_avg_wave = $occ_avg
 		create_x_wave($occ_avg)
 		wave x_wave
 		
+		////////////////////////////////////
 		///// interpolating data waves /////
+		////////////////////////////////////
 		variable minx, maxx
 		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
+		
 		// interpolating occupation to have higher density of points
 		string cond_vs_occ_data_wave_name_x = occ_avg + "_interp"
-		make /o /N=(numpts_occupation) cond_vs_occ_data_wave_x
-		duplicate /o cond_vs_occ_data_wave_x $cond_vs_occ_data_wave_name_x
-		setscale /I x x_wave[0], x_wave[INF], $cond_vs_occ_data_wave_name_x
-		Interpolate2/T=1/E=2/Y=$cond_vs_occ_data_wave_name_x/I=3 $occ_avg //cubic interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
-
+		interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
+		
 		// interpolating conduction to have data at same x points as occuptaion data
 		string cond_vs_occ_data_wave_name_y = cond_avg + "_interp"
-		duplicate /o $cond_vs_occ_data_wave_name_x $cond_vs_occ_data_wave_name_y
-		Interpolate2/T=1/E=2/Y=$cond_vs_occ_data_wave_name_y/I=3 $cond_avg //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+		interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
+		
+		// deleting points outside of mask
 		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
 		delete_points_from_x($cond_vs_occ_data_wave_name_y, minx, maxx)
 		
+		
+		///////////////////////////////////
 		///// interpolating fit waves /////
-//		[minx, maxx] = find_overlap_mask($occ_avg_fit, $occ_avg_fit)
-		create_x_wave($occ_avg_fit)
-		wave x_wave
+		///////////////////////////////////
 		string cond_vs_occ_fit_wave_name_x = occ_avg_fit + "_interp"
-		make /o /N=(numpts_occupation) cond_vs_occ_fit_wave_x
-		duplicate /o cond_vs_occ_fit_wave_x $cond_vs_occ_fit_wave_name_x
-		setscale /I x x_wave[0], x_wave[INF], $cond_vs_occ_fit_wave_name_x
-		Interpolate2/T=1/E=2/Y=$cond_vs_occ_fit_wave_name_x/I=3 $occ_avg_fit //cubic interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
-
+		interpolate_wave(cond_vs_occ_fit_wave_name_x, $occ_avg_fit, numpts_to_interp=10000)
+		
 		string cond_vs_occ_fit_wave_name_y = cond_avg_fit + "_interp"
-		duplicate /o $cond_vs_occ_fit_wave_name_x $cond_vs_occ_fit_wave_name_y
-		Interpolate2/T=1/E=2/Y=$cond_vs_occ_fit_wave_name_y/I=3 $cond_avg_fit //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
+		interpolate_wave(cond_vs_occ_fit_wave_name_y, $cond_avg_fit, wave_to_duplicate=$cond_vs_occ_fit_wave_name_x)
+
 		delete_points_from_x($cond_vs_occ_fit_wave_name_x, minx, maxx)
 		delete_points_from_x($cond_vs_occ_fit_wave_name_y, minx, maxx)
 
