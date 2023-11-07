@@ -61,8 +61,10 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 	wave badthetasx
 	wave badgammasx
 	
-	string quickavg = avg_wav($datasetname) // averages datasetname and returns the name of the averaged wave
-
+	string quickavg = avg_wav($("dat" + num2str(wavenum))) // averages datasetname and returns the name of the averaged wave
+	duplicate /o $quickavg $(quickavg+ "_BLIND")
+	quickavg += "_BLIND"
+	
 	if (refit==1)
 		// get a rough fit of average
 		get_initial_params($quickavg)
@@ -594,7 +596,7 @@ function plot_ct_figs(wavenum, N, kenner, kenner_out, minx, maxx, [average, fit_
 	string avg_wave_name = cleaned_wave_name + "_avg" // this is the averaged wave produced by avg_wave($cleaned)
 	
 	string fit_params_name = kenner_out + num2str(wavenum) + "_cs_fit_params" // this is the fit parameters 
-	string quickavg = datasetname + "_avg" // this is the wave produced by avg_wave($datasetname)
+	string quickavg = datasetname + "_avg_BLIND" // this is the wave produced by avg_wave($datasetname)
 	wave W_coef
 
 
