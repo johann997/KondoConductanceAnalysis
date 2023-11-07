@@ -73,7 +73,7 @@ end
 
 
 
-function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
+function notch_filters(wave wav, [string Hzs, string Qs, string notch_name, variable measure_freq])
 	// wav is the wave to be filtered.  notch_name, if specified, is the name of the wave after notch filtering.
 	// If not specified the filtered wave will have the original name plus '_nf' 
 	// This function is used to apply the notch filter for a choice of frequencies and Q factors
@@ -83,6 +83,7 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 	
 	Hzs = selectString(paramisdefault(Hzs), Hzs, "60")
 	Qs = selectString(paramisdefault(Qs), Qs, "50")
+	measure_freq = paramisdefault(measure_freq) ? 0 : measure_freq // default is to find measure freq from scanvars unless specified
 	variable num_Hz = ItemsInList(Hzs, ";")
 	variable num_Q = ItemsInList(Qs, ";")
 	
@@ -112,7 +113,10 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name])
 	
 	// Accessing freq conversion for wav
 	int wavenum = getfirstnum(wav_name)
-	variable freqfactor = 1/(fd_getmeasfreq(wavenum) * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
+	if (measure_freq == 0)
+		measure_freq = fd_getmeasfreq(wavenum)
+	endif
+	variable freqfactor = 1/(measure_freq * dimdelta(wav, 0)) // freq in wav = Hz in real seconds * freqfactor
 
 	fftfactor=1
 	variable freq, Q, i

@@ -631,7 +631,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 	////////////////////////////////////////////////
 	///// ADDING INITIAL GUESS OF COEFFICIENTS /////
 	////////////////////////////////////////////////
-	use_previous_coef = 1
+	use_previous_coef = 0
 	if (use_previous_coef == 1)
 		wave coefwave 
 		wave GFin.coefwave
