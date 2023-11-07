@@ -4,10 +4,10 @@
 #include <Reduce Matrix Size>
 
 
-function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling, forced_theta, fit_width, divide_data, resample_before_centering, average_every_n, zero_offset_entropy])
+function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling, forced_theta, fit_width, divide_data, resample_before_centering, resample_measure_freq, average_every_n, zero_offset_entropy, use_notch])
 	int filenum, delay, wavelen
 	int centre_repeats, average_repeats, demodulate_on, cold_awg_first, apply_scaling
-	variable forced_theta, fit_width, divide_data, resample_before_centering, average_every_n, zero_offset_entropy
+	variable forced_theta, fit_width, divide_data, resample_before_centering, resample_measure_freq, average_every_n, zero_offset_entropy, use_notch
 	
 	centre_repeats = paramisdefault(centre_repeats) ? 0 : centre_repeats // default is to not centre repeats based on cold trace
 	average_repeats = paramisdefault(average_repeats) ? 1 : average_repeats // default is to average repeats
@@ -18,12 +18,18 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	fit_width = paramisdefault(fit_width) ? INF : fit_width // default is to fit entire transition
 	divide_data = paramisdefault(divide_data) ? 1 : divide_data // default not divide the data. Use case: If input data is RAW we may need to re-scale data.
 	resample_before_centering = paramisdefault(resample_before_centering) ? 0 : resample_before_centering // resample the data before centering. Useful if file size are large. Resampled data not used to calculate entropy
+	resample_measure_freq = paramisdefault(resample_measure_freq) ? 0 : resample_measure_freq // Force the resampling measure freq. If set to zero, uses the input from scanvars
 	average_every_n = paramisdefault(average_every_n) ? 1 : average_every_n // average every n rows in a 2d data set. Useful if you have repeats at each setpoint
 	zero_offset_entropy = paramisdefault(zero_offset_entropy) ? 0 : zero_offset_entropy // offset entropy data so delta Ics starts at zero
-
-
-	string raw_wavename = "dat" + num2str(filenum) + "cscurrent_2d"
-	string notch_wavename = raw_wavename + "_nf"
+	use_notch = paramisdefault(use_notch) ? 0 : use_notch // assume a notch filtered wave has been created with "_nf" appended to the end. Default is to not use notch filtered wave
+	
+	string raw_wavename 
+	if (use_notch == 0)
+		raw_wavename = "dat" + num2str(filenum) + "cscurrent_2d"
+	else
+		raw_wavename = "dat" + num2str(filenum) + "cscurrent_2d_nf"
+	endif
+	
 	string cs_cold_cleaned_name = "dat" + num2str(filenum) + "_cs_cleaned"
 	string cs_hot_cleaned_name = "dat" + num2str(filenum) + "_cs_cleaned_hot"
 	string cs_cold_cleaned_avg_name = cs_cold_cleaned_name + "_avg"
@@ -41,13 +47,15 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	///// DEMODULATE /////
 	string demodx_wavename = "dat" + num2str(filenum) + "cscurrentx_2d";
 	wave demodx_wave = $demodx_wavename
-	demodx_wave[][] = demodx_wave[p][q]/divide_data
+//	demodx_wave[][] = demodx_wave[p][q]/divide_data
 	if (demodulate_on == 1)
+		demodx_wave[][] = demodx_wave[p][q]/divide_data
 		demodulate(filenum, 2, "cscurrent_2d", demod_wavename = demodx_wavename)
 		wave demodx_wave = $demodx_wavename
 		demodx_wave *= 2
+		duplicate /o $demodx_wavename demod_entropy
 	endif
-	duplicate /o $demodx_wavename demod_entropy
+//	duplicate /o $demodx_wavename demod_entropy
 	wave demod_entropy
 
 
@@ -60,7 +68,7 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 		// fit cold transitions
 		if (resample_before_centering != 0)
 			duplicate /o cold cold_resampled
-			resampleWave(cold_resampled, resample_before_centering)
+			resampleWave(cold_resampled, resample_before_centering, measure_freq = resample_measure_freq)
 			wave cold_resampled
 			master_ct_clean_average(cold_resampled, 1, 0, "dat")
 		else
@@ -78,24 +86,26 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 		centering(hot, "hot_centered", mids)
 		wave hot_centered
 		wave badthetasx
-		remove_bad_thetas(hot_centered, badthetasx, "hot_centered")
+		remove_bad_thetas(hot_centered, badthetasx, "hot_cleaned")
 //		zap_NaN_rows(hot_centered, overwrite = 1, percentage_cutoff_inf = 0.15)
-		duplicate /o hot_centered $cs_hot_cleaned_name
+		wave hot_cleaned
+		duplicate /o hot_cleaned $cs_hot_cleaned_name
 		
 		if (resample_before_centering != 0)
 			duplicate /o cold dat0_cs_cleaned
 			centering(cold, "cold_centered", mids)
 			wave cold_centered
 			wave badthetasx
-			remove_bad_thetas(cold_centered, badthetasx, "cold_centered")
+			remove_bad_thetas(cold_centered, badthetasx, "cold_cleaned")
 	//		zap_NaN_rows(hot_centered, overwrite = 1, percentage_cutoff_inf = 0.15)
-			duplicate /o cold_centered $cs_cold_cleaned_name
+			wave cold_cleaned
+			duplicate /o cold_cleaned $cs_cold_cleaned_name
 		endif
 
 		// create numerical entropy from centered cold and hot waves
 		duplicate /o $cs_cold_cleaned_name numerical_entropy
-		wave cold_centered = $cs_cold_cleaned_name
-		numerical_entropy = cold_centered - hot_centered
+		wave cold_cleaned = $cs_cold_cleaned_name
+		numerical_entropy = cold_cleaned - hot_cleaned
 		
 		// centre demod entropy
 		centering(demod_entropy, "demod_entropy_centered", mids)
@@ -119,10 +129,12 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 		wave numerical_entropy_avg
 		numerical_entropy_avg = cold_avg - hot_avg
 		
-		// average demod entropy
-		wave demod_entropy_centered
-		avg_wav(demod_entropy_centered)
-		wave demod_entropy_centered_avg
+		if (demodulate_on == 1)
+			// average demod entropy
+			wave demod_entropy_centered
+			avg_wav(demod_entropy_centered)
+			wave demod_entropy_centered_avg
+		endif
 	elseif ((average_repeats == 1) && (centre_repeats == 0)) // blind average
 		duplicate /o cold $cs_cold_cleaned_name
 		duplicate /o hot $cs_hot_cleaned_name
@@ -135,9 +147,11 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 		avg_wav(numerical_entropy)
 		wave numerical_entropy_avg
 		
-		// average demod entropy
-		avg_wav(demod_entropy)
-		wave demod_entropy_avg
+		if (demodulate_on == 1)
+			// average demod entropy
+			avg_wav(demod_entropy)
+			wave demod_entropy_avg
+		endif
 	elseif ((average_repeats == 0) && (average_every_n > 1))
 		average_every_n_rows(cold, average_every_n, overwrite=1)
 		average_every_n_rows(hot, average_every_n, overwrite=1)
@@ -165,10 +179,12 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	
 	wave entropy_centered_avg, numerical_entropy_centered_avg
 	if (average_repeats == 1)
-		if (centre_repeats == 1)
-			Integrate demod_entropy_centered_avg /D = demod_entropy_avg_int
-		else
-			Integrate demod_entropy_avg /D = demod_entropy_avg_int
+		if (demodulate_on == 1)
+			if (centre_repeats == 1)
+				Integrate demod_entropy_centered_avg /D = demod_entropy_avg_int
+			else
+				Integrate demod_entropy_avg /D = demod_entropy_avg_int
+			endif
 		endif
 		Integrate numerical_entropy_avg /D = numerical_entropy_avg_int
 	endif
@@ -229,7 +245,7 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 
 	duplicate /o demod_entropy $entropy_demod_2d_name
 	duplicate /o demod_entropy_int $entropy_int_demod_2d_name
-	if (average_repeats == 1)
+	if ((average_repeats == 1) && (demodulate_on == 1))
 		duplicate /o demod_entropy_avg $entropy_demod_avg_name
 		duplicate /o demod_entropy_avg_int $entropy_int_demod_avg_name
 	endif
@@ -265,15 +281,25 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	endif
 	
 	///// entropy 2d /////
-	plot2d_heatmap($entropy_demod_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // demod entropy 
+	if (demodulate_on == 1)
+		plot2d_heatmap($entropy_demod_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // demod entropy 
+		plot2d_heatmap($entropy_int_demod_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // demod entropy 
+	endif
+	
 	plot2d_heatmap($entropy_numerical_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // numerical entropy
-	plot2d_heatmap($entropy_int_demod_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // demod entropy 
 	plot2d_heatmap($entropy_int_numerical_2d_name, x_label = "Gate (mV)", y_label = "Repeats") // numerical entropy
 	
 	///// entropy 1d /////
-	display $entropy_numerical_avg_name $entropy_demod_avg_name
-	appendtograph /r $entropy_int_numerical_avg_name $entropy_int_demod_avg_name
-	ModifyGraph rgb($entropy_demod_avg_name)=(0,0,0), rgb($entropy_int_demod_avg_name)=(0,0,0)
+	display $entropy_numerical_avg_name 
+	if (demodulate_on == 1)
+		appendtograph $entropy_demod_avg_name
+	endif
+	
+	appendtograph /r $entropy_int_numerical_avg_name 
+	if (demodulate_on == 1)
+		appendtograph /r $entropy_int_demod_avg_name
+		ModifyGraph rgb($entropy_demod_avg_name)=(0,0,0), rgb($entropy_int_demod_avg_name)=(0,0,0)
+	endif
 	legend
 	Label left "dN/dT"
 	Label right "delta.S"
