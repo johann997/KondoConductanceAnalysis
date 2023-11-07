@@ -29,7 +29,7 @@ end
 
 
 
-function figure_C()
+function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
 //	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
 //	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
@@ -221,7 +221,7 @@ end
 
 
 
-function figure_D()
+function figure_3_conductance()
 	string low_gamma_low_field = "6081"
 	string mid_gamma_low_field = "6080"
 	string high_gamma_low_field = "6079"
@@ -451,6 +451,217 @@ end
 //end
 
 
+
+
+function figure_2_entropy()
+	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
+//	string global_datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+//	string global_datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
+//	string global_datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+	
+//	string global_datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
+	
+//	string global_datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
+//	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
+	
+	///// AUTUMN EXPERIMENT /////
+	string gamma_type
+	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"
+//	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
+//	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "mid"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
+//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
+//	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
+//	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
+//	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
+//	string entropy_datnums = "1439"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 1000uV bias
+//	string entropy_datnums = "1473"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias :: symmetric
+
+//	string e_temps = "23;100;300;500"
+	string e_temps = "22.5;90;275;400"
+	
+	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	string colour, e_temp
+	variable red, green, blue
+	
+	int global_fit_conductance = 0
+	int fit_conductance = 0
+	int fit_entropy = 0
+	
+	variable num_dats = ItemsInList(global_datnums, ";")
+	
+	///// ZAP NANs /////
+	string ct_datnum, ct_wavename
+	int i 
+	for (i=0; i<num_dats; i++)
+		ct_datnum = stringfromlist(i, global_datnums)
+		ct_wavename = "dat" + ct_datnum + "_cs_cleaned_avg"
+		zap_NaNs($ct_wavename, overwrite=1)
+	endfor
+	
+	///// RUN GLOBAL FIT /////
+	variable cond_chisq, occ_chisq, condocc_chisq
+	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums)	
+	
+	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
+
+	string cond_avg, cond_avg_fit
+	string trans_avg, trans_avg_fit
+	string occ_avg, occ_avg_fit
+	
+	string occupation_coef_name
+	
+	string legend_text = ""
+	variable datnum
+	for (i=0;i<num_dats;i+=1)
+		datnum = str2num(stringfromlist(i, global_datnums))
+		e_temp = stringfromlist(i, e_temps)
+		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
+		if (global_fit_conductance == 1)
+			cond_avg_fit = "GFit_" + cond_avg
+		else
+			cond_avg_fit = "fit_" + cond_avg
+		endif
+		
+		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
+		if (global_fit_conductance == 1)
+			trans_avg_fit = "fit_" + trans_avg
+		else
+			trans_avg_fit = "GFit_" + trans_avg
+		endif
+		
+		occ_avg = trans_avg + "_occ"
+		occ_avg_fit = trans_avg_fit + "_occ"
+		
+		legend_text = legend_text + "\\s(" + trans_avg_fit +  ") " +  e_temp + "mK\r"
+		
+		
+		///// getting correct colour for plot /////
+		colour = stringfromlist(i, colours, ";")
+		red = str2num(stringfromlist(0, colour, ","))
+		green = str2num(stringfromlist(1, colour, ","))
+		blue = str2num(stringfromlist(2, colour, ","))
+		
+		
+		//////////////////////////////////////////
+		///// ADDING CONDUCTION VS SWEEPGATE /////
+		//////////////////////////////////////////
+//		AppendToGraph /W=figure_ca /L=l3/B=b3 $cond_avg; AppendToGraph /W=figure_ca /L=l3/B=b3 $cond_avg_fit;
+//		ModifyGraph /W=figure_ca mode($cond_avg)=2, lsize($cond_avg)=1, rgb($cond_avg)=(red,green,blue)
+//		ModifyGraph /W=figure_ca mode($cond_avg_fit)=0, lsize($cond_avg_fit)=2, rgb($cond_avg_fit)=(red,green,blue)
+		
+		
+		//////////////////////////////////////////
+		///// ADDING OCCUPATION VS SWEEPGATE /////
+		//////////////////////////////////////////
+		///// Appending traces to panel ca /////
+		AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg; AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg_fit;
+		ModifyGraph /W=figure_ca mode($trans_avg)=2, lsize($trans_avg)=1, rgb($trans_avg)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(red,green,blue)
+		
+		///// Appending traces to panel cb /////
+		AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg; AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg_fit;
+		ModifyGraph /W=figure_ca mode($occ_avg)=2, lsize($occ_avg)=1, rgb($occ_avg)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(red,green,blue)		
+		
+		
+//		////////////////////////////////////////
+////		///// ADDING ENTROPY VS OCCUPATION /////
+////		////////////////////////////////////////
+//		variable numpts_occupation = 10000
+//		create_x_wave($occ_avg)
+//		wave x_wave
+//		
+//		////////////////////////////////////
+//		///// interpolating data waves /////
+//		////////////////////////////////////
+//		variable minx, maxx
+//		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
+//		
+//		// interpolating occupation to have higher density of points
+//		string cond_vs_occ_data_wave_name_x = occ_avg + "_interp"
+//		interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
+//		
+//		// interpolating conduction to have data at same x points as occuptaion data
+//		string cond_vs_occ_data_wave_name_y = cond_avg + "_interp"
+//		interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
+//		
+//		// deleting points outside of mask
+//		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
+//		delete_points_from_x($cond_vs_occ_data_wave_name_y, minx, maxx)
+//		
+//		
+//		///////////////////////////////////
+//		///// interpolating fit waves /////
+//		///////////////////////////////////
+//		string cond_vs_occ_fit_wave_name_x = occ_avg_fit + "_interp"
+//		interpolate_wave(cond_vs_occ_fit_wave_name_x, $occ_avg_fit, numpts_to_interp=10000)
+//		
+//		string cond_vs_occ_fit_wave_name_y = cond_avg_fit + "_interp"
+//		interpolate_wave(cond_vs_occ_fit_wave_name_y, $cond_avg_fit, wave_to_duplicate=$cond_vs_occ_fit_wave_name_x)
+//
+//		delete_points_from_x($cond_vs_occ_fit_wave_name_x, minx, maxx)
+//		delete_points_from_x($cond_vs_occ_fit_wave_name_y, minx, maxx)
+//
+//		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
+//		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=1, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
+//		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
+	endfor
+	
+	///// axis labelling goes from top plot to bottom plot
+	///// [b3, l3] [b2, l2] [bottom left]
+	
+	
+	///// setting y-scale of axis /////
+	ModifyGraph /W = figure_ca axisEnab(l2)={0.72, 1.0}
+//	ModifyGraph /W = figure_ca axisEnab(l2)={0.43, 0.71}
+	ModifyGraph /W = figure_ca axisEnab(left)={0.0, 0.28}
+	SetAxis /W=figure_ca left 0,*
+	SetAxis /W=figure_ca bottom 0,1
+	
+//	ModifyGraph /W = figure_ca axisEnab(l4)={0.57-0.05, 0.57+0.05}
+//	ModifyGraph /W = figure_ca axisEnab(b4)={0.1,0.4}
+	ModifyGraph /W=figure_ca  axisEnab(l4)={0.75,0.85},freePos(l4)=-20
+	ModifyGraph axisEnab(b4)={0.055,0.2},freePos(b4)={0,l4}
+	
+	
+	///// setting x-axis in line with y-axis /////
+//	ModifyGraph /W = figure_ca freePos(b2)={0,l3}
+//	ModifyGraph /W = figure_ca freePos(b3)={0,l2}
+		
+	///// remove label from b2 /////
+	ModifyGraph /W = figure_ca noLabel(b2)=2
+	
+	ModifyGraph /W = figure_ca freePos(l2)=0
+	ModifyGraph /W = figure_ca freePos(l3)=0
+	
+	ModifyGraph /W = figure_ca noLabel(b4)=2
+	ModifyGraph /W = figure_ca noLabel(l4)=2
+	
+	///// setting  axis labels /////
+//	Label /W=figure_ca l3 "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	Label /W=figure_ca l2 "Current (nA)"
+	Label /W=figure_ca left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	
+	Label /W=figure_ca bottom "Occupation (.arb)"
+//	Label /W=figure_ca b3 "Sweep Gate (mV)"
+	
+	///// off-setting labels from the axis /////
+	ModifyGraph /W=figure_ca lblPos(l2)=150
+//	ModifyGraph /W=figure_ca lblPos(l3)=150
+	ModifyGraph /W=figure_ca lblPos(left)=150
+	ModifyGraph /W=figure_ca lblPos(bottom)=80
+//	ModifyGraph /W=figure_ca lblPos(b3)=80
+	
+	
+	///// adding legend /////
+	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
+
+	beautify_figure("figure_ca")
+end
+
+
+
+
 function fit_charge_transition_entropy([global_temps, gamma_type])
 	string global_temps, gamma_type
 	global_temps = selectString(paramisdefault(global_temps), global_temps, "22.5;90;275;400") // temperatures used for global fitting
@@ -516,7 +727,7 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 		if (centre_transition_repeats == 1)
 //			closeallGraphs(); master_ct_clean_average($ct_wavename, 1, 0, "dat")
 		else
-			avg_wav($ct_wavename)
+			avg_wav($ct_wavename) 
 			duplicate /o $(ct_wavename + "_avg") $(avg_ct_name)
 		endif
 		
@@ -887,279 +1098,6 @@ function make_figure_entropy_shift([variable baset])
 
 end
 
-//
-//function figure_C_separate([variable baset, string gamma_type, variable field_on])
-//	baset = paramisdefault(baset) ? 15 : baset
-//	gamma_type = selectString(paramisdefault(gamma_type), gamma_type, "high") 
-//	field_on = paramisdefault(field_on) ? 0 : field_on
-//	
-//	string datnums, gamma_over_temp_type
-////	if ((StringMatch(gamma_type, "high") == 1) &&  (field_on == 0))
-////		datnums = "6079;6088;6085;6082"; gamma_over_temp_type = "high" // high gamma
-////	elseif ((StringMatch(gamma_type, "mid") == 1) && (field_on == 0))
-////		datnums = "6080;6089;6086;6083"; gamma_over_temp_type = "mid" // mid gamma
-////	elseif ((StringMatch(gamma_type, "low") == 1) && (field_on == 0))
-////		datnums = "6081;6090;6087;6084"; gamma_over_temp_type = "low" // low gamma
-////	elseif ((StringMatch(gamma_type, "high") == 1) && (field_on == 1))
-////		datnums = "6100;6097;6094;6091"; gamma_over_temp_type = "high" // high gamma
-////	endif
-//
-//
-//	if (StringMatch(gamma_type, "high") == 1)
-//		datnums = "699;695;691"; gamma_over_temp_type = "high" // high gamma
-//	elseif (StringMatch(gamma_type, "high_mid") == 1)
-//		datnums = "698;694;690"; gamma_over_temp_type = "mid" // mid gamma
-//	elseif (StringMatch(gamma_type, "low_mid") == 1)
-//		datnums = "697;693;689"; gamma_over_temp_type = "mid" // low gamma
-//	elseif (StringMatch(gamma_type, "low") == 1)
-//		datnums = "696;692;688"; gamma_over_temp_type = "low" // high gamma
-//	endif
-//	
-//
-//
-//
-//	string e_temps = num2str(baset) + ";275;500"
-//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
-////	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
-//	string colour, e_temp
-//	variable red, green, blue
-//	
-//	variable cond_chisq, occ_chisq, condocc_chisq
-//	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type)
-//	
-//	variable num_dats = ItemsInList(datnums, ";")
-//	
-//	
-//	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
-//	Display; KillWindow /Z figure_cb1; DoWindow/C/O figure_cb1
-//	Display; KillWindow /Z figure_cb2; DoWindow/C/O figure_cb2
-//	Display; KillWindow /Z figure_cc; DoWindow/C/O figure_cc
-//
-//	string cond_avg, trans_avg, occ_avg, cond_avg_fit, trans_avg_fit, occ_avg_fit
-//	
-//	variable mid_occupation_x, mid_occupation_y, y_offset_diff, y_offset_setpoint = 0.0
-//	variable quadratic_occupation_coef, linear_occupation_coef, amplitude_occupation_coef
-//	string occupation_coef_name
-//	
-//	
-//	string legend_text = ""
-//	variable i, datnum
-//	for (i=0;i<num_dats;i+=1)
-//		datnum = str2num(stringfromlist(i, datnums))
-//		e_temp = stringfromlist(i, e_temps)
-//		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
-//		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
-//		occ_avg = trans_avg + "_occ"
-//		
-//		cond_avg_fit = "GFit_" + cond_avg
-//		trans_avg_fit = "fit_" + trans_avg
-//		occ_avg_fit = "fit_" + occ_avg
-//		
-//		legend_text = legend_text + "\\s(" + trans_avg_fit +  "_figc) " +  e_temp + "mK\r"
-//		
-////		///// getting occupation fit coefficients /////
-////		occupation_coef_name = "coef_" + trans_avg
-////		wave occupation_coef = $occupation_coef_name
-////		///// finding mid occupation y point based on N=0.5 in x /////
-//////		mid_occupation_x = occupation_coef[2]
-//////		wave occupation_wave = $trans_avg
-//////		mid_occupation_y = occupation_wave(mid_occupation_x)
-////
-////		///// finsing mid occupation based on constant y offset in coefs /////
-////		mid_occupation_y = occupation_coef[4]
-////		
-////		///// finsidng difference between trace setpoint and y-offset /////
-////		y_offset_diff = mid_occupation_y - y_offset_setpoint
-////		
-////		linear_occupation_coef = occupation_coef[5]
-////		quadratic_occupation_coef = occupation_coef[6]
-////		amplitude_occupation_coef = occupation_coef[7]
-//		
-//		
-//		///// getting correct colour for plot /////
-//		colour = stringfromlist(i, colours, ";")
-//		red = str2num(stringfromlist(0, colour, ","))
-//		green = str2num(stringfromlist(1, colour, ","))
-//		blue = str2num(stringfromlist(2, colour, ","))
-//		
-//		
-//		
-//		//////////////////////////////////////////
-//		///// ADDING CONDUCTION VS SWEEPGATE /////
-//		//////////////////////////////////////////
-//		string cond_avg_data_wave_name = cond_avg + "_figc"
-//		string cond_avg_fit_wave_name = cond_avg_fit + "_figc"
-//		
-//		duplicate/o $cond_avg $cond_avg_data_wave_name
-//		duplicate/o $cond_avg_fit $cond_avg_fit_wave_name
-//		
-//		wave cond_avg_data_wave = $cond_avg_data_wave_name 
-//		wave cond_avg_fit_wave = $cond_avg_fit_wave_name 
-//		
-////		wave cond_avg_temp = $cond_avg
-////		wave cond_avg_fit_temp = $cond_avg_fit
-//		
-//		SetScale/I x pnt2x(cond_avg_data_wave, 0)/200, pnt2x(cond_avg_data_wave, dimsize(cond_avg_data_wave, 0) - 1)/200, cond_avg_data_wave // setting scale in real gate units (P*200)
-//		SetScale/I x pnt2x(cond_avg_fit_wave, 0)/200, pnt2x(cond_avg_fit_wave, dimsize(cond_avg_fit_wave, 0) - 1)/200, cond_avg_fit_wave  
-//		
-//		AppendToGraph /W=figure_ca $cond_avg_data_wave_name; AppendToGraph /W=figure_ca $cond_avg_fit_wave_name;
-//		ModifyGraph /W=figure_ca mode($cond_avg_data_wave_name)=2, lsize($cond_avg_data_wave_name)=1, rgb($cond_avg_data_wave_name)=(red,green,blue)
-//		ModifyGraph /W=figure_ca mode($cond_avg_fit_wave_name)=0, lsize($cond_avg_fit_wave_name)=2, rgb($cond_avg_fit_wave_name)=(red,green,blue)
-//		
-//		
-//		
-//		//////////////////////////////////////////
-//		///// ADDING OCCUPATION VS SWEEPGATE /////
-//		//////////////////////////////////////////
-//		///// adding occupation /////
-//		string occ_avg_data_wave_name = occ_avg + "_figc"
-//		string occ_avg_fit_wave_name = occ_avg_fit + "_figc"
-//		
-//		duplicate/o $occ_avg $occ_avg_data_wave_name
-//		duplicate/o $occ_avg_fit $occ_avg_fit_wave_name
-//		
-//		wave occ_avg_data_wave = $occ_avg_data_wave_name 
-//		wave occ_avg_fit_wave = $occ_avg_fit_wave_name 
-//		
-////		wave occ_avg_temp = $occ_avg
-////		wave occ_avg_fit_temp = $occ_avg_fit
-//		
-//		///// METHOD 1 ::::: Re-offsetting and removing quadratic and linear terms /////
-////		duplicate/o $trans_avg $trans_avg_data_wave_name
-////		duplicate/o $trans_avg tempx
-////		tempx = x
-////
-////		wave trans_avg_data_wave = $trans_avg_data_wave_name
-////		trans_avg_data_wave -= y_offset_diff + linear_occupation_coef*tempx + quadratic_occupation_coef*tempx^2
-////		trans_avg_data_wave /= amplitude_occupation_coef
-////		
-////		duplicate/o $trans_avg_fit $trans_avg_fit_wave_name
-////		duplicate/o $trans_avg_fit tempx
-////		tempx = x
-////		wave trans_avg_fit_wave = $trans_avg_fit_wave_name
-////		trans_avg_fit_wave -= y_offset_diff + linear_occupation_coef*tempx + quadratic_occupation_coef*tempx^2
-////		trans_avg_fit_wave /= amplitude_occupation_coef
-////
-////		///// METHOD 2 ::::: Re-fitting but with offset, linear and quadratic set to 0. /////
-////		string new_occupation_coef_name = occupation_coef_name + "_duplicate"
-////		duplicate/o $occupation_coef_name $new_occupation_coef_name
-////		wave new_occupation_coef = $new_occupation_coef_name
-////		
-////		new_occupation_coef[4]=0; new_occupation_coef[5]=0; new_occupation_coef[6]=0; new_occupation_coef[7]=1;
-////		
-////		///// calculating data
-////		duplicate/o $trans_avg $trans_avg_data_wave_name
-////		duplicate/o $trans_avg tempx
-////		tempx = x
-////
-////		wave trans_avg_data_wave = $trans_avg_data_wave_name
-////		fitfunc_nrgctAAO(new_occupation_coef, trans_avg_data_wave, tempx)
-////		
-////		///// calculating fit
-////		duplicate/o $trans_avg_fit $trans_avg_fit_wave_name
-////		duplicate/o $trans_avg_fit tempx
-////		tempx = x
-////
-////		wave trans_avg_fit_wave = $trans_avg_fit_wave_name
-////		fitfunc_nrgctAAO(new_occupation_coef, trans_avg_fit_wave, tempx)
-//
-//		
-//		SetScale/I x pnt2x(occ_avg_data_wave, 0)/200, pnt2x(occ_avg_data_wave, dimsize(occ_avg_data_wave, 0) - 1)/200, occ_avg_data_wave
-//		SetScale/I x pnt2x(occ_avg_fit_wave, 0)/200, pnt2x(occ_avg_fit_wave, dimsize(occ_avg_fit_wave, 0) - 1)/200, occ_avg_fit_wave 
-//		
-//
-//		///// Appending traces to graph ca /////
-//		AppendToGraph /W=figure_cb1 occ_avg_data_wave; AppendToGraph /W=figure_cb1 occ_avg_fit_wave;
-//		ModifyGraph /W=figure_cb1 mode($occ_avg_data_wave_name)=2, lsize($occ_avg_data_wave_name)=1, rgb($occ_avg_data_wave_name)=(red,green,blue)
-//		ModifyGraph /W=figure_cb1 mode($occ_avg_fit_wave_name)=0, lsize($occ_avg_fit_wave_name)=2, rgb($occ_avg_fit_wave_name)=(red,green,blue)
-//		
-//		
-//		
-//		
-//		///// adding charghe transition /////
-//		string trans_avg_data_wave_name = trans_avg + "_figc"
-//		string trans_avg_fit_wave_name = trans_avg_fit + "_figc"
-//		
-//		duplicate/o $trans_avg $trans_avg_data_wave_name
-//		duplicate/o $trans_avg_fit $trans_avg_fit_wave_name
-//		
-//		wave trans_avg_data_wave = $trans_avg_data_wave_name 
-//		wave trans_avg_fit_wave = $trans_avg_fit_wave_name 
-//		
-////		wave trans_avg_temp = $trans_avg
-////		wave trans_avg_fit_temp = $trans_avg_fit
-//		
-//		SetScale/I x pnt2x(trans_avg_data_wave, 0)/200, pnt2x(trans_avg_data_wave, dimsize(trans_avg_data_wave, 0) - 1)/200, trans_avg_data_wave
-//		SetScale/I x pnt2x(trans_avg_fit_wave, 0)/200, pnt2x(trans_avg_fit_wave, dimsize(trans_avg_fit_wave, 0) - 1)/200, trans_avg_fit_wave 
-//		
-//		///// Appending traces to graph cb /////
-//		AppendToGraph /W=figure_cb2 $trans_avg_data_wave_name; AppendToGraph /W=figure_cb2 $trans_avg_fit_wave_name;
-//		ModifyGraph /W=figure_cb2 mode($trans_avg_data_wave_name)=2, lsize($trans_avg_data_wave_name)=1, rgb($trans_avg_data_wave_name)=(red,green,blue)
-//		ModifyGraph /W=figure_cb2 mode($trans_avg_fit_wave_name)=0, lsize($trans_avg_fit_wave_name)=2, rgb($trans_avg_fit_wave_name)=(red,green,blue)
-//		
-//		
-////		///////////////////////////////////////////
-////		///// ADDING CONDUCTION VS OCCUPATION /////
-////		///////////////////////////////////////////
-//////		string cond_vs_occ_data_wave_name_y = cond_avg + "_cond_data"
-//////		string cond_vs_occ_data_wave_name_x = cond_avg + "_occ_nrg"
-////		string cond_vs_occ_data_wave_name_y = cond_avg
-////		string cond_vs_occ_data_wave_name_x = cond_avg + "_occ_nrg"
-////		
-//////		///// START EXTRA /////
-////		duplicate /o trans_avg_data_wave $cond_vs_occ_data_wave_name_x
-////		SetScale/I x pnt2x($cond_vs_occ_data_wave_name_y, 0)/200, pnt2x($cond_vs_occ_data_wave_name_y, dimsize($cond_vs_occ_data_wave_name_y, 0) - 1)/200, $cond_vs_occ_data_wave_name_y
-//////		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name_y, $cond_vs_occ_data_wave_name_x)
-//////		///// END EXTRA /////
-////		
-////		AppendToGraph /W=figure_cc $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x;
-////		ModifyGraph /W=figure_cc mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
-////		
-////		string cond_vs_occ_fit_wave_name_y = cond_avg + "_cond_nrg"
-////		string cond_vs_occ_fit_wave_name_x = cond_avg + "_occ_nrg"
-////		AppendToGraph /W=figure_cc $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
-////		ModifyGraph /W=figure_cc mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
-//		
-//	endfor
-//	
-//	// tick scales https://www.wavemetrics.com/forum/general/about-axis-scale
-//	
-//	///// setting  axis labels /////
-//	// y - axis labels
-////	Label /W=figure_ca left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
-////	Label /W=figure_cb1 left "Occupation (.arb)"
-////	Label /W=figure_cb2 left "Current (nA)"
-////	Label /W=figure_cc left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$   / h)"
-//	
-//	// x - axis labels
-////	Label /W=figure_ca bottom "Sweep Gate (mV)"
-////	Label /W=figure_cb1 bottom "Sweep Gate (mV)"
-////	Label /W=figure_cb2 bottom "Sweep Gate (mV)"
-////	Label /W=figure_cc bottom "Occupation (.arb)"
-//	
-//	// setting axis range
-//	SetAxis /W=figure_ca bottom -10, 10
-//	SetAxis /W=figure_cb1 bottom -20, 20
-//	SetAxis /W=figure_cb2 bottom -20, 20
-//	
-//	
-////	///// off-setting labels from the axis /////
-////	ModifyGraph /W=figure_ca lblPos(l2)=90
-////	ModifyGraph /W=figure_ca lblPos(l3)=90
-////	ModifyGraph /W=figure_ca lblPos(left)=90
-////	ModifyGraph /W=figure_ca lblPos(bottom)=80
-////	ModifyGraph /W=figure_ca lblPos(b3)=80
-//	
-//	
-//	///// adding legend /////
-////	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
-//	Legend/W=figure_cb1/C/N=legend_figc/J/A=LT legend_text
-////	Legend/W=figure_cb2/C/N=legend_figc/J/A=LT legend_text
-////	Legend/W=figure_cc/C/N=legend_figc/J/A=LT legend_text
-////	print legend_text
-//end
-
-
 function figure_B_NRG()
 	// SavePICT/P=home/E=-5/RES=1000/o
 	// assumes NRG waves g_nrg and occ_nrg have been created
@@ -1336,6 +1274,8 @@ end
 
 
 
+
+
 function figure_dummy_conductance_occupation()
 	// SavePICT/P=home/E=-5/RES=1000/o
 	// assumes NRG waves g_nrg and occ_nrg have been created
@@ -1448,6 +1388,8 @@ function figure_dummy_conductance_occupation()
 	ModifyGraph /W=figure_nrg_combined_dummy mirror(bottom)=1
 	ModifyGraph /W=figure_nrg_combined_dummy tick(l2)=0
 end
+
+
 
 
 function figure_tim_gamma()	
