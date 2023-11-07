@@ -202,17 +202,17 @@ function zap_NaNs(wave_1d, [overwrite])
 	
 	if (start_of_end_nan < num_rows)
 		if (overwrite == 1)
-			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan, wave_1d
+			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d
 		else
-			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan, wave_1d_new
+			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d_new
 		endif
 	endif
 	
 	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
 		if (overwrite == 1)
-			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan), wave_1d
+			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d
 		else
-			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan), wave_1d_new
+			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d_new
 		endif
 	endif
 	
