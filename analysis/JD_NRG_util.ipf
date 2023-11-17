@@ -1141,10 +1141,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_fit_name = "Gfit_" + cs_data_name
 		endif
 			///// add charge transition ot the graph /////
-		appendtograph /r cs_data
-		ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
-		appendtograph /r $cs_fit_name
-		ModifyGraph mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(red,green,blue)
+//		appendtograph /r cs_data
+//		ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
+//		appendtograph /r $cs_fit_name
+//		ModifyGraph mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(red,green,blue)
 	
 		total_cs_chisq += V_chisq // sum the chisq from each fit
 			
@@ -1178,10 +1178,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		fitfunc_nrgocc(cs_coef, $occ_fit_name)	
 			
 		///// add occupation to graph /////
-//		appendtograph /r $occ_data_name
-//		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(red,green,blue)
-//		appendtograph /r $occ_fit_name
-//		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(red,green,blue)
+		appendtograph /r $occ_data_name
+		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(red,green,blue)
+		appendtograph /r $occ_fit_name
+		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(red,green,blue)
 		
 		////////////////////////////////////////
 		/////// Creating Conductance fit ///////
@@ -1545,6 +1545,7 @@ Function fitfunc_nrgocc(pw, yw) : FitFunc
 	wave nrg=occ_nrg
 	
 	yw = interp2d(nrg, (pw[1]*(x-pw[2])), (pw[0]+pw[3]))
+//	yw = interp2d(nrg, x, (pw[0]+pw[3]))
 end
 
 

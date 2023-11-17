@@ -57,15 +57,18 @@ function zap_NaNs(wave_1d, [overwrite])
 		
 	endfor
 	
+	variable start_point = pnt2x(wave_1d, end_of_start_nan)
 	if (numtype(wave_1d[0]) == 0)
 		end_of_start_nan = 0
 	endif
 	
+	variable end_point = pnt2x(wave_1d, start_of_end_nan)
 	if (numtype(wave_1d[num_rows-1]) == 0)
-		start_of_end_nan = num_rows
+		start_of_end_nan = num_rows + 1
+		end_point = pnt2x(wave_1d, start_of_end_nan - 2)
 	endif
 	
-	
+
 	
 	// delete NaN rows
 	if (end_of_start_nan > 0)
@@ -84,13 +87,13 @@ function zap_NaNs(wave_1d, [overwrite])
 		endif
 	endif
 	
-	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
-		if (overwrite == 1)
-			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d
-		else
-			setscale /I x, pnt2x(wave_1d, end_of_start_nan), pnt2x(wave_1d, start_of_end_nan - 1), wave_1d_new
-		endif
+//	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
+	if (overwrite == 1)
+		setscale /I x, start_point, end_point, wave_1d
+	else
+		setscale /I x, start_point, end_point, wave_1d_new
 	endif
+//	endif
 	
 end
 

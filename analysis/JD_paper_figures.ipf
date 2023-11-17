@@ -45,7 +45,7 @@ function figure_2_conductance()
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 1
+	int global_fit_conductance = 0
 	
 	variable num_dats = ItemsInList(datnums, ";")
 	
