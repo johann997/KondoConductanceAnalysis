@@ -32,8 +32,8 @@ end
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
 //	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
-	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+//	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
+	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
 //	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 	
@@ -45,7 +45,7 @@ function figure_2_conductance()
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 0
+	int global_fit_conductance = 1
 	
 	variable num_dats = ItemsInList(datnums, ";")
 	

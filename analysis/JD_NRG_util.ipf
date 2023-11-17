@@ -879,16 +879,16 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //		dot_min_val = -750; dot_max_val = 300
 //		cs_min_val = -2000; cs_max_val = 500
 	elseif (cmpstr(datnum, "6081") == 0)
-		dot_min_val = -500; dot_max_val = 200
+		dot_min_val = -800; dot_max_val = 800
 		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6090") == 0)
-		dot_min_val = -500; dot_max_val = 200
+		dot_min_val = -800; dot_max_val = 800
 		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6087") == 0)
-		dot_min_val = -750; dot_max_val = 200
+		dot_min_val = -800; dot_max_val = 800
 		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6084") == 0)
-		dot_min_val = -750; dot_max_val = 200
+		dot_min_val = -800; dot_max_val = 800
 		cs_min_val = -2000; cs_max_val = 1000
 ////////// high gamma high field ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6100") == 0)
@@ -1130,8 +1130,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_fit_name = "fit_" + cs_data_name
 			duplicate /o $cs_data_name $cs_fit_name
 			
-			FuncFit/Q/H="11010110"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-			FuncFit/Q/H="11010010"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			FuncFit/Q/H="11010110"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
+			FuncFit/Q/H="11010010"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
 //			FuncFit/Q/H="11010000"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 
 		else 
@@ -1187,26 +1187,29 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		/////// Creating Conductance fit ///////
 		////////////////////////////////////////
 		cond_data_name = stringfromlist(i,data.g_wvlist)
-		if ((fit_conductance == 1) && (global_fit_conductance == 0))
-			cond_fit_name = "fit_" + cond_data_name
-			cond_coef_name = "coef_" + cond_data_name
+		if ((fit_conductance == 1) || (global_fit_conductance == 1))
+			if (global_fit_conductance == 0)
+				cond_fit_name = "fit_" + cond_data_name
+				cond_coef_name = "coef_" + cond_data_name
+				
+				make/o /n=5 $cond_coef_name = 0 
+				wave cond_coef = $cond_coef_name
+				cond_coef[0,4] = cs_coef[p]
+				cond_coef[4] = 1
+				
+				duplicate /o $cond_data_name $cond_fit_name
+	
+				FuncFit/Q/TBOX=768/H="11010" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
+			else
+				cond_fit_name = "Gfit_" + cond_data_name
+			endif
 			
-			make/o /n=5 $cond_coef_name = 0 
-			wave cond_coef = $cond_coef_name
-			cond_coef[0,4] = cs_coef[p]
-			cond_coef[4] = 1
-			
-			duplicate /o $cond_data_name $cond_fit_name
-
-			FuncFit/Q/TBOX=768/H="11010" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
-		else
-			cond_fit_name = "Gfit_" + cond_data_name
+			// add conduction to graph
+			appendtograph /l $cond_data_name
+			ModifyGraph mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
+			appendtograph /l $cond_fit_name
+			ModifyGraph mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
 		endif
-		// add conduction to graph
-		appendtograph /l $cond_data_name
-		ModifyGraph mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
-		appendtograph /l $cond_fit_name
-		ModifyGraph mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
 		
 		////////////////////////////////////
 		/////// Creating Entropy fit ///////
