@@ -1083,6 +1083,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	cond_chisq = GF_chisq
 	
 	
+	///// hard coding 4 colours from blue to red
+	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	string colour
+	variable red, green, blue
 	//////////////////////////////////////////////////////////////////////
 	///// Fitting and Plotting Charge Transition and Occupation Data /////
 	//////////////////////////////////////////////////////////////////////
@@ -1102,6 +1106,12 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	variable scaling_dt, scaling_amplitude, scaling_factor
 	display
 	for(i=0; i<numwvs; i++)
+		
+		///// getting correct colour for plot /////
+		colour = stringfromlist(i, colours, ";")
+		red = str2num(stringfromlist(0, colour, ","))
+		green = str2num(stringfromlist(1, colour, ","))
+		blue = str2num(stringfromlist(2, colour, ","))
 		
 		if (global_fit_conductance == 1) // if fitting conductance, use conductance parameters to fit charge transitions
 			cs_coef_name = "coef_" + stringfromlist(i,data.occ_wvlist)
@@ -1130,14 +1140,14 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			wave cs_data = $cs_data_name
 			cs_fit_name = "Gfit_" + cs_data_name
 		endif
-			appendtograph cs_data
-			appendtograph $cs_fit_name
-			ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(0,0,0)
+			///// add charge transition ot the graph /////
+		appendtograph /r cs_data
+		ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
+		appendtograph /r $cs_fit_name
+		ModifyGraph mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(red,green,blue)
 	
-			total_cs_chisq += V_chisq // sum the chisq from each fit
+		total_cs_chisq += V_chisq // sum the chisq from each fit
 			
-			// add fit to graph
-			ModifyGraph mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(65535,0,0)
 		
 		////////////////////////////////////
 		///// Creating Occupation data /////
@@ -1167,17 +1177,17 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //		fitfunc_nrgctAAO(occ_coef, $occ_fit_name, x_wave)
 		fitfunc_nrgocc(cs_coef, $occ_fit_name)	
 			
-		// append occupation to graph
-		appendtograph /r $occ_data_name
-		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(0,0,0)
-		appendtograph /r $occ_fit_name
-		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(65535,0,0)
+		///// add occupation to graph /////
+//		appendtograph /r $occ_data_name
+//		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(red,green,blue)
+//		appendtograph /r $occ_fit_name
+//		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(red,green,blue)
 		
 		////////////////////////////////////////
 		/////// Creating Conductance fit ///////
 		////////////////////////////////////////
+		cond_data_name = stringfromlist(i,data.g_wvlist)
 		if ((fit_conductance == 1) && (global_fit_conductance == 0))
-			cond_data_name = stringfromlist(i,data.g_wvlist)
 			cond_fit_name = "fit_" + cond_data_name
 			cond_coef_name = "coef_" + cond_data_name
 			
@@ -1189,8 +1199,14 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			duplicate /o $cond_data_name $cond_fit_name
 
 			FuncFit/Q/TBOX=768/H="11010" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
+		else
+			cond_fit_name = "Gfit_" + cond_data_name
 		endif
-		
+		// add conduction to graph
+		appendtograph /l $cond_data_name
+		ModifyGraph mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
+		appendtograph /l $cond_fit_name
+		ModifyGraph mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
 		
 		////////////////////////////////////
 		/////// Creating Entropy fit ///////
@@ -1541,8 +1557,8 @@ Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
 	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2)
 	yw[] = yw[p]/pw[7]
 	
-	xw[] = xw[p]/pw[1]
-	xw[] = xw[p] + pw[2]
+//	xw[] = xw[p]/pw[1]
+//	xw[] = xw[p] + pw[2]
 	
 	SetScale/I x pnt2x(xw, 0), pnt2x(xw, dimsize(xw, 0) - 1), yw
 end
