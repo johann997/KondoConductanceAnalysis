@@ -31,9 +31,9 @@ end
 
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
 //	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
 //	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 	
@@ -46,6 +46,8 @@ function figure_2_conductance()
 	variable red, green, blue
 	
 	int global_fit_conductance = 1
+	
+	
 	
 	variable num_dats = ItemsInList(datnums, ";")
 	
@@ -216,6 +218,8 @@ function figure_2_conductance()
 	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
 
 	beautify_figure("figure_ca")
+	
+	TileWindows/O=1/C/P
 end
 
 
@@ -484,9 +488,10 @@ function figure_2_entropy()
 	
 	int global_fit_conductance = 0
 	int fit_conductance = 0
-	int fit_entropy = 0
+	int fit_entropy = 1
 	
 	variable num_dats = ItemsInList(global_datnums, ";")
+	variable num_entropy_dats = ItemsInList(entropy_datnums, ";")
 	
 	///// ZAP NANs /////
 	string ct_datnum, ct_wavename
@@ -501,19 +506,31 @@ function figure_2_entropy()
 	variable cond_chisq, occ_chisq, condocc_chisq
 	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums)	
 	
-	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
-
+	Display; KillWindow /Z figure_2a; DoWindow/C/O figure_2a
+	Display; KillWindow /Z figure_2b; DoWindow/C/O figure_2b
+	Display; KillWindow /Z figure_2c; DoWindow/C/O figure_2c
+	
 	string cond_avg, cond_avg_fit
 	string trans_avg, trans_avg_fit
 	string occ_avg, occ_avg_fit
+	string dndt_avg, dndt_avg_fit
+	string dndt_nrg_avg_fit
+	string dndt_occ_avg, dndt_occ_avg_fit
+	string entropy_avg, entropy_avg_fit
 	
 	string occupation_coef_name
 	
 	string legend_text = ""
-	variable datnum
+	variable datnum, entropy_datnum
 	for (i=0;i<num_dats;i+=1)
 		datnum = str2num(stringfromlist(i, global_datnums))
 		e_temp = stringfromlist(i, e_temps)
+		
+		if (i < num_entropy_dats)
+			entropy_datnum = str2num(stringfromlist(i, entropy_datnums))
+		endif
+		
+		// setting conduction names 
 		cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
 		if (global_fit_conductance == 1)
 			cond_avg_fit = "GFit_" + cond_avg
@@ -521,6 +538,7 @@ function figure_2_entropy()
 			cond_avg_fit = "fit_" + cond_avg
 		endif
 		
+		// setting charge transition names
 		trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
 		if (global_fit_conductance == 1)
 			trans_avg_fit = "fit_" + trans_avg
@@ -528,8 +546,25 @@ function figure_2_entropy()
 			trans_avg_fit = "GFit_" + trans_avg
 		endif
 		
+		// setting occupation names
 		occ_avg = trans_avg + "_occ"
 		occ_avg_fit = trans_avg_fit + "_occ"
+		
+		
+		
+		// setting dndt names
+		dndt_avg = "dat" + num2str(entropy_datnum) + "_numerical_entropy_avg"
+		dndt_avg_fit = "fit_" + dndt_avg
+		dndt_nrg_avg_fit = "fit_nrg_" + dndt_avg
+		
+		// setting dndt occupation names
+		dndt_occ_avg = "dat" + num2str(entropy_datnum) + "_cs_cleaned_avg_occ"
+		dndt_occ_avg_fit = "fit_" + dndt_occ_avg
+		
+		// setting entropy names
+		entropy_avg = "dat" + num2str(entropy_datnum) + "_numerical_entropy_int_avg"
+		entropy_avg_fit = "fit_" + entropy_avg
+
 		
 		legend_text = legend_text + "\\s(" + trans_avg_fit +  ") " +  e_temp + "mK\r"
 		
@@ -544,66 +579,95 @@ function figure_2_entropy()
 		//////////////////////////////////////////
 		///// ADDING CONDUCTION VS SWEEPGATE /////
 		//////////////////////////////////////////
-//		AppendToGraph /W=figure_ca /L=l3/B=b3 $cond_avg; AppendToGraph /W=figure_ca /L=l3/B=b3 $cond_avg_fit;
-//		ModifyGraph /W=figure_ca mode($cond_avg)=2, lsize($cond_avg)=1, rgb($cond_avg)=(red,green,blue)
-//		ModifyGraph /W=figure_ca mode($cond_avg_fit)=0, lsize($cond_avg_fit)=2, rgb($cond_avg_fit)=(red,green,blue)
+//		AppendToGraph /W=figure_2a /L=l3/B=b3 $cond_avg; AppendToGraph /W=figure_2a /L=l3/B=b3 $cond_avg_fit;
+//		ModifyGraph /W=figure_2a mode($cond_avg)=2, lsize($cond_avg)=1, rgb($cond_avg)=(red,green,blue)
+//		ModifyGraph /W=figure_2a mode($cond_avg_fit)=0, lsize($cond_avg_fit)=2, rgb($cond_avg_fit)=(red,green,blue)
 		
 		
 		//////////////////////////////////////////
 		///// ADDING OCCUPATION VS SWEEPGATE /////
 		//////////////////////////////////////////
 		///// Appending traces to panel ca /////
-		AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg; AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg_fit;
-		ModifyGraph /W=figure_ca mode($trans_avg)=2, lsize($trans_avg)=1, rgb($trans_avg)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(red,green,blue)
+		AppendToGraph /W=figure_2a /L=left/B=bottom $trans_avg; AppendToGraph /W=figure_2a /L=left/B=bottom $trans_avg_fit;
+		ModifyGraph /W=figure_2a mode($trans_avg)=2, lsize($trans_avg)=1, rgb($trans_avg)=(red,green,blue)
+		ModifyGraph /W=figure_2a mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(red,green,blue)
 		
 		///// Appending traces to panel cb /////
-		AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg; AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg_fit;
-		ModifyGraph /W=figure_ca mode($occ_avg)=2, lsize($occ_avg)=1, rgb($occ_avg)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(red,green,blue)		
+		AppendToGraph /W=figure_2a /L=l1/B=b1 $occ_avg; AppendToGraph /W=figure_2a /L=l1/B=b1 $occ_avg_fit;
+		ModifyGraph /W=figure_2a mode($occ_avg)=2, lsize($occ_avg)=1, rgb($occ_avg)=(red,green,blue)
+		ModifyGraph /W=figure_2a mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(red,green,blue)		
 		
-		
-//		////////////////////////////////////////
-////		///// ADDING ENTROPY VS OCCUPATION /////
-////		////////////////////////////////////////
-//		variable numpts_occupation = 10000
-//		create_x_wave($occ_avg)
-//		wave x_wave
-//		
-//		////////////////////////////////////
-//		///// interpolating data waves /////
-//		////////////////////////////////////
-//		variable minx, maxx
-//		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
-//		
-//		// interpolating occupation to have higher density of points
-//		string cond_vs_occ_data_wave_name_x = occ_avg + "_interp"
-//		interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
-//		
-//		// interpolating conduction to have data at same x points as occuptaion data
-//		string cond_vs_occ_data_wave_name_y = cond_avg + "_interp"
-//		interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
-//		
-//		// deleting points outside of mask
-//		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
-//		delete_points_from_x($cond_vs_occ_data_wave_name_y, minx, maxx)
-//		
-//		
-//		///////////////////////////////////
-//		///// interpolating fit waves /////
-//		///////////////////////////////////
-//		string cond_vs_occ_fit_wave_name_x = occ_avg_fit + "_interp"
-//		interpolate_wave(cond_vs_occ_fit_wave_name_x, $occ_avg_fit, numpts_to_interp=10000)
-//		
-//		string cond_vs_occ_fit_wave_name_y = cond_avg_fit + "_interp"
-//		interpolate_wave(cond_vs_occ_fit_wave_name_y, $cond_avg_fit, wave_to_duplicate=$cond_vs_occ_fit_wave_name_x)
-//
-//		delete_points_from_x($cond_vs_occ_fit_wave_name_x, minx, maxx)
-//		delete_points_from_x($cond_vs_occ_fit_wave_name_y, minx, maxx)
-//
-//		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
-//		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=1, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
-//		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
+		if (i < num_entropy_dats)
+			/////////////////////////////////////
+	//		///// ADDING DNDT VS SWEEPGATE //////
+	//		/////////////////////////////////////
+			AppendToGraph /W=figure_2b /L=left/B=bottom $dndt_avg
+			ModifyGraph /W=figure_2b mode($dndt_avg)=2, lsize($dndt_avg)=1, rgb($dndt_avg)=(red,green,blue)
+			
+			AppendToGraph /W=figure_2b /L=left/B=bottom $dndt_avg_fit
+			ModifyGraph /W=figure_2b mode($dndt_avg_fit)=0, lsize($dndt_avg_fit)=2, rgb($dndt_avg_fit)=(red,green,blue)
+			
+			
+			AppendToGraph /W=figure_2b /L=left/B=bottom $dndt_nrg_avg_fit
+			ModifyGraph /W=figure_2b mode($dndt_nrg_avg_fit)=0, lsize($dndt_nrg_avg_fit)=2, rgb($dndt_nrg_avg_fit)=(0,0,0)
+
+	
+	
+			/////////////////////////////////////
+	//		///// ADDING DNDT VS OCCUPATION /////
+	//		/////////////////////////////////////
+			variable numpts_occupation = 10000
+			create_x_wave($dndt_occ_avg)
+			wave x_wave
+			
+			////////////////////////////////////
+			///// interpolating data waves /////
+			////////////////////////////////////
+	//		variable minx, maxx
+	//		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
+			
+			// interpolating occupation to have higher density of points
+			string dndt_vs_occ_data_wave_name_x = dndt_occ_avg + "_interp"
+			interpolate_wave(dndt_vs_occ_data_wave_name_x, $dndt_occ_avg, numpts_to_interp=10000)
+			
+			// interpolating conduction to have data at same x points as occuptaion data
+			string dndt_vs_occ_data_wave_name_y = dndt_avg + "_interp"
+			interpolate_wave(dndt_vs_occ_data_wave_name_y, $dndt_avg, wave_to_duplicate=$dndt_vs_occ_data_wave_name_x)
+			
+			// deleting points outside of mask
+	//		delete_points_from_x($dndt_vs_occ_data_wave_name_x, minx, maxx)
+	//		delete_points_from_x($dndt_vs_occ_data_wave_name_y, minx, maxx)
+			
+			
+			///////////////////////////////////
+			///// interpolating fit waves /////
+			///////////////////////////////////
+			string dndt_vs_occ_fit_wave_name_x = dndt_occ_avg_fit + "_interp"
+			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_occ_avg_fit, numpts_to_interp=10000)
+			
+			string dndt_vs_occ_fit_wave_name_y = dndt_avg_fit + "_interp"
+			interpolate_wave(dndt_vs_occ_fit_wave_name_y, $dndt_avg_fit, wave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
+	
+	//		delete_points_from_x($dndt_vs_occ_fit_wave_name_x, minx, maxx)
+	//		delete_points_from_x($dndt_vs_occ_fit_wave_name_y, minx, maxx)
+	
+	
+			///// interpolating nrg fit wave /////
+//			string dndt_nrg_vs_occ_fit_wave_name_x = dndt_nrg_avg_fit + "_interp"
+//			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_nrg_avg_fit, numpts_to_interp=10000)
+//			
+			string dndt_nrg_vs_occ_fit_wave_name_y = dndt_nrg_avg_fit + "_interp"
+			interpolate_wave(dndt_nrg_vs_occ_fit_wave_name_y, $dndt_nrg_avg_fit, wave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
+			
+	
+			AppendToGraph /W=figure_2c /L=left/B=bottom $dndt_vs_occ_data_wave_name_y vs $dndt_vs_occ_data_wave_name_x
+			AppendToGraph /W=figure_2c /L=left/B=bottom $dndt_vs_occ_fit_wave_name_y vs $dndt_vs_occ_fit_wave_name_x;
+			AppendToGraph /W=figure_2c /L=left/B=bottom $dndt_nrg_vs_occ_fit_wave_name_y vs $dndt_vs_occ_fit_wave_name_x;
+			
+			ModifyGraph /W=figure_2c mode($dndt_vs_occ_data_wave_name_y)=2, lsize($dndt_vs_occ_data_wave_name_y)=1, rgb($dndt_vs_occ_data_wave_name_y)=(red,green,blue)
+			ModifyGraph /W=figure_2c mode($dndt_vs_occ_fit_wave_name_y)=0, lsize($dndt_vs_occ_fit_wave_name_y)=2, rgb($dndt_vs_occ_fit_wave_name_y)=(red,green,blue)
+			ModifyGraph /W=figure_2c mode($dndt_nrg_vs_occ_fit_wave_name_y)=0, lsize($dndt_nrg_vs_occ_fit_wave_name_y)=2, rgb($dndt_nrg_vs_occ_fit_wave_name_y)=(0,0,0)
+		endif
 	endfor
 	
 	///// axis labelling goes from top plot to bottom plot
@@ -611,51 +675,46 @@ function figure_2_entropy()
 	
 	
 	///// setting y-scale of axis /////
-	ModifyGraph /W = figure_ca axisEnab(l2)={0.72, 1.0}
-//	ModifyGraph /W = figure_ca axisEnab(l2)={0.43, 0.71}
-	ModifyGraph /W = figure_ca axisEnab(left)={0.0, 0.28}
-	SetAxis /W=figure_ca left 0,*
-	SetAxis /W=figure_ca bottom 0,1
+//	SetAxis /W=figure_2a left 0,*
+//	SetAxis /W=figure_2a bottom 0,1
 	
-//	ModifyGraph /W = figure_ca axisEnab(l4)={0.57-0.05, 0.57+0.05}
-//	ModifyGraph /W = figure_ca axisEnab(b4)={0.1,0.4}
-	ModifyGraph /W=figure_ca  axisEnab(l4)={0.75,0.85},freePos(l4)=-20
-	ModifyGraph axisEnab(b4)={0.055,0.2},freePos(b4)={0,l4}
+	ModifyGraph /W=figure_2a axisEnab(l1)={0.75,0.85}
+	ModifyGraph /W=figure_2a axisEnab(b1)={0.6,0.9},freePos(b1)={0,l1}
+	ModifyGraph /W=figure_2a freePos(l1)={-1000,b1}
+	ModifyGraph /W=figure_2a lblPos(l1)=50,lblPos(b1)=40
 	
-	
-	///// setting x-axis in line with y-axis /////
-//	ModifyGraph /W = figure_ca freePos(b2)={0,l3}
-//	ModifyGraph /W = figure_ca freePos(b3)={0,l2}
-		
-	///// remove label from b2 /////
-	ModifyGraph /W = figure_ca noLabel(b2)=2
-	
-	ModifyGraph /W = figure_ca freePos(l2)=0
-	ModifyGraph /W = figure_ca freePos(l3)=0
-	
-	ModifyGraph /W = figure_ca noLabel(b4)=2
-	ModifyGraph /W = figure_ca noLabel(l4)=2
 	
 	///// setting  axis labels /////
-//	Label /W=figure_ca l3 "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
-	Label /W=figure_ca l2 "Current (nA)"
-	Label /W=figure_ca left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	Label /W=figure_2a left "Current (nA)"
+	Label /W=figure_2a l1 "Occupation (.arb)"
+	Label /W=figure_2a bottom "Sweep Gate (mV)"
+	Label /W=figure_2a b1 "Sweep Gate (mV)"
 	
-	Label /W=figure_ca bottom "Occupation (.arb)"
-//	Label /W=figure_ca b3 "Sweep Gate (mV)"
+	Label /W=figure_2b left "dN/dT"
+	Label /W=figure_2b bottom "Sweep Gate (mV)"
+	
+	Label /W=figure_2c left "dN/dT"
+	Label /W=figure_2c bottom "Occupation (.arb)"
+	
 	
 	///// off-setting labels from the axis /////
-	ModifyGraph /W=figure_ca lblPos(l2)=150
-//	ModifyGraph /W=figure_ca lblPos(l3)=150
-	ModifyGraph /W=figure_ca lblPos(left)=150
-	ModifyGraph /W=figure_ca lblPos(bottom)=80
-//	ModifyGraph /W=figure_ca lblPos(b3)=80
+//	ModifyGraph /W=figure_2a lblPos(l2)=150
+//	ModifyGraph /W=figure_2a lblPos(l3)=150
+//	ModifyGraph /W=figure_2a lblPos(l1)=150
+//	ModifyGraph /W=figure_2a lblPos(b1)=80
+//	ModifyGraph /W=figure_2a lblPos(b3)=80
 	
 	
 	///// adding legend /////
-	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
-
-	beautify_figure("figure_ca")
+	Legend/W=figure_2a/C/N=legend_figc/J/A=LT legend_text
+	Legend/W=figure_2c
+	Legend/W=figure_2b
+	
+	beautify_figure("figure_2a")
+	beautify_figure("figure_2b")
+	beautify_figure("figure_2c")
+	
+	TileWindows/O=1/C/P
 end
 
 
