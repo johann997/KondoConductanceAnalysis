@@ -39,62 +39,58 @@ function zap_NaNs(wave_1d, [overwrite])
 	
 	
 	variable num_rows = dimsize(wave_1d, 0)
-	int end_of_start_nan = 0
-	int start_of_end_nan = 0
+	int first_num_from_left = 0
+	int first_num_from_right = num_rows
 		
-	// find start and end of NaN rows
+		
+	///// find first number index on the left /////
 	int i 
 	for (i = 0; i < num_rows; i++)
 	
-		if ((numtype(wave_1d[i]) == 0) && (end_of_start_nan == 0))
-			end_of_start_nan = i
-		endif
-		
-		
-		if ((numtype(wave_1d[i]) != 0) && (end_of_start_nan != 0) && (start_of_end_nan == 0))
-			start_of_end_nan = i
+		if (numtype(wave_1d[i]) == 0)
+			first_num_from_left = i
+			break
 		endif
 		
 	endfor
 	
-	variable start_point = pnt2x(wave_1d, end_of_start_nan)
-	if (numtype(wave_1d[0]) == 0)
-		end_of_start_nan = 0
-	endif
 	
-	variable end_point = pnt2x(wave_1d, start_of_end_nan)
-	if (numtype(wave_1d[num_rows-1]) == 0)
-		start_of_end_nan = num_rows + 1
-		end_point = pnt2x(wave_1d, start_of_end_nan - 2)
-	endif
+	///// find first number index on the right /////
+	for (i = num_rows - 1; i >= 0; i--)
 	
+		if (numtype(wave_1d[i]) == 0)
+			first_num_from_right = i
+			break
+		endif
+		
+	endfor
+	
+	
+	variable start_point = pnt2x(wave_1d, first_num_from_left) // point of first non-NaN
+	variable end_point = pnt2x(wave_1d, first_num_from_right) // point of first non-NaN
+	
+	// delete NaNs from the left
+	if (overwrite == 1)
+		deletePoints /M=0 0, first_num_from_left, wave_1d
+	else 
+		deletePoints /M=0 0, first_num_from_left, wave_1d_new
+	endif
 
 	
-	// delete NaN rows
-	if (end_of_start_nan > 0)
-		if (overwrite == 1)
-			deletePoints /M=0 0, end_of_start_nan, wave_1d
-		else 
-			deletePoints /M=0 0, end_of_start_nan, wave_1d_new
-		endif
+	// delete NaNs from the right
+	if (overwrite == 1)
+		deletePoints /M=0 first_num_from_right-first_num_from_left+1, num_rows-first_num_from_right-1, wave_1d
+	else
+		deletePoints /M=0 first_num_from_right-first_num_from_left+1, num_rows-first_num_from_right-1, wave_1d_new
 	endif
+
 	
-	if (start_of_end_nan < num_rows)
-		if (overwrite == 1)
-			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d
-		else
-			deletePoints /M=0 start_of_end_nan-end_of_start_nan, num_rows-start_of_end_nan + 1, wave_1d_new
-		endif
-	endif
-	
-//	if ((end_of_start_nan > 0) && (start_of_end_nan < num_rows))
+	// set correct scaling using start and end point
 	if (overwrite == 1)
 		setscale /I x, start_point, end_point, wave_1d
 	else
 		setscale /I x, start_point, end_point, wave_1d_new
 	endif
-//	endif
-	
 end
 
 
