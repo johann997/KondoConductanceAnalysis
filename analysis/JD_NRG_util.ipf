@@ -667,7 +667,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.85 // lnG/T for Tbase (linked)
+//			coefwave[0][0] = 3.2 // lnG/T for Tbase (linked)
+			coefwave[0][0] = 2.8 // lnG/T for Tbase (linked)
 			coefwave[1][0] = 0.004 //0.00019 // 0.01 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
@@ -1097,6 +1098,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	string cs_data_name, cs_fit_name, cs_coef_name
 	string occ_data_name, occ_fit_name
 	string entropy_base_name, entropy_coef_name, entropy_data_name, entropy_fit_name
+	string entropy_nrg_coef_name, entropy_nrg_fit_name
 	string cold_entropy_base_name, cold_entropy_coef_name, cold_entropy_data_name, cold_entropy_fit_name, cold_entropy_mask_name
 	string occ_cold_entropy_data_name, occ_cold_entropy_fit_name
 	string hot_entropy_base_name, hot_entropy_coef_name, hot_entropy_data_name, hot_entropy_fit_name
@@ -1104,7 +1106,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	variable total_cs_chisq, entropy_y_offset
 	variable scaling_dt, scaling_amplitude, scaling_factor
-	display
+	
+	Display; KillWindow /Z global_fit; DoWindow/C/O global_fit
+	Display; KillWindow /Z global_fit_entropy; DoWindow/C/O global_fit_entropy
 	for(i=0; i<numwvs; i++)
 		
 		///// getting correct colour for plot /////
@@ -1141,10 +1145,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_fit_name = "Gfit_" + cs_data_name
 		endif
 			///// add charge transition ot the graph /////
-//		appendtograph /r cs_data
-//		ModifyGraph mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
-//		appendtograph /r $cs_fit_name
-//		ModifyGraph mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(red,green,blue)
+//		appendtograph /W=global_fit /r cs_data
+//		ModifyGraph /W=global_fit mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
+//		appendtograph /W=global_fit /r $cs_fit_name
+//		ModifyGraph /W=global_fit mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(red,green,blue)
 	
 		total_cs_chisq += V_chisq // sum the chisq from each fit
 			
@@ -1178,10 +1182,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		fitfunc_nrgocc(cs_coef, $occ_fit_name)	
 			
 		///// add occupation to graph /////
-		appendtograph /r $occ_data_name
-		ModifyGraph mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(red,green,blue)
-		appendtograph /r $occ_fit_name
-		ModifyGraph mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(red,green,blue)
+		appendtograph /W=global_fit /r $occ_data_name
+		ModifyGraph /W=global_fit mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(red,green,blue)
+		appendtograph /W=global_fit /r $occ_fit_name
+		ModifyGraph /W=global_fit mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(red,green,blue)
 		
 		////////////////////////////////////////
 		/////// Creating Conductance fit ///////
@@ -1205,10 +1209,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			endif
 			
 			// add conduction to graph
-			appendtograph /l $cond_data_name
-			ModifyGraph mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
-			appendtograph /l $cond_fit_name
-			ModifyGraph mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
+			appendtograph /W=global_fit /l $cond_data_name
+			ModifyGraph /W=global_fit mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
+			appendtograph /W=global_fit /l $cond_fit_name
+			ModifyGraph /W=global_fit mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
 		endif
 		
 		////////////////////////////////////
@@ -1248,6 +1252,13 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			FuncFit/Q/TBOX=768/H="11010110" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
 			FuncFit/Q/TBOX=768/H="11010010" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
 			FuncFit/Q/TBOX=768/H="11010000" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name /M=cold_entropy_mask_wave
+			
+			
+			AppendToGraph /W=global_fit_entropy /r $cold_entropy_data_name
+			ModifyGraph /W=global_fit_entropy mode($cold_entropy_data_name)=2, lsize($cold_entropy_data_name)=1, rgb($cold_entropy_data_name)=(0,0,0)
+			
+			AppendToGraph /W=global_fit_entropy /r $cold_entropy_fit_name
+			ModifyGraph /W=global_fit_entropy mode($cold_entropy_fit_name)=0, lsize($cold_entropy_fit_name)=2
 			
 			
 			//////////////////////////////////////////////////////
@@ -1316,34 +1327,52 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			// coef[5]: linear
 			// coef[6]: quadratic
 			// coef[7]: amplitude
-//			display $entropy_data_name
-			 
-			smooth 200, entropy_data
 			
+			AppendToGraph /W=global_fit_entropy $entropy_data_name
+			ModifyGraph /W=global_fit_entropy mode($entropy_data_name)=2, lsize($entropy_data_name)=1, rgb($entropy_data_name)=(0,0,0)
 			
-//			wavestats /q entropy_data;
+//			smooth 200, entropy_data
+			
 			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, dimsize(entropy_data, 0)/4))
 			
-			entropy_data -= entropy_y_offset
+//			entropy_data -= entropy_y_offset
 			variable  entropy_y_mul = wavemax(entropy_data,  pnt2x(entropy_data, 9*dimsize(entropy_data, 0)/20), pnt2x(entropy_data, 19*dimsize(entropy_data, 0)/20))
-			entropy_data /= entropy_y_mul
+//			entropy_data /= entropy_y_mul
 			
 			entropy_coef[0,3] = cold_entropy_coef[p]; entropy_coef[4]=0;  entropy_coef[5]=0; entropy_coef[6]=0; entropy_coef[7]=1;
 			duplicate /o $cold_entropy_fit_name $entropy_fit_name
 			wave entropy_fit = $entropy_fit_name
 			
-//			create_x_wave($cs_fit_name)
-//			wave x_wave
-			
-//			Interpolate2/T=1/E=2/Y=entropy_fit/I=3 entropy_data //linear interpolation // T=1: Linear || E=2: Match 2nd derivative || I=3:gives output at x-coords specified (destination must be created)|| Y=destination wave ||
-
 //			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
 			FuncFit/Q/H="11111110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 		
 //			entropy_y_mul = wavemax(entropy_fit,  pnt2x(entropy_fit, 9*dimsize(entropy_fit, 0)/20), pnt2x(entropy_fit, 19*dimsize(entropy_fit, 0)/20))
 //			entropy_fit /= entropy_y_mul
+
+			AppendToGraph /W=global_fit_entropy $entropy_fit_name
+			ModifyGraph /W=global_fit_entropy mode($entropy_fit_name)=0, lsize($entropy_fit_name)=2//,rgb($entropy_fit_name)=(0,0,0)
+			
+			
+			/////////////////////////////////////////////////////////////////////////////
+			///// FIFTH FITTING ENTROPY WITH NRG LETTING GAMMA AND LEVERARM GO FREE /////
+			/////////////////////////////////////////////////////////////////////////////
+			entropy_nrg_coef_name = "coef_nrg_" + entropy_base_name
+			entropy_nrg_fit_name = "fit_nrg_" + entropy_data_name
+			
+			duplicate /o entropy_coef $entropy_nrg_coef_name 
+			wave entropy_nrg_coef = $entropy_nrg_coef_name
+			
+			duplicate /o $cold_entropy_fit_name $entropy_nrg_fit_name
+			wave entropy_nrg_fit = $entropy_nrg_fit_name
+			
+			FuncFit/Q/H="00110110" fitfunc_nrgentropyAAO entropy_nrg_coef $entropy_data_name /D=entropy_nrg_fit
+			
+			AppendToGraph /W=global_fit_entropy $entropy_nrg_fit_name
+			ModifyGraph /W=global_fit_entropy mode($entropy_nrg_fit_name)=0, lsize($entropy_nrg_fit_name)=2,rgb($entropy_nrg_fit_name)=(0,0,65535)
+			
+			
 			/////////////////////////////////////////////
-			///// FIFTH INTEGRATE ENTROPY AND SCALE /////
+			///// SIXTH INTEGRATE ENTROPY AND SCALE /////
 			/////////////////////////////////////////////
 			
 			int_entropy_data_name = entropy_data_name + "_int"
@@ -1366,85 +1395,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //	print "Chisqr on occupation fit is " + num2str(total_cs_chisq/4)
 	occ_chisq = total_cs_chisq/4 /// NOTE: Poorly named variable, this should be cs 
 
-
-	
-	
-	
-	//// CONDUCTANCE VS OCCUPATION /////
-//	////////////////////////////////////////////////////
-//	///// Creating Occupation and Plotting Conductance vs. Occupation Data /////
-//	////////////////////////////////////////////////////
-//	// Use coefficients determined from occupations fit to find occupation(Vgate)
-//	// create NRG occupation wave with same x-scaling as data conductance
-//	// create data conduction curve 
-//	string cond_vs_occ_data_wave_name
-//	display
-//	for(i=0;i<numwvs;i++)
-//		wavenm = stringfromlist(i,data.g_wvlist) + "_occ_nrg" // create a new name XXX_occ_nrg where XXX is the name of the conductance wave used in the NRG fitting
-//
-//		duplicate /o $(stringfromlist(i,data.g_wvlist)) $wavenm // copy the conductance wave into nrgocc_XXX, in the end just to use its x-scaling
-//		wave nrg_occ = $wavenm // call this wave nrg_occ for use in this function
-//		
-//		wavenm = "coef_" + stringfromlist(i,data.occ_wvlist)
-//		fitfunc_nrgocc($wavenm, nrg_occ) // overwrite nrg_occ using occupation fit params and NRG occupation (keep same x-scaling as conduction)
-//		
-//		string cond_vs_occ_ydata_wave_name = stringfromlist(i,data.g_wvlist)
-//
-//		// NEW WAY //
-////		crop_waves_by_x_scaling($cond_vs_occ_data_wave_name, wave2)
-//		
-//		// OLD WAY //
-////		prune_waves($cond_vs_occ_ydata_wave_name, nrg_occ)
-//		appendtograph $cond_vs_occ_ydata_wave_name vs nrg_occ
-//		ModifyGraph mode($cond_vs_occ_ydata_wave_name)=2, lsize($cond_vs_occ_ydata_wave_name)=2, rgb($cond_vs_occ_ydata_wave_name)=(0,0,0)
-//	
-//	
-//		///// creating occupation data wave /////
-//		
-//	
-//		///// saving occupation fit data from GFfit_XXX to fit_XXX this is same naming scheme with how charge transitions are saved
-//		wavenm = "GFit_" + stringfromlist(i,data.g_wvlist)
-//		newwavenm = "fit_" + stringfromlist(i,data.g_wvlist)
-//		duplicate /o $wavenm $newwavenm
-//	endfor
-	
-//		
-//	// Add NRG data on top
-//	for(i=0;i<numwvs;i++)
-//		wavenm="coef_" + stringfromlist(i,data.g_wvlist)
-//		string cond_vs_occ_xnrg_wave_name = stringfromlist(i,data.g_wvlist) + "_occ_nrg"
-//		string cond_vs_occ_ynrg_wave_name = stringfromlist(i,data.g_wvlist) + "_cond_nrg"
-//		
-//		wave g_coefs = $wavenm
-//		wave g_nrg
-//		wave occ_nrg
-//		nrgline = scaletoindex(g_nrg, (g_coefs[0] + g_coefs[3]), 1)
-//		wavenm = "g" + num2str(nrgline)
-//		matrixop /o $wavenm=col(g_nrg, nrgline)
-//		wave gnrg = $wavenm
-//		gnrg *= g_coefs[4]
-//
-//		// save NRG conduction
-//		duplicate /o gnrg, $cond_vs_occ_ynrg_wave_name
-//		
-//		// save x-wave (alrady saved above)
-//		duplicate /RMD=[][nrgline] /o occ_nrg, $cond_vs_occ_xnrg_wave_name
-//		
-//		
-//		appendtograph $cond_vs_occ_ynrg_wave_name vs $cond_vs_occ_xnrg_wave_name
-//		wave cond_vs_occ_nrg_wave_y = $cond_vs_occ_ynrg_wave_name
-//		
-//		
-//		///// calculate chi2 /////
-//		cond_vs_occ_data_wave_name = stringfromlist(i,data.g_wvlist)
-//		wave cond_vs_occ_data_wave = $cond_vs_occ_data_wave_name
-//		
-//		duplicate /o cond_vs_occ_data_wave, cond_vs_occ_calc
-//		wave cond_vs_occ_calc 
-//		cond_vs_occ_calc = (cond_vs_occ_data_wave - cond_vs_occ_nrg_wave_y)^2
-//		condocc_chisq += sum(cond_vs_occ_calc)
-//	endfor
-//	
 	return [cond_chisq, occ_chisq, condocc_chisq/4]
 end
 
