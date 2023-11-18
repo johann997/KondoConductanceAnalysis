@@ -115,6 +115,8 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 
 	if(average==1)
 //		replace_nans_with_avg($cleaned_wave_name, overwrite=0) // remove any row with > 25% NaNs in the row
+		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
+		
 		avg_wav($cleaned_wave_name) // quick average plot
 		
 //		wavetransform/o zapnans $avg_wave_name
@@ -590,13 +592,13 @@ function plot_ct_figs(wavenum, N, kenner, kenner_out, minx, maxx, [average, fit_
 	repeats_on = paramisdefault(repeats_on) ? 1 : repeats_on // repeats_on ON is default
 	zap_params = paramisdefault(zap_params) ? 0 : zap_params // repeats_on ON is default
 	
-	string datasetname ="dat" + num2str(wavenum) + kenner // this was the original dataset name
+	string datasetname = "dat" + num2str(wavenum) + kenner // this was the original dataset name
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_cs_centered" // this is the centered 2D wave
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_cs_cleaned" // this is the centered 2D wave after removing outliers ("cleaning")
 	string avg_wave_name = cleaned_wave_name + "_avg" // this is the averaged wave produced by avg_wave($cleaned)
 	
 	string fit_params_name = kenner_out + num2str(wavenum) + "_cs_fit_params" // this is the fit parameters 
-	string quickavg = datasetname + "_avg_BLIND" // this is the wave produced by avg_wave($datasetname)
+	string quickavg = "dat" + num2str(wavenum) + "_avg_BLIND" // this is the wave produced by avg_wave($datasetname)
 	wave W_coef
 
 
