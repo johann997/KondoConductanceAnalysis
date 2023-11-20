@@ -134,7 +134,13 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 			wave demod_entropy_centered
 			avg_wav(demod_entropy_centered)
 			wave demod_entropy_centered_avg
+			zap_NaNs(demod_entropy_centered_avg, overwrite=1)
 		endif
+		
+		zap_NaNs(cold_avg, overwrite=1)
+		zap_NaNs(hot_avg, overwrite=1)
+		zap_NaNs(numerical_entropy_avg, overwrite=1)
+		
 	elseif ((average_repeats == 1) && (centre_repeats == 0)) // blind average
 		duplicate /o cold $cs_cold_cleaned_name
 		duplicate /o hot $cs_hot_cleaned_name
