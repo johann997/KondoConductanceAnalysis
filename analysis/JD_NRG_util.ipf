@@ -653,7 +653,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 				
 				if (quadratic_term != 0)
 					coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
-					coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // quadratic
+					coefwave[6 + i*(numcoefs-numlinks)][1] = 0 // quadratic
 				endif
 ////				coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/2 // amplitude
 				
@@ -667,13 +667,13 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-//			coefwave[0][0] = 3.2 // lnG/T for Tbase (linked)
-			coefwave[0][0] = 2.8 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.004 //0.00019 // 0.01 // x scaling (linked)
+			coefwave[0][0] = 3.0 //3.4 // lnG/T for Tbase (linked)
+//			coefwave[0][0] = 2.8 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.005 //0.0028 //0.005 // 0.01 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] = 1 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.012 //0.002 //0.16 // 0.02 // x scaling (linked)
+			coefwave[1][0] = 0.005 //0.012 //0.002 //0.16 // 0.02 // x scaling (linked)
 			
 		elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 			coefwave[0][0] = 1e-4 // lnG/Tbase (linked)
@@ -931,14 +931,18 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 ////////// autumn experiment ////////////////////////////////////////////////////
-	elseif (cmpstr(datnum, "1287") == 0)
-		cs_max_val = 1230
 	elseif (cmpstr(datnum, "1283") == 0)
 		cs_max_val = 6.33*200
 	elseif (cmpstr(datnum, "1284") == 0)
 		cs_max_val = 13*200
 	elseif (cmpstr(datnum, "1285") == 0)
 		cs_max_val = 370
+	elseif (cmpstr(datnum, "1287") == 0)
+		cs_min_val = -1500;  cs_max_val = 1230
+	elseif (cmpstr(datnum, "1291") == 0)
+		cs_max_val = 1950
+	elseif (cmpstr(datnum, "1299") == 0)
+		cs_max_val = 1500
 	elseif (cmpstr(datnum, "1288") == 0)
 		cs_max_val = 2873
 	elseif (cmpstr(datnum, "1300") == 0)
@@ -1343,8 +1347,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			duplicate /o $cold_entropy_fit_name $entropy_fit_name
 			wave entropy_fit = $entropy_fit_name
 			
-//			FuncFit/Q/H="11010110" fitfunc_nrgentropyAAO entropy_coef entropy_data /D // /M=$(stringfromlist(i,data.occ_maskwvlist))
-			FuncFit/Q/H="11111110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
+//			FuncFit/Q/H="11111110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
+			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 		
 //			entropy_y_mul = wavemax(entropy_fit,  pnt2x(entropy_fit, 9*dimsize(entropy_fit, 0)/20), pnt2x(entropy_fit, 19*dimsize(entropy_fit, 0)/20))
 //			entropy_fit /= entropy_y_mul
@@ -1365,7 +1369,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			duplicate /o $cold_entropy_fit_name $entropy_nrg_fit_name
 			wave entropy_nrg_fit = $entropy_nrg_fit_name
 			
-			FuncFit/Q/H="00110110" fitfunc_nrgentropyAAO entropy_nrg_coef $entropy_data_name /D=entropy_nrg_fit
+			FuncFit/Q/H="01110110" fitfunc_nrgentropyAAO entropy_nrg_coef $entropy_data_name /D=entropy_nrg_fit
 			
 			AppendToGraph /W=global_fit_entropy $entropy_nrg_fit_name
 			ModifyGraph /W=global_fit_entropy mode($entropy_nrg_fit_name)=0, lsize($entropy_nrg_fit_name)=2,rgb($entropy_nrg_fit_name)=(0,0,65535)
@@ -1389,6 +1393,13 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			
 			wave int_entropy_fit_wave = $int_entropy_fit_name
 			int_entropy_fit_wave *= scaling_factor
+			
+			
+			///// printing entropy fit outputs
+			print "Fiting entropy, holding G/T from cold CT", entropy_coef
+			print "Gamma/T = " + num2str(exp(entropy_coef[0]))
+			print "Fiting entropy, letting G/T go free", entropy_nrg_coef
+			print "Gamma/T = " + num2str(exp(entropy_nrg_coef[0]))
 		endif
 	endfor
 	
@@ -1514,7 +1525,7 @@ Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
 //	xw[] = xw[p]/pw[1]
 //	xw[] = xw[p] + pw[2]
 	
-	SetScale/I x pnt2x(xw, 0), pnt2x(xw, dimsize(xw, 0) - 1), yw
+//	SetScale/I x pnt2x(xw, 0), pnt2x(xw, dimsize(xw, 0) - 1), yw
 end
 
 
