@@ -931,6 +931,8 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 ////////// autumn experiment ////////////////////////////////////////////////////
+	elseif (cmpstr(datnum, "1281") == 0)
+		cs_max_val = 302
 	elseif (cmpstr(datnum, "1283") == 0)
 		cs_max_val = 6.33*200
 	elseif (cmpstr(datnum, "1284") == 0)
