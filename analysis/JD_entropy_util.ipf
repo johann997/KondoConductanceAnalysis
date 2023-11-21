@@ -272,6 +272,19 @@ function master_entropy_clean_average(filenum, delay, wavelen, [centre_repeats, 
 	ModifyGraph rgb(cold_diff_avg)=(1,16019,65535)
 	legend
 	
+	///// plus diff and minus diff /////
+	wave plus_diff, minus_diff
+	plot2d_heatmap(plus_diff, x_label = "Gate (mV)", y_label = "Repeats") // difference between cold set points
+	plot2d_heatmap(minus_diff, x_label = "Gate (mV)", y_label = "Repeats") // difference between hot set points
+	
+	avg_wav(plus_diff) // average cold diff
+	avg_wav(minus_diff) // average hot diff
+	wave plus_diff_avg, minus_diff_avg
+	smooth 500, plus_diff_avg; smooth 500, minus_diff_avg
+	display plus_diff_avg, minus_diff_avg
+	ModifyGraph rgb(minus_diff_avg)=(0,0,0)
+	legend
+	
 	
 	///// cold average and hot average /////
 	if (average_repeats == 1)
@@ -474,12 +487,14 @@ function/wave sqw_analysis(wave wav, int delay, int wavelen, [variable cold_awg_
 		i = i + 1
 	while(i < nc)
 
+	///// cold and hot averages
 	duplicate/o cold1, cold
 	cold = (cold1 + cold2) / 2
 	
 	duplicate/o hot1, hot
 	hot = (hot1 + hot2) / 2
 	
+	///// differences between cold
 	duplicate /o cold cold_diff
 	wave cold_diff
 	cold_diff = cold1 - cold2
@@ -488,13 +503,25 @@ function/wave sqw_analysis(wave wav, int delay, int wavelen, [variable cold_awg_
 	wave hot_diff
 	hot_diff = hot1 - hot2
 
+	///// differences between plus setpoints
+	duplicate /o cold1 plus_diff
+	wave plus_diff
+	plus_diff = cold1 - hot1
+	
+	duplicate /o cold2 minus_diff
+	wave minus_diff
+	minus_diff = cold2 - hot2
+	
 	matrixtranspose cold
 	matrixtranspose hot
 	
 	matrixtranspose cold_diff
 	matrixtranspose hot_diff
+	
+	matrixtranspose plus_diff
+	matrixtranspose minus_diff
 
-	CopyScales wav, cold, hot, cold_diff, hot_diff
+	CopyScales wav, cold, hot, cold_diff, hot_diff, plus_diff, minus_diff
 	
 	duplicate/o hot, numerical_entropy
 	numerical_entropy = cold - hot;
