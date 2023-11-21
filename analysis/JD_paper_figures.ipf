@@ -22,9 +22,38 @@
 
 function beautify_figure(figure_name)
 	string figure_name
-	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+	int font_size = 8
+//	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, width=200, height=200/1.6180339887
 end
 
+macro default_layout(layout_name)
+	string layout_name
+//	layout_name = "test"
+//	int font_size = 8
+////	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+//	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, width=200, height=200/1.5
+//	NewLayout/W=(663,53,1691,903)
+	NewLayout/N=$layout_name /W=(288,53,792,903)
+	LayoutPageAction /W=$layout_name size=(288, 792)//, margins(-1)=(18, 18, 18, 18)
+//	ModifyLayout /W=layout_name width=504
+//	LayoutPageAction size(-1)=(288, 720), margins(-1)=(18, 18, 18, 18)
+end
+
+//macro graphdefault()
+////	ModifyGraph gFont="Helvetica",width=188,height=116
+//	ModifyGraph font="Helvetica"
+//	ModifyGraph fSize=8
+//	ModifyGraph lowTrip(bottom)=0.1
+//	ModifyGraph lsize=0.5, mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=8, tick=2
+//	
+//
+//	Label left "\\$WMTEX$ \\Delta S (k_B)\\F'Helvetica'\\Z08\\$/WMTEX$"
+//	Label bottom "\\$WMTEX$ V_{\epsilon}(mV)\\F'Helvetica'\\Z08\\$/WMTEX$"
+//
+//	
+//	endmacro
+	
 
 function save_figure(figure_name)
 	string figure_name
@@ -83,7 +112,7 @@ macro paper_v1_figure_2a_midweak()
 	
 	Label /W=paper_figure_2a left "Current (nA)"
 	
-	Legend /W=paper_figure_2a /C/N=text0/J "\\s(GFit_dat1286_cs_cleaned_avg) 22.5 mK\r\\s(GFit_dat1298_cs_cleaned_avg) 90 mK\r\\s(GFit_dat1294_cs_cleaned_avg) 275 mK\r\\s(GFit_dat1290_cs_cleaned_avg) 400 mK"
+	Legend /W=paper_figure_2a /C/N=text0/J/F=0 "\\s(GFit_dat1286_cs_cleaned_avg) 22.5 mK\r\\s(GFit_dat1298_cs_cleaned_avg) 90 mK\r\\s(GFit_dat1294_cs_cleaned_avg) 275 mK\r\\s(GFit_dat1290_cs_cleaned_avg) 400 mK"
 	
 	
 	//////////////////////////// occupation ///////////////////////////
@@ -113,7 +142,7 @@ macro paper_v1_figure_2a_midweak()
 //	
 //	Label /W=paper_figure_2a left "Occupation (.arb)"
 //	
-//	Legend /W=paper_figure_2a /C/N=text0/J "\\s(GFit_dat1286_cs_cleaned_avg_occ) 22.5 mK\r\\s(GFit_dat1298_cs_cleaned_avg_occ) 90 mK\r\\s(GFit_dat1294_cs_cleaned_avg_occ) 275 mK\r\\s(GFit_dat1290_cs_cleaned_avg_occ) 400 mK"
+//	Legend /W=paper_figure_2a /C/N=text0/J/F=0 "\\s(GFit_dat1286_cs_cleaned_avg_occ) 22.5 mK\r\\s(GFit_dat1298_cs_cleaned_avg_occ) 90 mK\r\\s(GFit_dat1294_cs_cleaned_avg_occ) 275 mK\r\\s(GFit_dat1290_cs_cleaned_avg_occ) 400 mK"
 	//////////////////////////////////////////////////////////////////////
 	
 	
@@ -146,7 +175,7 @@ macro paper_v1_figure_2b_midweak()
 	ModifyGraph /W=paper_figure_2b mode(fit_dat1282_numerical_entropy_avg_interp)=0, lsize(fit_dat1282_numerical_entropy_avg_interp)=2, rgb(fit_dat1282_numerical_entropy_avg_interp)=(0,0,0)
 	ModifyGraph /W=paper_figure_2b mode(fit_nrg_dat1282_numerical_entropy_avg_interp)=0, lsize(fit_nrg_dat1282_numerical_entropy_avg_interp)=2, rgb(fit_nrg_dat1282_numerical_entropy_avg_interp)=(65535,0,0)
 	
-	Legend /W=paper_figure_2b/C/N=text0/J "\\s(dat1282_numerical_entropy_avg_interp) data\r\\s(fit_dat1282_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1282_numerical_entropy_avg_interp) direct fit from CT"
+	Legend /W=paper_figure_2b/C/N=text0/J/F=0 "\\s(dat1282_numerical_entropy_avg_interp) data\r\\s(fit_dat1282_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1282_numerical_entropy_avg_interp) direct fit from CT"
 	Label /W=paper_figure_2b bottom "Sweepgate (mV)"
 	Label /W=paper_figure_2b left "dN/dT"
 	
@@ -172,7 +201,7 @@ macro paper_v1_figure_2c_midweak()
 	ModifyGraph /W=paper_figure_2c mode(fit_dat1282_numerical_entropy_avg_interp)=0, lsize(fit_dat1282_numerical_entropy_avg_interp)=2, rgb(fit_dat1282_numerical_entropy_avg_interp)=(0,0,0)
 	ModifyGraph /W=paper_figure_2c mode(fit_nrg_dat1282_numerical_entropy_avg_interp)=0, lsize(fit_nrg_dat1282_numerical_entropy_avg_interp)=2, rgb(fit_nrg_dat1282_numerical_entropy_avg_interp)=(65535,0,0)
 	
-	Legend /W=paper_figure_2c/C/N=text0/J "\\s(dat1282_numerical_entropy_avg_interp) data\r\\s(fit_dat1282_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1282_numerical_entropy_avg_interp) direct fit"
+	Legend /W=paper_figure_2c/C/N=text0/J/F=0 "\\s(dat1282_numerical_entropy_avg_interp) data\r\\s(fit_dat1282_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1282_numerical_entropy_avg_interp) direct fit"
 	Label /W=paper_figure_2c bottom "Sweepgate (mV)"
 	Label /W=paper_figure_2c left "dN/dT"
 	
@@ -221,7 +250,7 @@ macro paper_v1_figure_2a_strong()
 //	
 //	Label /W=paper_figure_2a left "Current (nA)"
 //	
-//	Legend /W=paper_figure_2a /C/N=text0/J "\\s(GFit_dat1288_cs_cleaned_avg) 22.5 mK\r\\s(GFit_dat1300_cs_cleaned_avg) 90 mK\r\\s(GFit_dat1296_cs_cleaned_avg) 275 mK\r\\s(GFit_dat1292_cs_cleaned_avg) 400 mK"
+//	Legend /W=paper_figure_2a /C/N=text0/J/F=0 "\\s(GFit_dat1288_cs_cleaned_avg) 22.5 mK\r\\s(GFit_dat1300_cs_cleaned_avg) 90 mK\r\\s(GFit_dat1296_cs_cleaned_avg) 275 mK\r\\s(GFit_dat1292_cs_cleaned_avg) 400 mK"
 	
 	
 	//////////////////////////// occupation ///////////////////////////
@@ -251,7 +280,7 @@ macro paper_v1_figure_2a_strong()
 	
 	Label /W=paper_figure_2a left "Occupation (.arb)"
 	
-	Legend /W=paper_figure_2a /C/N=text0/J "\\s(GFit_dat1288_cs_cleaned_avg_occ) 22.5 mK\r\\s(GFit_dat1300_cs_cleaned_avg_occ) 90 mK\r\\s(GFit_dat1296_cs_cleaned_avg_occ) 275 mK\r\\s(GFit_dat1292_cs_cleaned_avg_occ) 400 mK"
+	Legend /W=paper_figure_2a /C/N=text0/J/F=0 "\\s(GFit_dat1288_cs_cleaned_avg_occ) 22.5 mK\r\\s(GFit_dat1300_cs_cleaned_avg_occ) 90 mK\r\\s(GFit_dat1296_cs_cleaned_avg_occ) 275 mK\r\\s(GFit_dat1292_cs_cleaned_avg_occ) 400 mK"
 	//////////////////////////////////////////////////////////////////////
 	
 	
@@ -282,7 +311,7 @@ macro paper_v1_figure_2b_strong()
 	ModifyGraph /W=paper_figure_2b mode(fit_dat1284_numerical_entropy_avg_interp)=0, lsize(fit_dat1284_numerical_entropy_avg_interp)=2, rgb(fit_dat1284_numerical_entropy_avg_interp)=(0,0,0)
 	ModifyGraph /W=paper_figure_2b mode(fit_nrg_dat1284_numerical_entropy_avg_interp)=0, lsize(fit_nrg_dat1284_numerical_entropy_avg_interp)=2, rgb(fit_nrg_dat1284_numerical_entropy_avg_interp)=(65535,0,0)
 	
-	Legend /W=paper_figure_2b/C/N=text0/J "\\s(dat1284_numerical_entropy_avg_interp) data\r\\s(fit_dat1284_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1284_numerical_entropy_avg_interp) direct fit from CT"
+	Legend /W=paper_figure_2b/C/N=text0/J/F=0 "\\s(dat1284_numerical_entropy_avg_interp) data\r\\s(fit_dat1284_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1284_numerical_entropy_avg_interp) direct fit from CT"
 	Label /W=paper_figure_2b bottom "Sweepgate (mV)"
 	Label /W=paper_figure_2b left "dN/dT"
 	
@@ -308,7 +337,7 @@ macro paper_v1_figure_2c_strong()
 	ModifyGraph /W=paper_figure_2c mode(fit_dat1284_numerical_entropy_avg_interp)=0, lsize(fit_dat1284_numerical_entropy_avg_interp)=2, rgb(fit_dat1284_numerical_entropy_avg_interp)=(0,0,0)
 	ModifyGraph /W=paper_figure_2c mode(fit_nrg_dat1284_numerical_entropy_avg_interp)=0, lsize(fit_nrg_dat1284_numerical_entropy_avg_interp)=2, rgb(fit_nrg_dat1284_numerical_entropy_avg_interp)=(65535,0,0)
 	
-	Legend /W=paper_figure_2c/C/N=text0/J "\\s(dat1284_numerical_entropy_avg_interp) data\r\\s(fit_dat1284_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1284_numerical_entropy_avg_interp) direct fit"
+	Legend /W=paper_figure_2c/C/N=text0/J/F=0 "\\s(dat1284_numerical_entropy_avg_interp) data\r\\s(fit_dat1284_numerical_entropy_avg_interp) fit from CT\r\\s(fit_nrg_dat1284_numerical_entropy_avg_interp) direct fit"
 	Label /W=paper_figure_2c bottom "Sweepgate (mV)"
 	Label /W=paper_figure_2c left "dN/dT"
 	
@@ -316,7 +345,7 @@ macro paper_v1_figure_2c_strong()
 endmacro
 
 
-macro paper_v1_figure_dndt()
+macro paper_v1_figure_3()
 // entropy 1281 1282 1283 1284
 
 	Display; KillWindow /Z paper_figure_dndt_noscale; DoWindow/C/O paper_figure_dndt_noscale 
@@ -482,7 +511,7 @@ macro paper_v1_figure_dndt()
 	
 	Label /W=paper_figure_dndt_scale left "dN/dT (.arb)"
 	
-	Legend/W=paper_figure_dndt_scale /C/N=text0/J "\\s(fit_dat1281_numerical_entropy_avg_interp_scaled) Γ/T = 0.9\r\\s(fit_dat1282_numerical_entropy_avg_interp_scaled) Γ/T = 8.8\r\\s(fit_dat1283_numerical_entropy_avg_interp_scaled) Γ/T = 21.7\r\\s(fit_dat1284_numerical_entropy_avg_interp_scaled) Γ/T = 30.9"
+	Legend/W=paper_figure_dndt_scale /C/N=text0/J/F=0 "\\s(fit_dat1281_numerical_entropy_avg_interp_scaled) Γ/T = 0.9\r\\s(fit_dat1282_numerical_entropy_avg_interp_scaled) Γ/T = 8.8\r\\s(fit_dat1283_numerical_entropy_avg_interp_scaled) Γ/T = 21.7\r\\s(fit_dat1284_numerical_entropy_avg_interp_scaled) Γ/T = 30.9"
 
 	
 	beautify_figure("paper_figure_dndt_scale")
@@ -578,7 +607,7 @@ macro paper_v1_figure_4()
 	
 	Label /W=paper_figure_4 left "Conductance (\\$WMTEX$ 2e^2/h \\$/WMTEX$)"
 	
-	Legend/W=paper_figure_4 /C/N=text0/J "\\s(GFit_dat6081_dot_cleaned_avg_interp) Γ/T = 1.0\r\\s(GFit_dat6080_dot_cleaned_avg_interp) Γ/T = 9.5\r\\s(GFit_dat6079_dot_cleaned_avg_interp) Γ/T = 24.3"
+	Legend/W=paper_figure_4 /C/N=text0/J/F=0 "\\s(GFit_dat6081_dot_cleaned_avg_interp) Γ/T = 1.0\r\\s(GFit_dat6080_dot_cleaned_avg_interp) Γ/T = 9.5\r\\s(GFit_dat6079_dot_cleaned_avg_interp) Γ/T = 24.3"
 
 	beautify_figure("paper_figure_4")
 
@@ -652,6 +681,20 @@ macro paper_v2_figure_2a_strong()
 	fit_dat6082_cs_cleaned_avg_scale -= (coef_dat6082_cs_cleaned_avg[5]*x_wave[p] + coef_dat6082_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_cs_cleaned_avg[4]
 //	setscale /I x x_wave[0]-coef_dat6082_cs_cleaned_avg[2], x_wave[inf]-coef_dat6082_cs_cleaned_avg[2], fit_dat6082_cs_cleaned_avg_scale
 	
+	
+//	// offset everything
+//	variable offset = 0.003
+//	dat6079_cs_cleaned_avg_scale += offset * 0
+//	dat6088_cs_cleaned_avg_scale += offset * 1
+//	dat6085_cs_cleaned_avg_scale += offset * 2
+//	dat6082_cs_cleaned_avg_scale += offset * 3
+//	
+//	fit_dat6079_cs_cleaned_avg_scale += offset * 0
+//	fit_dat6088_cs_cleaned_avg_scale += offset * 1
+//	fit_dat6085_cs_cleaned_avg_scale += offset * 2
+//	fit_dat6082_cs_cleaned_avg_scale += offset * 3
+	
+	
 	/////// charge transition //////
 	///// append data
 	AppendToGraph /W=paper_figure_2a dat6079_cs_cleaned_avg_scale; 
@@ -664,6 +707,19 @@ macro paper_v2_figure_2a_strong()
 	AppendToGraph /W=paper_figure_2a fit_dat6088_cs_cleaned_avg_scale; 
 	AppendToGraph /W=paper_figure_2a fit_dat6085_cs_cleaned_avg_scale; 
 	AppendToGraph /W=paper_figure_2a fit_dat6082_cs_cleaned_avg_scale;
+	
+	// offset 
+	variable offset = 0.0015
+	variable const_offset = coef_dat6082_cs_cleaned_avg[4]
+	ModifyGraph /W=paper_figure_2a offset(dat6079_cs_cleaned_avg_scale)={0,offset * 0 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6088_cs_cleaned_avg_scale)={0,offset * 1 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6085_cs_cleaned_avg_scale)={0,offset * 2 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6082_cs_cleaned_avg_scale)={0,offset * 3 + const_offset}
+	
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6079_cs_cleaned_avg_scale)={0,offset * 0 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6088_cs_cleaned_avg_scale)={0,offset * 1 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6085_cs_cleaned_avg_scale)={0,offset * 2 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6082_cs_cleaned_avg_scale)={0,offset * 3 + const_offset}
 	
 	// modify data
 	ModifyGraph /W=paper_figure_2a mode(dat6079_cs_cleaned_avg_scale)=2, lsize(dat6079_cs_cleaned_avg_scale)=1, rgb(dat6079_cs_cleaned_avg_scale)=(0,0,65535)
@@ -678,8 +734,9 @@ macro paper_v2_figure_2a_strong()
 	ModifyGraph /W=paper_figure_2a mode(fit_dat6082_cs_cleaned_avg_scale)=0, lsize(fit_dat6082_cs_cleaned_avg_scale)=2, rgb(fit_dat6082_cs_cleaned_avg_scale)=(65535,0,0)
 	
 	Label /W=paper_figure_2a left "Current (nA)"
+	SetAxis /W=paper_figure_2a bottom -10,10
 	
-	Legend /W=paper_figure_2a /C/N=text0/J "\\s(fit_dat6079_cs_cleaned_avg_scale) 22.5 mK\r\\s(fit_dat6088_cs_cleaned_avg_scale) 100 mK\r\\s(fit_dat6085_cs_cleaned_avg_scale) 300 mK\r\\s(fit_dat6082_cs_cleaned_avg_scale) 500 mK"
+	Legend /W=paper_figure_2a /C/N=text0/J/F=0/F=0 "\\Zr080\\s(fit_dat6079_cs_cleaned_avg_scale) 22.5 mK\r\\s(fit_dat6088_cs_cleaned_avg_scale) 100 mK\r\\s(fit_dat6085_cs_cleaned_avg_scale) 300 mK\r\\s(fit_dat6082_cs_cleaned_avg_scale) 500 mK"
 	
 	
 	//////////////////////////// occupation ///////////////////////////
@@ -709,12 +766,11 @@ macro paper_v2_figure_2a_strong()
 //	
 //	Label /W=paper_figure_2a left "Occupation (.arb)"
 //	
-//	Legend /W=paper_figure_2a /C/N=text0/J "\\s(fit_dat6079_cs_cleaned_avg_occ) 22.5 mK\r\\s(fit_dat6088_cs_cleaned_avg_occ) 90 mK\r\\s(fit_dat6085_cs_cleaned_avg_occ) 275 mK\r\\s(fit_dat6082_cs_cleaned_avg_occ) 400 mK"
+//	Legend /W=paper_figure_2a /C/N=text0/J/F=0 "\\s(fit_dat6079_cs_cleaned_avg_occ) 22.5 mK\r\\s(fit_dat6088_cs_cleaned_avg_occ) 90 mK\r\\s(fit_dat6085_cs_cleaned_avg_occ) 275 mK\r\\s(fit_dat6082_cs_cleaned_avg_occ) 400 mK"
 	//////////////////////////////////////////////////////////////////////
 	
 	Label /W=paper_figure_2a bottom "Sweepgate  (mV)"
 //	Label /W=paper_figure_2a bottom "Sweepgate (centered by mid) (mV)"
-	
 	ModifyGraph /W=paper_figure_2a muloffset={0.005,0}
 	
 	beautify_figure("paper_figure_2a")
@@ -723,6 +779,647 @@ macro paper_v2_figure_2a_strong()
 // fit_nrg_dat1282_numerical_entropy_avg_interp vs fit_dat1282_cs_cleaned_avg_occ_interp
 endmacro
 
+
+macro paper_v2_figure_2b_strong()
+// data from summer cool down
+//Temp	 22.5 100  300  500
+//Datnum 6079 6088 6085 6082
+
+
+// charge transition
+//dat1293_cs_cleaned_avg
+//GFit_dat1289_cs_cleaned_avg
+
+// occupation 
+//dat1289_cs_cleaned_avg_occ
+//Gfit_dat1297_cs_cleaned_avg_occ
+
+	Display; KillWindow /Z paper_figure_2b; DoWindow/C/O paper_figure_2b 
+	
+	
+	///// duplicating so that data can be re-scaled /////
+	duplicate /o dat6079_dot_cleaned_avg_interp dat6079_dot_cleaned_avg_scale
+	duplicate /o dat6088_dot_cleaned_avg_interp dat6088_dot_cleaned_avg_scale
+	duplicate /o dat6085_dot_cleaned_avg_interp dat6085_dot_cleaned_avg_scale
+	duplicate /o dat6082_dot_cleaned_avg_interp dat6082_dot_cleaned_avg_scale
+	
+	duplicate /o gfit_dat6079_dot_cleaned_avg_interp gfit_dat6079_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6088_dot_cleaned_avg_interp gfit_dat6088_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6085_dot_cleaned_avg_interp gfit_dat6085_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6082_dot_cleaned_avg_interp gfit_dat6082_dot_cleaned_avg_scale
+	
+	
+	////////// removing linear and quadratic terms /////
+//	// data
+//	create_x_wave(dat6079_dot_cleaned_avg_scale)
+//	dat6079_dot_cleaned_avg_scale -= (coef_dat6079_dot_cleaned_avg[5]*x_wave[p] + coef_dat6079_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6079_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6079_dot_cleaned_avg[2], x_wave[inf]-coef_dat6079_dot_cleaned_avg[2], dat6079_dot_cleaned_avg_scale
+//
+//	create_x_wave(dat6088_dot_cleaned_avg_scale)
+//	dat6088_dot_cleaned_avg_scale -= (coef_dat6088_dot_cleaned_avg[5]*x_wave[p] + coef_dat6088_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6088_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6088_dot_cleaned_avg[2], x_wave[inf]-coef_dat6088_dot_cleaned_avg[2], dat6088_dot_cleaned_avg_scale
+//	
+//	create_x_wave(dat6085_dot_cleaned_avg_scale)
+//	dat6085_dot_cleaned_avg_scale -= (coef_dat6085_dot_cleaned_avg[5]*x_wave[p] + coef_dat6085_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6085_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6085_dot_cleaned_avg[2], x_wave[inf]-coef_dat6085_dot_cleaned_avg[2], dat6085_dot_cleaned_avg_scale
+//	
+//	create_x_wave(dat6082_dot_cleaned_avg_scale)
+//	dat6082_dot_cleaned_avg_scale -= (coef_dat6082_dot_cleaned_avg[5]*x_wave[p] + coef_dat6082_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6082_dot_cleaned_avg[2], x_wave[inf]-coef_dat6082_dot_cleaned_avg[2], dat6082_dot_cleaned_avg_scale
+//	
+//	// gfit
+//	create_x_wave(gfit_dat6079_dot_cleaned_avg_scale)
+//	gfit_dat6079_dot_cleaned_avg_scale -= (coef_dat6079_dot_cleaned_avg[5]*x_wave[p] + coef_dat6079_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6079_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6079_dot_cleaned_avg[2], x_wave[inf]-coef_dat6079_dot_cleaned_avg[2], gfit_dat6079_dot_cleaned_avg_scale
+//	
+//	create_x_wave(gfit_dat6088_dot_cleaned_avg_scale)
+//	gfit_dat6088_dot_cleaned_avg_scale -= (coef_dat6088_dot_cleaned_avg[5]*x_wave[p] + coef_dat6088_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6088_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6088_dot_cleaned_avg[2], x_wave[inf]-coef_dat6088_dot_cleaned_avg[2], gfit_dat6088_dot_cleaned_avg_scale
+//	
+//	create_x_wave(gfit_dat6085_dot_cleaned_avg_scale)
+//	gfit_dat6085_dot_cleaned_avg_scale -= (coef_dat6085_dot_cleaned_avg[5]*x_wave[p] + coef_dat6085_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6085_dot_cleaned_avg[4]
+////	setscale /I x x_wave[0]-coef_dat6085_dot_cleaned_avg[2], x_wave[inf]-coef_dat6085_dot_cleaned_avg[2], gfit_dat6085_dot_cleaned_avg_scale
+//	
+//	create_x_wave(gfit_dat6082_dot_cleaned_avg_scale)
+//	gfit_dat6082_dot_cleaned_avg_scale -= (coef_dat6082_dot_cleaned_avg[5]*x_wave[p] + coef_dat6082_dot_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_dot_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6082_dot_cleaned_avg[2], x_wave[inf]-coef_dat6082_dot_cleaned_avg[2], gfit_dat6082_dot_cleaned_avg_scale
+	
+	/////// charge transition //////
+	
+//		///// translate data
+//	translate_wave_by_occupation(dat6079_dot_cleaned_avg_scale, dat6079_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6088_dot_cleaned_avg_scale, dat6088_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6085_dot_cleaned_avg_scale, dat6085_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6082_dot_cleaned_avg_scale, dat6082_cs_cleaned_avg_occ_interp) 
+//
+//	///// translate fit
+//	translate_wave_by_occupation(gfit_dat6079_dot_cleaned_avg_scale, fit_dat6079_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6088_dot_cleaned_avg_scale, fit_dat6088_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6085_dot_cleaned_avg_scale, fit_dat6085_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6082_dot_cleaned_avg_scale, fit_dat6082_cs_cleaned_avg_occ_interp)  
+	
+//	////////////////////////////////// SWEEPGATE //////////////////////////////////////////////////////////////
+	///// append data
+	AppendToGraph /W=paper_figure_2b dat6079_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_2b dat6088_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_2b dat6085_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_2b dat6082_dot_cleaned_avg_scale; 
+	
+	///// append gfits
+	AppendToGraph /W=paper_figure_2b gfit_dat6079_dot_cleaned_avg_scale;
+	AppendToGraph /W=paper_figure_2b gfit_dat6088_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_2b gfit_dat6085_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_2b gfit_dat6082_dot_cleaned_avg_scale;
+	Label /W=paper_figure_2b bottom "Sweepgate  (mV)"
+//	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////// OCCUPATION //////////////////////////////////////////////////////////////
+//	///// append data
+//	AppendToGraph /W=paper_figure_2b dat6079_dot_cleaned_avg_scale vs dat6079_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_2b dat6088_dot_cleaned_avg_scale vs dat6088_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_2b dat6085_dot_cleaned_avg_scale vs dat6085_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_2b dat6082_dot_cleaned_avg_scale vs dat6082_cs_cleaned_avg_occ_interp; 
+//	
+//	///// append gfits
+//	AppendToGraph /W=paper_figure_2b gfit_dat6079_dot_cleaned_avg_scale vs fit_dat6079_cs_cleaned_avg_occ_interp;
+//	AppendToGraph /W=paper_figure_2b gfit_dat6088_dot_cleaned_avg_scale vs fit_dat6088_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_2b gfit_dat6085_dot_cleaned_avg_scale vs fit_dat6085_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_2b gfit_dat6082_dot_cleaned_avg_scale vs fit_dat6082_cs_cleaned_avg_occ_interp;
+//	Label /W=paper_figure_2b bottom "Occupation  (.arb)"
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// modify data
+	ModifyGraph /W=paper_figure_2b mode(dat6079_dot_cleaned_avg_scale)=2, lsize(dat6079_dot_cleaned_avg_scale)=1, rgb(dat6079_dot_cleaned_avg_scale)=(0,0,65535)
+	ModifyGraph /W=paper_figure_2b mode(dat6088_dot_cleaned_avg_scale)=2, lsize(dat6088_dot_cleaned_avg_scale)=1, rgb(dat6088_dot_cleaned_avg_scale)=(29524,1,58982)
+	ModifyGraph /W=paper_figure_2b mode(dat6085_dot_cleaned_avg_scale)=2, lsize(dat6085_dot_cleaned_avg_scale)=1, rgb(dat6085_dot_cleaned_avg_scale)=(64981,37624,14500)
+	ModifyGraph /W=paper_figure_2b mode(dat6082_dot_cleaned_avg_scale)=2, lsize(dat6082_dot_cleaned_avg_scale)=1, rgb(dat6082_dot_cleaned_avg_scale)=(65535,0,0)
+	
+	// modify gfits
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6079_dot_cleaned_avg_scale)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale)=2, rgb(gfit_dat6079_dot_cleaned_avg_scale)=(0,0,65535)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6088_dot_cleaned_avg_scale)=0, lsize(gfit_dat6088_dot_cleaned_avg_scale)=2, rgb(gfit_dat6088_dot_cleaned_avg_scale)=(29524,1,58982)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6085_dot_cleaned_avg_scale)=0, lsize(gfit_dat6085_dot_cleaned_avg_scale)=2, rgb(gfit_dat6085_dot_cleaned_avg_scale)=(64981,37624,14500)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6082_dot_cleaned_avg_scale)=0, lsize(gfit_dat6082_dot_cleaned_avg_scale)=2, rgb(gfit_dat6082_dot_cleaned_avg_scale)=(65535,0,0)
+	
+	Label /W=paper_figure_2b left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	
+	Legend /W=paper_figure_2b /C/N=text0/J/F=0 "\\s(gfit_dat6079_dot_cleaned_avg_scale) 22.5 mK\r\\s(gfit_dat6088_dot_cleaned_avg_scale) 100 mK\r\\s(gfit_dat6085_dot_cleaned_avg_scale) 300 mK\r\\s(gfit_dat6082_dot_cleaned_avg_scale) 500 mK"
+//	/A=LT/X=4.50/Y=5.26
+//	Label /W=paper_figure_2b bottom "Sweepgate (centered by mid) (mV)"
+	
+//	ModifyGraph /W=paper_figure_2b muloffset={0.005,0}
+	SetAxis /W=paper_figure_2b bottom -10,10
+	ModifyGraph /W=paper_figure_2b muloffset={0.005,0}
+	
+	beautify_figure("paper_figure_2b")
+
+endmacro
+
+
+//macro paper_v2_figure_3_layout()
+//	NewLayout/W=(663,53,1691,903)
+////	LayoutPageAction size(-1)=(288, 720), margins(-1)=(18, 18, 18, 18)
+//endmacro
+
+macro paper_v2_figure_3a()
+// data from summer cool down
+// base temp
+//Datnum 6079 6080 6081
+
+
+	Display; KillWindow /Z paper_figure_3a; DoWindow/C/O paper_figure_3a 
+	
+	
+	///// duplicating so that data can be re-scaled /////
+	duplicate /o dat6079_dot_cleaned_avg_interp dat6079_dot_cleaned_avg_scale
+	duplicate /o dat6080_dot_cleaned_avg_interp dat6080_dot_cleaned_avg_scale
+	duplicate /o dat6081_dot_cleaned_avg_interp dat6081_dot_cleaned_avg_scale
+	
+	duplicate /o gfit_dat6079_dot_cleaned_avg_interp gfit_dat6079_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6080_dot_cleaned_avg_interp gfit_dat6080_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6081_dot_cleaned_avg_interp gfit_dat6081_dot_cleaned_avg_scale
+	
+	
+	
+	/////// charge transition //////
+	
+	
+	
+	////////////////////////////////// SWEEPGATE //////////////////////////////////////////////////////////////
+//		///// translate data
+	translate_wave_by_occupation(dat6079_dot_cleaned_avg_scale, dat6079_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat6080_dot_cleaned_avg_scale, dat6080_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat6081_dot_cleaned_avg_scale, dat6081_cs_cleaned_avg_occ_interp) 
+
+	///// translate fit
+	translate_wave_by_occupation(gfit_dat6079_dot_cleaned_avg_scale, fit_dat6079_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(gfit_dat6080_dot_cleaned_avg_scale, fit_dat6080_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(gfit_dat6081_dot_cleaned_avg_scale, fit_dat6081_cs_cleaned_avg_occ_interp) 
+
+	///// append data
+	AppendToGraph /W=paper_figure_3a dat6079_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_3a dat6080_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_3a dat6081_dot_cleaned_avg_scale; 
+	
+	///// append gfits
+	AppendToGraph /W=paper_figure_3a gfit_dat6079_dot_cleaned_avg_scale;
+	AppendToGraph /W=paper_figure_3a gfit_dat6080_dot_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_3a gfit_dat6081_dot_cleaned_avg_scale; 
+	Label /W=paper_figure_3a bottom "Sweepgate  (mV)"
+	ModifyGraph /W=paper_figure_3a muloffset={0.005,0}
+//	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////// OCCUPATION //////////////////////////////////////////////////////////////
+//	///// append data
+//	AppendToGraph /W=paper_figure_3a dat6079_dot_cleaned_avg_scale vs dat6079_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3a dat6080_dot_cleaned_avg_scale vs dat6080_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3a dat6081_dot_cleaned_avg_scale vs dat6081_cs_cleaned_avg_occ_interp; 
+//	
+//	///// append gfits
+//	AppendToGraph /W=paper_figure_3a gfit_dat6079_dot_cleaned_avg_scale vs fit_dat6079_cs_cleaned_avg_occ_interp;
+//	AppendToGraph /W=paper_figure_3a gfit_dat6080_dot_cleaned_avg_scale vs fit_dat6080_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3a gfit_dat6081_dot_cleaned_avg_scale vs fit_dat6081_cs_cleaned_avg_occ_interp; 
+//	Label /W=paper_figure_3a bottom "Occupation  (.arb)"
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// "0,0,0;	24158,34695,23901;	52685,33924,12336;	47802,0,2056;	14906,27499,34438" // black, green, yellow, red
+	// modify data
+	ModifyGraph /W=paper_figure_3a mode(dat6079_dot_cleaned_avg_scale)=2, lsize(dat6079_dot_cleaned_avg_scale)=1, rgb(dat6079_dot_cleaned_avg_scale)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_3a mode(dat6080_dot_cleaned_avg_scale)=2, lsize(dat6080_dot_cleaned_avg_scale)=1, rgb(dat6080_dot_cleaned_avg_scale)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_3a mode(dat6081_dot_cleaned_avg_scale)=2, lsize(dat6081_dot_cleaned_avg_scale)=1, rgb(dat6081_dot_cleaned_avg_scale)=(0,0,0)
+	
+	// modify gfits
+	ModifyGraph /W=paper_figure_3a mode(gfit_dat6079_dot_cleaned_avg_scale)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale)=2, rgb(gfit_dat6079_dot_cleaned_avg_scale)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_3a mode(gfit_dat6080_dot_cleaned_avg_scale)=0, lsize(gfit_dat6080_dot_cleaned_avg_scale)=2, rgb(gfit_dat6080_dot_cleaned_avg_scale)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_3a mode(gfit_dat6081_dot_cleaned_avg_scale)=0, lsize(gfit_dat6081_dot_cleaned_avg_scale)=2, rgb(gfit_dat6081_dot_cleaned_avg_scale)=(0,0,0)
+	
+	Label /W=paper_figure_3a left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	
+	Legend /W=paper_figure_3a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(gfit_dat6079_dot_cleaned_avg_scale) Γ/T = 24.29\r\\s(gfit_dat6080_dot_cleaned_avg_scale) Γ/T = 9.48\r\\s(gfit_dat6081_dot_cleaned_avg_scale) Γ/T = 0.99"
+	
+//	Label /W=paper_figure_3a bottom "Sweepgate (centered by mid) (mV)"
+	
+//	ModifyGraph /W=paper_figure_3a muloffset={0.005,0}
+	SetAxis /W=paper_figure_3a bottom -8,8
+	beautify_figure("paper_figure_3a")
+
+endmacro
+
+
+
+macro paper_v2_figure_3b()
+// entropy 1281 1282 1283 1284
+
+	Display; KillWindow /Z paper_figure_3b; DoWindow/C/O paper_figure_3b 
+	
+	////////////////////////////////////////////////////////////
+	//////////// duplicate and scale ///////////////////////////
+	////////////////////////////////////////////////////////////
+	///// scaled data
+	duplicate /o dat1281_numerical_entropy_avg_interp dat1281_numerical_entropy_avg_interp_scaled
+	duplicate /o dat1282_numerical_entropy_avg_interp dat1282_numerical_entropy_avg_interp_scaled
+	duplicate /o dat1283_numerical_entropy_avg_interp dat1283_numerical_entropy_avg_interp_scaled
+	duplicate /o dat1284_numerical_entropy_avg_interp dat1284_numerical_entropy_avg_interp_scaled
+	
+	duplicate /o fit_dat1281_numerical_entropy_avg_interp fit_dat1281_numerical_entropy_avg_interp_scaled
+	duplicate /o fit_dat1282_numerical_entropy_avg_interp fit_dat1282_numerical_entropy_avg_interp_scaled
+	duplicate /o fit_dat1283_numerical_entropy_avg_interp fit_dat1283_numerical_entropy_avg_interp_scaled
+	duplicate /o fit_dat1284_numerical_entropy_avg_interp fit_dat1284_numerical_entropy_avg_interp_scaled
+	
+	///// non-scaled data
+	duplicate /o dat1281_numerical_entropy_avg_interp dat1281_numerical_entropy_avg_interp_noscaled
+	duplicate /o dat1282_numerical_entropy_avg_interp dat1282_numerical_entropy_avg_interp_noscaled
+	duplicate /o dat1283_numerical_entropy_avg_interp dat1283_numerical_entropy_avg_interp_noscaled
+	duplicate /o dat1284_numerical_entropy_avg_interp dat1284_numerical_entropy_avg_interp_noscaled
+	
+	duplicate /o fit_dat1281_numerical_entropy_avg_interp fit_dat1281_numerical_entropy_avg_interp_noscaled
+	duplicate /o fit_dat1282_numerical_entropy_avg_interp fit_dat1282_numerical_entropy_avg_interp_noscaled
+	duplicate /o fit_dat1283_numerical_entropy_avg_interp fit_dat1283_numerical_entropy_avg_interp_noscaled
+	duplicate /o fit_dat1284_numerical_entropy_avg_interp fit_dat1284_numerical_entropy_avg_interp_noscaled
+	
+	// offset to 0
+	dat1281_numerical_entropy_avg_interp_scaled -= fit_dat1281_numerical_entropy_avg_interp[0]
+	dat1282_numerical_entropy_avg_interp_scaled -= fit_dat1282_numerical_entropy_avg_interp[0]
+	dat1283_numerical_entropy_avg_interp_scaled -= fit_dat1283_numerical_entropy_avg_interp[0]
+	dat1284_numerical_entropy_avg_interp_scaled -= fit_dat1284_numerical_entropy_avg_interp[0]
+	
+	fit_dat1281_numerical_entropy_avg_interp_scaled -= fit_dat1281_numerical_entropy_avg_interp[0]
+	fit_dat1282_numerical_entropy_avg_interp_scaled -= fit_dat1282_numerical_entropy_avg_interp[0]
+	fit_dat1283_numerical_entropy_avg_interp_scaled -= fit_dat1283_numerical_entropy_avg_interp[0]
+	fit_dat1284_numerical_entropy_avg_interp_scaled -= fit_dat1284_numerical_entropy_avg_interp[0]
+	
+	// scale everything by the maximum fit value
+	dat1281_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1281_numerical_entropy_avg_interp)
+	dat1282_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1282_numerical_entropy_avg_interp)
+	dat1283_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1283_numerical_entropy_avg_interp)
+	dat1284_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1284_numerical_entropy_avg_interp)
+	
+	fit_dat1281_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1281_numerical_entropy_avg_interp)
+	fit_dat1282_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1282_numerical_entropy_avg_interp)
+	fit_dat1283_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1283_numerical_entropy_avg_interp)
+	fit_dat1284_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1284_numerical_entropy_avg_interp)
+	
+//	// offset everything
+//	variable offset = 0
+//	dat1281_numerical_entropy_avg_interp_scaled += offset * 0
+//	dat1282_numerical_entropy_avg_interp_scaled += offset * 1
+//	dat1283_numerical_entropy_avg_interp_scaled += offset * 2
+//	dat1284_numerical_entropy_avg_interp_scaled += offset * 3
+//	
+//	fit_dat1281_numerical_entropy_avg_interp_scaled += offset * 0
+//	fit_dat1282_numerical_entropy_avg_interp_scaled += offset * 1
+//	fit_dat1283_numerical_entropy_avg_interp_scaled += offset * 2
+//	fit_dat1284_numerical_entropy_avg_interp_scaled += offset * 3
+	
+	
+//	resampleWave(dat1281_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+//	resampleWave(dat1282_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+//	resampleWave(dat1283_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+//	resampleWave(dat1284_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+	
+	smooth 1000, dat1281_numerical_entropy_avg_interp_scaled
+	smooth 1000, dat1282_numerical_entropy_avg_interp_scaled
+	smooth 1000, dat1283_numerical_entropy_avg_interp_scaled
+	smooth 2000, dat1284_numerical_entropy_avg_interp_scaled
+	
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	
+//	/////// sweepgate //////
+	///// translate data
+	translate_wave_by_occupation(dat1281_numerical_entropy_avg_interp_scaled, dat1281_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat1282_numerical_entropy_avg_interp_scaled, dat1282_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat1283_numerical_entropy_avg_interp_scaled, dat1283_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat1284_numerical_entropy_avg_interp_scaled, dat1284_cs_cleaned_avg_occ_interp) 
+
+	///// translate fit
+	translate_wave_by_occupation(fit_dat1281_numerical_entropy_avg_interp_scaled, fit_dat1281_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(fit_dat1282_numerical_entropy_avg_interp_scaled, fit_dat1282_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(fit_dat1283_numerical_entropy_avg_interp_scaled, fit_dat1283_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(fit_dat1284_numerical_entropy_avg_interp_scaled, fit_dat1284_cs_cleaned_avg_occ_interp) 
+	///// append data
+	AppendToGraph /W=paper_figure_3b dat1281_numerical_entropy_avg_interp_scaled
+	AppendToGraph /W=paper_figure_3b dat1282_numerical_entropy_avg_interp_scaled
+	AppendToGraph /W=paper_figure_3b dat1283_numerical_entropy_avg_interp_scaled
+	AppendToGraph /W=paper_figure_3b dat1284_numerical_entropy_avg_interp_scaled
+	
+	///// append fits
+	AppendToGraph /W=paper_figure_3b fit_dat1281_numerical_entropy_avg_interp_scaled
+	AppendToGraph /W=paper_figure_3b fit_dat1282_numerical_entropy_avg_interp_scaled
+	AppendToGraph /W=paper_figure_3b fit_dat1283_numerical_entropy_avg_interp_scaled
+	AppendToGraph /W=paper_figure_3b fit_dat1284_numerical_entropy_avg_interp_scaled
+	
+	Label /W=paper_figure_3b bottom "Sweepgate (mV)"
+	
+	
+	// offset 
+	variable offset = 1
+	variable const_offset = 0
+	ModifyGraph /W=paper_figure_3b offset(dat1281_numerical_entropy_avg_interp_scaled)={0,offset * 0 + const_offset}
+	ModifyGraph /W=paper_figure_3b offset(dat1282_numerical_entropy_avg_interp_scaled)={0,offset * 1 + const_offset}
+	ModifyGraph /W=paper_figure_3b offset(dat1283_numerical_entropy_avg_interp_scaled)={0,offset * 2 + const_offset}
+	ModifyGraph /W=paper_figure_3b offset(dat1284_numerical_entropy_avg_interp_scaled)={0,offset * 3 + const_offset}
+	
+	ModifyGraph /W=paper_figure_3b offset(fit_dat1281_numerical_entropy_avg_interp_scaled)={0,offset * 0 + const_offset}
+	ModifyGraph /W=paper_figure_3b offset(fit_dat1282_numerical_entropy_avg_interp_scaled)={0,offset * 1 + const_offset}
+	ModifyGraph /W=paper_figure_3b offset(fit_dat1283_numerical_entropy_avg_interp_scaled)={0,offset * 2 + const_offset}
+	ModifyGraph /W=paper_figure_3b offset(fit_dat1284_numerical_entropy_avg_interp_scaled)={0,offset * 3 + const_offset}
+	
+	
+	
+	///// adding inset
+	///// translate data
+	translate_wave_by_occupation(dat1281_numerical_entropy_avg_interp_noscaled, dat1281_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat1282_numerical_entropy_avg_interp_noscaled, dat1282_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat1283_numerical_entropy_avg_interp_noscaled, dat1283_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(dat1284_numerical_entropy_avg_interp_noscaled, dat1284_cs_cleaned_avg_occ_interp) 
+
+	///// translate fit
+	translate_wave_by_occupation(fit_dat1281_numerical_entropy_avg_interp_noscaled, fit_dat1281_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(fit_dat1282_numerical_entropy_avg_interp_noscaled, fit_dat1282_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(fit_dat1283_numerical_entropy_avg_interp_noscaled, fit_dat1283_cs_cleaned_avg_occ_interp) 
+	translate_wave_by_occupation(fit_dat1284_numerical_entropy_avg_interp_noscaled, fit_dat1284_cs_cleaned_avg_occ_interp) 
+
+//	///// append data
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1281_numerical_entropy_avg_interp_noscaled
+////	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1282_numerical_entropy_avg_interp_noscaled
+////	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1283_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1284_numerical_entropy_avg_interp_noscaled
+//	
+//	///// append fits
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1281_numerical_entropy_avg_interp_noscaled
+////	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1282_numerical_entropy_avg_interp_noscaled
+////	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1283_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1284_numerical_entropy_avg_interp_noscaled
+//	
+//	ModifyGraph /W=paper_figure_3b  axisEnab(l1)={0.5,0.9},axisEnab(b1)={0.1,0.4},freePos(l1)={-25,b1},freePos(b1)={-0.0021,l1}
+	
+	//////////////////////////// occupation ///////////////////////////
+//	///// append data
+//	AppendToGraph /W=paper_figure_3b dat1281_numerical_entropy_avg_interp_scaled vs dat1281_cs_cleaned_avg_occ_interp;  
+//	AppendToGraph /W=paper_figure_3b dat1282_numerical_entropy_avg_interp_scaled vs dat1282_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3b dat1283_numerical_entropy_avg_interp_scaled vs dat1283_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3b dat1284_numerical_entropy_avg_interp_scaled vs dat1284_cs_cleaned_avg_occ_interp;  
+//	
+//	///// append fits
+//	AppendToGraph /W=paper_figure_3b fit_dat1281_numerical_entropy_avg_interp_scaled vs fit_dat1281_cs_cleaned_avg_occ_interp;
+//	AppendToGraph /W=paper_figure_3b fit_dat1282_numerical_entropy_avg_interp_scaled vs fit_dat1282_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3b fit_dat1283_numerical_entropy_avg_interp_scaled vs fit_dat1283_cs_cleaned_avg_occ_interp; 
+//	AppendToGraph /W=paper_figure_3b fit_dat1284_numerical_entropy_avg_interp_scaled vs fit_dat1284_cs_cleaned_avg_occ_interp;
+//	
+//	Label /W=paper_figure_3b bottom "Occupation (.arb)"
+	//////////////////////////////////////////////////////////////////////
+	
+	
+	// "0,0,0;	24158,34695,23901;	52685,33924,12336;	47802,0,2056;	14906,27499,34438" // black, green, yellow, red
+	// modify data
+	ModifyGraph /W=paper_figure_3b mode(dat1281_numerical_entropy_avg_interp_scaled)=2, lsize(dat1281_numerical_entropy_avg_interp_scaled)=1, rgb(dat1281_numerical_entropy_avg_interp_scaled)=(0,0,0)
+	ModifyGraph /W=paper_figure_3b mode(dat1282_numerical_entropy_avg_interp_scaled)=2, lsize(dat1282_numerical_entropy_avg_interp_scaled)=1, rgb(dat1282_numerical_entropy_avg_interp_scaled)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_3b mode(dat1283_numerical_entropy_avg_interp_scaled)=2, lsize(dat1283_numerical_entropy_avg_interp_scaled)=1, rgb(dat1283_numerical_entropy_avg_interp_scaled)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_3b mode(dat1284_numerical_entropy_avg_interp_scaled)=2, lsize(dat1284_numerical_entropy_avg_interp_scaled)=1, rgb(dat1284_numerical_entropy_avg_interp_scaled)=(47802,0,2056)
+	
+	// modify fits
+	ModifyGraph /W=paper_figure_3b mode(fit_dat1281_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1281_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1281_numerical_entropy_avg_interp_scaled)=(0,0,0)
+	ModifyGraph /W=paper_figure_3b mode(fit_dat1282_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1282_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1282_numerical_entropy_avg_interp_scaled)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_3b mode(fit_dat1283_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1283_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1283_numerical_entropy_avg_interp_scaled)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_3b mode(fit_dat1284_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1284_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1284_numerical_entropy_avg_interp_scaled)=(47802,0,2056)
+		
+	
+	Label /W=paper_figure_3b left "dN/dT (.arb)"
+	
+	beautify_figure("paper_figure_3b")
+	
+	
+		///// append data
+	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1281_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1282_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1283_numerical_entropy_avg_interp_noscaled
+	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 dat1284_numerical_entropy_avg_interp_noscaled
+	
+	///// append fits
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1281_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1282_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1283_numerical_entropy_avg_interp_noscaled
+//	AppendToGraph /W=paper_figure_3b /l=l1 /b=b1 fit_dat1284_numerical_entropy_avg_interp_noscaled
+	
+	
+	ModifyGraph /W=paper_figure_3b mode(dat1281_numerical_entropy_avg_interp_noscaled)=2, lsize(dat1281_numerical_entropy_avg_interp_noscaled)=1, rgb(dat1281_numerical_entropy_avg_interp_noscaled)=(0,0,0)
+//	ModifyGraph /W=paper_figure_3b mode(dat1282_numerical_entropy_avg_interp_scaled)=2, lsize(dat1282_numerical_entropy_avg_interp_scaled)=1, rgb(dat1282_numerical_entropy_avg_interp_scaled)=(24158,34695,23901)
+//	ModifyGraph /W=paper_figure_3b mode(dat1283_numerical_entropy_avg_interp_scaled)=2, lsize(dat1283_numerical_entropy_avg_interp_scaled)=1, rgb(dat1283_numerical_entropy_avg_interp_scaled)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_3b mode(dat1284_numerical_entropy_avg_interp_noscaled)=2, lsize(dat1284_numerical_entropy_avg_interp_noscaled)=1, rgb(dat1284_numerical_entropy_avg_interp_noscaled)=(47802,0,2056)
+	
+//	ModifyGraph /W=paper_figure_3b  axisEnab(l1)={0.5,0.9},axisEnab(b1)={0.1,0.4},freePos(l1)={-25,b1},freePos(b1)={-0.0021,l1}
+//	ModifyGraph /W=paper_figure_3b nticks(l1)=2, nticks(b1)=2, noLabel(l1)=2, axisEnab(l1)={0.58,0.98}, axisEnab(b1)={0.03,0.33}, freePos(l1)={-25,b1}, freePos(b1)={-0.0015,l1}
+	ModifyGraph /W=paper_figure_3b nticks(l1)=2, nticks(b1)=2, noLabel(l1)=2, axisEnab(l1)={0.15,0.55}, axisEnab(b1)={0.03,0.33}, freePos(l1)={-25,b1}, freePos(b1)={-0.0015,l1}
+
+	
+	Legend/W=paper_figure_3b /C/N=text0/J/F=0/A=RB/X=4.50/Y=69.35 "\\Zr080\\s(fit_dat1281_numerical_entropy_avg_interp_scaled) Γ/T = 0.9\r\\s(fit_dat1282_numerical_entropy_avg_interp_scaled) Γ/T = 8.8\r\\s(fit_dat1283_numerical_entropy_avg_interp_scaled) Γ/T = 21.7\r\\s(fit_dat1284_numerical_entropy_avg_interp_scaled) Γ/T = 30.9"
+
+	ModifyGraph /W=paper_figure_3b  mirror=0,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=8, tick=2, gFont="Calibri", gfSize=8
+	ModifyGraph/W=paper_figure_3b muloffset={0.005,0}
+	SetAxis /W=paper_figure_3b bottom -10,10
+	
+	ModifyGraph /W=paper_figure_3b mirror(left)=1,mirror(bottom)=1
+//	SetAxis /W=paper_figure_3b bottom -6,9
+	
+endmacro
+
+
+
+
+macro paper_v2_figure_4a()
+// data from summer cool down
+// base temp
+//Datnum 6079 6080 6081
+
+
+	Display; KillWindow /Z paper_figure_4a; DoWindow/C/O paper_figure_4a 
+	
+	
+	///// duplicating so that data can be re-scaled /////
+	duplicate /o dat6079_dot_cleaned_avg_interp dat6079_dot_cleaned_avg_scale
+	duplicate /o dat6080_dot_cleaned_avg_interp dat6080_dot_cleaned_avg_scale
+	duplicate /o dat6081_dot_cleaned_avg_interp dat6081_dot_cleaned_avg_scale
+	
+	duplicate /o gfit_dat6079_dot_cleaned_avg_interp gfit_dat6079_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6080_dot_cleaned_avg_interp gfit_dat6080_dot_cleaned_avg_scale
+	duplicate /o gfit_dat6081_dot_cleaned_avg_interp gfit_dat6081_dot_cleaned_avg_scale
+	
+	
+	
+	/////// charge transition //////
+	
+	
+	
+	////////////////////////////////// SWEEPGATE //////////////////////////////////////////////////////////////
+////		///// translate data
+//	translate_wave_by_occupation(dat6079_dot_cleaned_avg_scale, dat6079_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6080_dot_cleaned_avg_scale, dat6080_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6081_dot_cleaned_avg_scale, dat6081_cs_cleaned_avg_occ_interp) 
+//
+//	///// translate fit
+//	translate_wave_by_occupation(gfit_dat6079_dot_cleaned_avg_scale, fit_dat6079_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6080_dot_cleaned_avg_scale, fit_dat6080_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6081_dot_cleaned_avg_scale, fit_dat6081_cs_cleaned_avg_occ_interp) 
+//
+//	///// append data
+//	AppendToGraph /W=paper_figure_4a dat6079_dot_cleaned_avg_scale; 
+//	AppendToGraph /W=paper_figure_4a dat6080_dot_cleaned_avg_scale; 
+//	AppendToGraph /W=paper_figure_4a dat6081_dot_cleaned_avg_scale; 
+//	
+//	///// append gfits
+//	AppendToGraph /W=paper_figure_4a gfit_dat6079_dot_cleaned_avg_scale;
+//	AppendToGraph /W=paper_figure_4a gfit_dat6080_dot_cleaned_avg_scale; 
+//	AppendToGraph /W=paper_figure_4a gfit_dat6081_dot_cleaned_avg_scale; 
+//	Label /W=paper_figure_4a bottom "Sweepgate  (mV)"
+//	ModifyGraph /W=paper_figure_4a muloffset={0.005,0}
+//	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////// OCCUPATION //////////////////////////////////////////////////////////////
+	///// append data
+	AppendToGraph /W=paper_figure_4a dat6079_dot_cleaned_avg_scale vs dat6079_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4a dat6080_dot_cleaned_avg_scale vs dat6080_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4a dat6081_dot_cleaned_avg_scale vs dat6081_cs_cleaned_avg_occ_interp; 
+	
+	///// append gfits
+	AppendToGraph /W=paper_figure_4a gfit_dat6079_dot_cleaned_avg_scale vs fit_dat6079_cs_cleaned_avg_occ_interp;
+	AppendToGraph /W=paper_figure_4a gfit_dat6080_dot_cleaned_avg_scale vs fit_dat6080_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4a gfit_dat6081_dot_cleaned_avg_scale vs fit_dat6081_cs_cleaned_avg_occ_interp; 
+	Label /W=paper_figure_4a bottom "Occupation  (.arb)"
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// "0,0,0;	24158,34695,23901;	52685,33924,12336;	47802,0,2056;	14906,27499,34438" // black, green, yellow, red
+	// modify data
+	ModifyGraph /W=paper_figure_4a mode(dat6079_dot_cleaned_avg_scale)=2, lsize(dat6079_dot_cleaned_avg_scale)=1, rgb(dat6079_dot_cleaned_avg_scale)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_4a mode(dat6080_dot_cleaned_avg_scale)=2, lsize(dat6080_dot_cleaned_avg_scale)=1, rgb(dat6080_dot_cleaned_avg_scale)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_4a mode(dat6081_dot_cleaned_avg_scale)=2, lsize(dat6081_dot_cleaned_avg_scale)=1, rgb(dat6081_dot_cleaned_avg_scale)=(0,0,0)
+	
+	// modify gfits
+	ModifyGraph /W=paper_figure_4a mode(gfit_dat6079_dot_cleaned_avg_scale)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale)=2, rgb(gfit_dat6079_dot_cleaned_avg_scale)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_4a mode(gfit_dat6080_dot_cleaned_avg_scale)=0, lsize(gfit_dat6080_dot_cleaned_avg_scale)=2, rgb(gfit_dat6080_dot_cleaned_avg_scale)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_4a mode(gfit_dat6081_dot_cleaned_avg_scale)=0, lsize(gfit_dat6081_dot_cleaned_avg_scale)=2, rgb(gfit_dat6081_dot_cleaned_avg_scale)=(0,0,0)
+	
+	Label /W=paper_figure_4a left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	
+	Legend /W=paper_figure_4a /C/N=text0/J/F=0/A=LT "\\Zr080\\s(gfit_dat6079_dot_cleaned_avg_scale) Γ/T = 24.29\r\\s(gfit_dat6080_dot_cleaned_avg_scale) Γ/T = 9.48\r\\s(gfit_dat6081_dot_cleaned_avg_scale) Γ/T = 0.99"
+	
+//	Label /W=paper_figure_4a bottom "Sweepgate (centered by mid) (mV)"
+	
+//	ModifyGraph /W=paper_figure_4a muloffset={0.005,0}
+//	SetAxis /W=paper_figure_4a bottom -8,8
+	beautify_figure("paper_figure_4a")
+
+endmacro
+
+
+
+
+macro paper_v2_figure_4b()
+// entropy 1281 1282 1283 1284
+
+	Display; KillWindow /Z paper_figure_4b; DoWindow/C/O paper_figure_4b 
+	
+	////////////////////////////////////////////////////////////
+	//////////// duplicate and scale ///////////////////////////
+	////////////////////////////////////////////////////////////
+	///// scaled data
+	duplicate /o dat1281_numerical_entropy_avg_interp dat1281_numerical_entropy_avg_interp_scaled
+	duplicate /o dat1282_numerical_entropy_avg_interp dat1282_numerical_entropy_avg_interp_scaled
+	duplicate /o dat1283_numerical_entropy_avg_interp dat1283_numerical_entropy_avg_interp_scaled
+	duplicate /o dat1284_numerical_entropy_avg_interp dat1284_numerical_entropy_avg_interp_scaled
+	
+	duplicate /o fit_dat1281_numerical_entropy_avg_interp fit_dat1281_numerical_entropy_avg_interp_scaled
+	duplicate /o fit_dat1282_numerical_entropy_avg_interp fit_dat1282_numerical_entropy_avg_interp_scaled
+	duplicate /o fit_dat1283_numerical_entropy_avg_interp fit_dat1283_numerical_entropy_avg_interp_scaled
+	duplicate /o fit_dat1284_numerical_entropy_avg_interp fit_dat1284_numerical_entropy_avg_interp_scaled
+	
+	
+	// offset to 0
+	dat1281_numerical_entropy_avg_interp_scaled -= fit_dat1281_numerical_entropy_avg_interp[0]
+	dat1282_numerical_entropy_avg_interp_scaled -= fit_dat1282_numerical_entropy_avg_interp[0]
+	dat1283_numerical_entropy_avg_interp_scaled -= fit_dat1283_numerical_entropy_avg_interp[0]
+	dat1284_numerical_entropy_avg_interp_scaled -= fit_dat1284_numerical_entropy_avg_interp[0]
+	
+	fit_dat1281_numerical_entropy_avg_interp_scaled -= fit_dat1281_numerical_entropy_avg_interp[0]
+	fit_dat1282_numerical_entropy_avg_interp_scaled -= fit_dat1282_numerical_entropy_avg_interp[0]
+	fit_dat1283_numerical_entropy_avg_interp_scaled -= fit_dat1283_numerical_entropy_avg_interp[0]
+	fit_dat1284_numerical_entropy_avg_interp_scaled -= fit_dat1284_numerical_entropy_avg_interp[0]
+	
+	// scale everything by the maximum fit value
+	dat1281_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1281_numerical_entropy_avg_interp)
+	dat1282_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1282_numerical_entropy_avg_interp)
+	dat1283_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1283_numerical_entropy_avg_interp)
+	dat1284_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1284_numerical_entropy_avg_interp)
+	
+	fit_dat1281_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1281_numerical_entropy_avg_interp)
+	fit_dat1282_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1282_numerical_entropy_avg_interp)
+	fit_dat1283_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1283_numerical_entropy_avg_interp)
+	fit_dat1284_numerical_entropy_avg_interp_scaled /= wavemax(fit_dat1284_numerical_entropy_avg_interp)
+	
+	// offset everything
+	variable offset = 1
+	dat1281_numerical_entropy_avg_interp_scaled += offset * 0
+	dat1282_numerical_entropy_avg_interp_scaled += offset * 1
+	dat1283_numerical_entropy_avg_interp_scaled += offset * 2
+	dat1284_numerical_entropy_avg_interp_scaled += offset * 3
+	
+	fit_dat1281_numerical_entropy_avg_interp_scaled += offset * 0
+	fit_dat1282_numerical_entropy_avg_interp_scaled += offset * 1
+	fit_dat1283_numerical_entropy_avg_interp_scaled += offset * 2
+	fit_dat1284_numerical_entropy_avg_interp_scaled += offset * 3
+	
+	
+//	resampleWave(dat1281_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+//	resampleWave(dat1282_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+//	resampleWave(dat1283_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+//	resampleWave(dat1284_numerical_entropy_avg_interp_scaled, 500, measure_freq=12195/4)
+	
+	smooth 1000, dat1281_numerical_entropy_avg_interp_scaled
+	smooth 1000, dat1282_numerical_entropy_avg_interp_scaled
+	smooth 1000, dat1283_numerical_entropy_avg_interp_scaled
+	smooth 2000, dat1284_numerical_entropy_avg_interp_scaled
+	
+	//////////////////////////// occupation ///////////////////////////
+	///// append data
+	AppendToGraph /W=paper_figure_4b dat1281_numerical_entropy_avg_interp_scaled vs dat1281_cs_cleaned_avg_occ_interp;  
+	AppendToGraph /W=paper_figure_4b dat1282_numerical_entropy_avg_interp_scaled vs dat1282_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4b dat1283_numerical_entropy_avg_interp_scaled vs dat1283_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4b dat1284_numerical_entropy_avg_interp_scaled vs dat1284_cs_cleaned_avg_occ_interp;  
+	
+	///// append fits
+	AppendToGraph /W=paper_figure_4b fit_dat1281_numerical_entropy_avg_interp_scaled vs fit_dat1281_cs_cleaned_avg_occ_interp;
+	AppendToGraph /W=paper_figure_4b fit_dat1282_numerical_entropy_avg_interp_scaled vs fit_dat1282_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4b fit_dat1283_numerical_entropy_avg_interp_scaled vs fit_dat1283_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4b fit_dat1284_numerical_entropy_avg_interp_scaled vs fit_dat1284_cs_cleaned_avg_occ_interp;
+	
+	Label /W=paper_figure_4b bottom "Occupation (.arb)"
+	//////////////////////////////////////////////////////////////////////
+	
+	
+	// "0,0,0;	24158,34695,23901;	52685,33924,12336;	47802,0,2056;	14906,27499,34438" // black, green, yellow, red
+	// modify data
+	ModifyGraph /W=paper_figure_4b mode(dat1281_numerical_entropy_avg_interp_scaled)=2, lsize(dat1281_numerical_entropy_avg_interp_scaled)=1, rgb(dat1281_numerical_entropy_avg_interp_scaled)=(0,0,0)
+	ModifyGraph /W=paper_figure_4b mode(dat1282_numerical_entropy_avg_interp_scaled)=2, lsize(dat1282_numerical_entropy_avg_interp_scaled)=1, rgb(dat1282_numerical_entropy_avg_interp_scaled)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_4b mode(dat1283_numerical_entropy_avg_interp_scaled)=2, lsize(dat1283_numerical_entropy_avg_interp_scaled)=1, rgb(dat1283_numerical_entropy_avg_interp_scaled)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_4b mode(dat1284_numerical_entropy_avg_interp_scaled)=2, lsize(dat1284_numerical_entropy_avg_interp_scaled)=1, rgb(dat1284_numerical_entropy_avg_interp_scaled)=(47802,0,2056)
+	
+	// modify fits
+	ModifyGraph /W=paper_figure_4b mode(fit_dat1281_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1281_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1281_numerical_entropy_avg_interp_scaled)=(0,0,0)
+	ModifyGraph /W=paper_figure_4b mode(fit_dat1282_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1282_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1282_numerical_entropy_avg_interp_scaled)=(24158,34695,23901)
+	ModifyGraph /W=paper_figure_4b mode(fit_dat1283_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1283_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1283_numerical_entropy_avg_interp_scaled)=(52685,33924,12336)
+	ModifyGraph /W=paper_figure_4b mode(fit_dat1284_numerical_entropy_avg_interp_scaled)=0, lsize(fit_dat1284_numerical_entropy_avg_interp_scaled)=2, rgb(fit_dat1284_numerical_entropy_avg_interp_scaled)=(47802,0,2056)
+		
+	
+	Label /W=paper_figure_4b left "dN/dT (.arb)"
+	
+	beautify_figure("paper_figure_4b")
+	
+	Legend/W=paper_figure_4b /C/N=text0/J/F=0/A=LT "\\s(fit_dat1281_numerical_entropy_avg_interp_scaled) Γ/T = 0.9\r\\s(fit_dat1282_numerical_entropy_avg_interp_scaled) Γ/T = 8.8\r\\s(fit_dat1283_numerical_entropy_avg_interp_scaled) Γ/T = 21.7\r\\s(fit_dat1284_numerical_entropy_avg_interp_scaled) Γ/T = 30.9"
+
+//	ModifyGraph /W=paper_figure_4b  mirror=0,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
+//	ModifyGraph /W=paper_figure_4b mirror(left)=1,mirror(bottom)=1
+//	SetAxis /W=paper_figure_4b bottom -6,9
+	
+endmacro
 
 
 function figure_2_conductance()
@@ -1165,10 +1862,10 @@ function figure_2_entropy()
 	
 	///// AUTUMN EXPERIMENT /////
 	string gamma_type
-//	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
+	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
-	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
+//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
 //	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
 //	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
 //	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
@@ -1211,7 +1908,7 @@ function figure_2_entropy()
 	string occ_avg, occ_avg_fit
 	string dndt_avg, dndt_avg_fit
 	string dndt_nrg_avg_fit
-	string dndt_occ_avg, dndt_occ_avg_fit
+	string dndt_occ_avg, dndt_occ_avg_fit, dndt_occ_avg_coef
 	string entropy_avg, entropy_avg_fit
 	
 	string occupation_coef_name
@@ -1256,6 +1953,8 @@ function figure_2_entropy()
 		// setting dndt occupation names
 		dndt_occ_avg = "dat" + num2str(entropy_datnum) + "_cs_cleaned_avg_occ"
 		dndt_occ_avg_fit = "fit_" + dndt_occ_avg
+		
+		dndt_occ_avg_coef = "coef_dat" + num2str(entropy_datnum) + "_cs_cleaned_avg"
 		
 		// setting entropy names
 		entropy_avg = "dat" + num2str(entropy_datnum) + "_numerical_entropy_int_avg"
@@ -1324,16 +2023,20 @@ function figure_2_entropy()
 			
 			variable int_entropy_scale
 			
-			if (entropy_datnum == 1281)
-				int_entropy_scale = (1/(0.24299*8.617e-5*0.0067))*0.0225*8.617e-5*(0.212027)
-			elseif (entropy_datnum == 1282)
-				int_entropy_scale = (1/(0.22623*8.617e-5*0.0067))*0.0225*8.617e-5*(0.0177491)
-			elseif (entropy_datnum == 1283)
-				int_entropy_scale = (1/(0.10034538*8.617e-5*0.0067))*0.0225*8.617e-5*(0.0051304582)
-			elseif (entropy_datnum == 1284)
-				int_entropy_scale = (1/(0.095089674*8.617e-5*0.0067))*0.0225*8.617e-5*(0.0028941352)
-			endif
-			int_entropy_scale = 1
+			wave occ_coef = $dndt_occ_avg_coef
+			
+			int_entropy_scale = abs((1/(2*occ_coef[7]*8.617e-5*0.0067))*0.0225*8.617e-5*2*(occ_coef[1]))*50
+			
+//			if (entropy_datnum == 1281)
+//				int_entropy_scale = (1/(0.24299*8.617e-5*0.0067))*0.0225*8.617e-5*(0.212027)
+//			elseif (entropy_datnum == 1282)
+//				int_entropy_scale = (1/(0.22623*8.617e-5*0.0067))*0.0225*8.617e-5*(0.0177491)
+//			elseif (entropy_datnum == 1283)
+//				int_entropy_scale = (1/(0.10034538*8.617e-5*0.0067))*0.0225*8.617e-5*(0.0051304582)
+//			elseif (entropy_datnum == 1284)
+//				int_entropy_scale = (1/(0.095089674*8.617e-5*0.0067))*0.0225*8.617e-5*(0.0028941352)
+//			endif
+//			int_entropy_scale = 1
 			print "Scaling factor = " + num2str(int_entropy_scale)
 			print "Max int val = " + num2str(dndt_int_avg_fit_wav[inf])
 			AppendToGraph /W=figure_2b /r /B=bottom dndt_int_avg_fit_wav
@@ -2039,14 +2742,14 @@ function figure_B_NRG()
 	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#2)=2, rgb(occ_nrg_pick#2)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_nrg_occ_aligned lsize(occ_nrg_pick#3)=2, rgb(occ_nrg_pick#3)=(186*257,0*257,8*257)
 
-	Legend/C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
+	Legend/C/N=text0/J/F=0/A=LT/X=5.38/Y=0.00 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
 	
 //	Label /W=figure_nrg_occ_aligned bottom "Energy (arb.)"
 //	Label /W=figure_nrg_occ_aligned left "Occupation"
 	SetAxis /W=figure_nrg_occ_aligned bottom -1.2e+03,1.2e+03
 	ModifyGraph /W=figure_nrg_occ_aligned mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=14, tick=2, gFont="Calibri", gfSize=14, gfSize=14
 	
-//	Legend/C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
+//	Legend/C/N=text0/J/F=0/A=LT/X=5.38/Y=0.00 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 20"
 
 	/////	KILL WAVES	/////
 	killwaves /Z x_wave
@@ -2152,7 +2855,7 @@ function figure_dummy_conductance_occupation()
 	SetAxis /W=figure_nrg_occ_dummy bottom -0.1e+03,0.1e+03
 	ModifyGraph /W=figure_nrg_occ_dummy lsize(occ_nrg_pick)=2, rgb(occ_nrg_pick)=(0,0,0), mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2,  gFont="Calibri", gfSize=14
 
-//	Legend/C/N=text0/J "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 7"
+//	Legend/C/N=text0/J/F=0 "\\s(occ_nrg_pick) Γ/T = 0.1\r\\s(occ_nrg_pick#1) Γ/T = 1\r\\s(occ_nrg_pick#2) Γ/T = 5\r\\s(occ_nrg_pick#3) Γ/T = 7"
 
 
 	///////////////////////////////////////////////////////
@@ -2262,9 +2965,9 @@ function figure_tim_gamma()
 //	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_med_fit)=0, lsize(int_entropy_med_fit)=2, rgb(int_entropy_med_fit)=(205*257,132*257,48*257)
 	ModifyGraph /W=figure_poster_gamma_entropy mode(int_entropy_strong_fit)=0, lsize(int_entropy_strong_fit)=2, rgb(int_entropy_strong_fit)=(58*257,107*257,134*257) //rgb(int_entropy_strong_fit)=(186*257,0*257,8*257)
 	
-//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_similar_fit)  Γ/T = 1.3\r\\s(int_entropy_med_fit)  Γ/T = 5\r\\s(int_entropy_strong_fit) Γ/T = 18"
-//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_strong_fit) Γ/T = 18"
-	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit) Γ/T = weak\r\\s(int_entropy_strong_fit) Γ/T = strong"
+//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/F=0/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_similar_fit)  Γ/T = 1.3\r\\s(int_entropy_med_fit)  Γ/T = 5\r\\s(int_entropy_strong_fit) Γ/T = 18"
+//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/F=0/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_strong_fit) Γ/T = 18"
+	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/F=0/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit) Γ/T = weak\r\\s(int_entropy_strong_fit) Γ/T = strong"
 
 
 //	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\u#2"
@@ -2354,7 +3057,7 @@ function figure_tim_single()
 	ModifyGraph /W=figure_poster_gamma_weak mirror(bottom)=1
 	ModifyGraph /W=figure_poster_gamma_weak tick(l2)=0
 	
-//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_similar_fit)  Γ/T = 1.3\r\\s(int_entropy_med_fit)  Γ/T = 5\r\\s(int_entropy_strong_fit) Γ/T = 18"
+//	Legend /W=figure_poster_gamma_entropy /C/N=text0/J/F=0/A=LT/X=5.38/Y=0.00 "\\s(int_entropy_weak_fit)  Γ/T < 0.01\r\\s(int_entropy_similar_fit)  Γ/T = 1.3\r\\s(int_entropy_med_fit)  Γ/T = 5\r\\s(int_entropy_strong_fit) Γ/T = 18"
 ////	Label /W=figure_poster_gamma_entropy bottom "Sweep Gate (mV)\\u#2"
 ////	Label /W=figure_poster_gamma_entropy left "Entropy (kB)\\u#2"
 //	SetAxis /W=figure_poster_gamma_entropy bottom -3,3
