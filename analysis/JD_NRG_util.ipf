@@ -673,7 +673,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] = 1 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.005 //0.012 //0.002 //0.16 // 0.02 // x scaling (linked)
+			coefwave[1][0] = 0.012// 0.005  //0.002 //0.16 // 0.02 // x scaling (linked)
 			
 		elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 			coefwave[0][0] = 1e-4 // lnG/Tbase (linked)
