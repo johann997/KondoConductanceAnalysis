@@ -14,6 +14,55 @@ function get_hdfid(datnum)
 	return fileid
 end
 
+function fd_getfield(datnum)
+	// Function to get old h5 values for Lakeshore temperatures
+	variable datnum
+	
+	variable sl_id, fd_id  //JSON ids
+	variable field
+
+	try
+		sl_id = get_sweeplogs(datnum)  // Get Sweep_logs JSON;
+		fd_id = getJSONXid(sl_id, "LS625 Magnet Supply") // Get FastDAC JSON from Sweeplogs
+	
+		JSONXOP_GetValue/V fd_id, "field mT"
+		field = V_value
+	
+		JSONXOP_Release /A  //Clear all stored JSON strings
+		
+		return field
+	catch
+		print "[WARNING] No Field found in JSON, returning 0"
+		return 0
+	endtry
+
+end
+
+
+function fd_gettemperature(datnum, [which_plate])
+	// Function to get old h5 values for Lakeshore temperatures
+	variable datnum
+	string which_plate // "MC K" :: "50K Plate K" :: "4K Plate K" :: "Magnet K" :: "Still K
+	
+	which_plate = selectString(paramisdefault(which_plate), which_plate, "MC K") // Mixing chamber temp is default
+	
+	variable sl_id, fd_id  //JSON ids
+	variable temperature
+
+	sl_id = get_sweeplogs(datnum)  // Get Sweep_logs JSON;
+	fd_id = getJSONXid(sl_id, "Lakeshore") // Get FastDAC JSON from Sweeplogs
+	fd_id = getJSONXid(fd_id, "Temperature") // Get FastDAC JSON from Sweeplogs
+
+	JSONXOP_GetValue/V fd_id, which_plate
+	temperature = V_value
+
+	JSONXOP_Release /A  //Clear all stored JSON strings
+	
+	return temperature
+
+end
+
+
 function fd_getGlobalAWG(S)
 	// Function to get global values for AWG_list that were stored using set_global_AWG_list()
 	// StructPut ONLY gets VARIABLES
