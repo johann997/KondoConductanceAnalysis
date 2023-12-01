@@ -3033,3 +3033,41 @@ function figure_tim_single()
 //	ModifyGraph /W=figure_poster_gamma_entropy mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
 
 end
+
+
+macro compare_cold_entropy_vs_global()
+
+// 1281, 1285 low G/T
+// 1282, 1286
+// 1283, 1287
+// 1284, 1288 high G/T
+
+
+// cold entropy data :: dat1281_cs_cleaned_avg
+// cold entropy coef :: coef_dat1281_cs_cleaned_avg
+
+// cold transition data :: dat1285_cs_cleaned_avg
+// cold transition data :: coef_dat1285_cs_cleaned_avg
+
+
+	// modify entropy data
+	duplicate /o dat1284_cs_cleaned_avg dat1284_cs_cleaned_avg_scale
+	
+	create_x_wave(dat1284_cs_cleaned_avg_scale)
+	dat1284_cs_cleaned_avg_scale -= (coef_dat1284_cs_cleaned_avg[4] + coef_dat1284_cs_cleaned_avg[5]*x_wave[p] + coef_dat1284_cs_cleaned_avg[6]*x_wave[p]^2)
+	dat1284_cs_cleaned_avg_scale /= coef_dat1284_cs_cleaned_avg[7]
+	setscale /I x x_wave[0]-coef_dat1284_cs_cleaned_avg[2], x_wave[inf]-coef_dat1284_cs_cleaned_avg[2], dat1284_cs_cleaned_avg_scale
+
+	// modify global data
+	duplicate /o dat1288_cs_cleaned_avg dat1288_cs_cleaned_avg_scale
+	
+	create_x_wave(dat1288_cs_cleaned_avg_scale)
+	dat1288_cs_cleaned_avg_scale -= (coef_dat1288_cs_cleaned_avg[4] + coef_dat1288_cs_cleaned_avg[5]*x_wave[p] + coef_dat1288_cs_cleaned_avg[6]*x_wave[p]^2)
+	dat1288_cs_cleaned_avg_scale /= coef_dat1288_cs_cleaned_avg[7]
+	setscale /I x x_wave[0]-coef_dat1288_cs_cleaned_avg[2], x_wave[inf]-coef_dat1288_cs_cleaned_avg[2], dat1288_cs_cleaned_avg_scale
+	
+	display dat1284_cs_cleaned_avg_scale, dat1288_cs_cleaned_avg_scale
+	makecolorful()
+	legend
+	
+endmacro
