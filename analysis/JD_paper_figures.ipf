@@ -635,109 +635,119 @@ macro paper_v2_figure_2a_strong()
 	
 	
 	///// duplicating so that data can be re-scaled /////
-	duplicate /o dat6079_cs_cleaned_avg dat6079_cs_cleaned_avg_scale
-	duplicate /o dat6088_cs_cleaned_avg dat6088_cs_cleaned_avg_scale
-	duplicate /o dat6085_cs_cleaned_avg dat6085_cs_cleaned_avg_scale
-	duplicate /o dat6082_cs_cleaned_avg dat6082_cs_cleaned_avg_scale
+	duplicate /o dat6079_cs_cleaned_avg dat6079_cs_cleaned_avg_scale_fig2a
+	duplicate /o dat6088_cs_cleaned_avg dat6088_cs_cleaned_avg_scale_fig2a
+	duplicate /o dat6085_cs_cleaned_avg dat6085_cs_cleaned_avg_scale_fig2a
+	duplicate /o dat6082_cs_cleaned_avg dat6082_cs_cleaned_avg_scale_fig2a
 	
-	duplicate /o fit_dat6079_cs_cleaned_avg fit_dat6079_cs_cleaned_avg_scale
-	duplicate /o fit_dat6088_cs_cleaned_avg fit_dat6088_cs_cleaned_avg_scale
-	duplicate /o fit_dat6085_cs_cleaned_avg fit_dat6085_cs_cleaned_avg_scale
-	duplicate /o fit_dat6082_cs_cleaned_avg fit_dat6082_cs_cleaned_avg_scale
+	duplicate /o fit_dat6079_cs_cleaned_avg fit_dat6079_cs_cleaned_avg_scale_fig2a
+	duplicate /o fit_dat6088_cs_cleaned_avg fit_dat6088_cs_cleaned_avg_scale_fig2a
+	duplicate /o fit_dat6085_cs_cleaned_avg fit_dat6085_cs_cleaned_avg_scale_fig2a
+	duplicate /o fit_dat6082_cs_cleaned_avg fit_dat6082_cs_cleaned_avg_scale_fig2a
 	
 	
 	////////// removing linear and quadratic terms /////
 	// data
-	create_x_wave(dat6079_cs_cleaned_avg_scale)
-	dat6079_cs_cleaned_avg_scale -= (coef_dat6079_cs_cleaned_avg[5]*x_wave[p] + coef_dat6079_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6079_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6079_cs_cleaned_avg[2], x_wave[inf]-coef_dat6079_cs_cleaned_avg[2], dat6079_cs_cleaned_avg_scale
+	create_x_wave(dat6079_cs_cleaned_avg_scale_fig2a)
+	dat6079_cs_cleaned_avg_scale_fig2a -= (coef_dat6079_cs_cleaned_avg[5]*x_wave[p] + coef_dat6079_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6079_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6079_cs_cleaned_avg[2], x_wave[inf]-coef_dat6079_cs_cleaned_avg[2], dat6079_cs_cleaned_avg_scale_fig2a
 
-	create_x_wave(dat6088_cs_cleaned_avg_scale)
-	dat6088_cs_cleaned_avg_scale -= (coef_dat6088_cs_cleaned_avg[5]*x_wave[p] + coef_dat6088_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6088_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6088_cs_cleaned_avg[2], x_wave[inf]-coef_dat6088_cs_cleaned_avg[2], dat6088_cs_cleaned_avg_scale
+	create_x_wave(dat6088_cs_cleaned_avg_scale_fig2a)
+	dat6088_cs_cleaned_avg_scale_fig2a -= (coef_dat6088_cs_cleaned_avg[5]*x_wave[p] + coef_dat6088_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6088_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6088_cs_cleaned_avg[2], x_wave[inf]-coef_dat6088_cs_cleaned_avg[2], dat6088_cs_cleaned_avg_scale_fig2a
 	
-	create_x_wave(dat6085_cs_cleaned_avg_scale)
-	dat6085_cs_cleaned_avg_scale -= (coef_dat6085_cs_cleaned_avg[5]*x_wave[p] + coef_dat6085_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6085_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6085_cs_cleaned_avg[2], x_wave[inf]-coef_dat6085_cs_cleaned_avg[2], dat6085_cs_cleaned_avg_scale
+	create_x_wave(dat6085_cs_cleaned_avg_scale_fig2a)
+	dat6085_cs_cleaned_avg_scale_fig2a -= (coef_dat6085_cs_cleaned_avg[5]*x_wave[p] + coef_dat6085_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6085_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6085_cs_cleaned_avg[2], x_wave[inf]-coef_dat6085_cs_cleaned_avg[2], dat6085_cs_cleaned_avg_scale_fig2a
 	
-	create_x_wave(dat6082_cs_cleaned_avg_scale)
-	dat6082_cs_cleaned_avg_scale -= (coef_dat6082_cs_cleaned_avg[5]*x_wave[p] + coef_dat6082_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6082_cs_cleaned_avg[2], x_wave[inf]-coef_dat6082_cs_cleaned_avg[2], dat6082_cs_cleaned_avg_scale
+	create_x_wave(dat6082_cs_cleaned_avg_scale_fig2a)
+	dat6082_cs_cleaned_avg_scale_fig2a -= (coef_dat6082_cs_cleaned_avg[5]*x_wave[p] + coef_dat6082_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6082_cs_cleaned_avg[2], x_wave[inf]-coef_dat6082_cs_cleaned_avg[2], dat6082_cs_cleaned_avg_scale_fig2a
 	
 	// fit
-	create_x_wave(fit_dat6079_cs_cleaned_avg_scale)
-	fit_dat6079_cs_cleaned_avg_scale -= (coef_dat6079_cs_cleaned_avg[5]*x_wave[p] + coef_dat6079_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6079_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6079_cs_cleaned_avg[2], x_wave[inf]-coef_dat6079_cs_cleaned_avg[2], fit_dat6079_cs_cleaned_avg_scale
+	create_x_wave(fit_dat6079_cs_cleaned_avg_scale_fig2a)
+	fit_dat6079_cs_cleaned_avg_scale_fig2a -= (coef_dat6079_cs_cleaned_avg[5]*x_wave[p] + coef_dat6079_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6079_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6079_cs_cleaned_avg[2], x_wave[inf]-coef_dat6079_cs_cleaned_avg[2], fit_dat6079_cs_cleaned_avg_scale_fig2a
 	
-	create_x_wave(fit_dat6088_cs_cleaned_avg_scale)
-	fit_dat6088_cs_cleaned_avg_scale -= (coef_dat6088_cs_cleaned_avg[5]*x_wave[p] + coef_dat6088_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6088_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6088_cs_cleaned_avg[2], x_wave[inf]-coef_dat6088_cs_cleaned_avg[2], fit_dat6088_cs_cleaned_avg_scale
+	create_x_wave(fit_dat6088_cs_cleaned_avg_scale_fig2a)
+	fit_dat6088_cs_cleaned_avg_scale_fig2a -= (coef_dat6088_cs_cleaned_avg[5]*x_wave[p] + coef_dat6088_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6088_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6088_cs_cleaned_avg[2], x_wave[inf]-coef_dat6088_cs_cleaned_avg[2], fit_dat6088_cs_cleaned_avg_scale_fig2a
 	
-	create_x_wave(fit_dat6085_cs_cleaned_avg_scale)
-	fit_dat6085_cs_cleaned_avg_scale -= (coef_dat6085_cs_cleaned_avg[5]*x_wave[p] + coef_dat6085_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6085_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6085_cs_cleaned_avg[2], x_wave[inf]-coef_dat6085_cs_cleaned_avg[2], fit_dat6085_cs_cleaned_avg_scale
+	create_x_wave(fit_dat6085_cs_cleaned_avg_scale_fig2a)
+	fit_dat6085_cs_cleaned_avg_scale_fig2a -= (coef_dat6085_cs_cleaned_avg[5]*x_wave[p] + coef_dat6085_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6085_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6085_cs_cleaned_avg[2], x_wave[inf]-coef_dat6085_cs_cleaned_avg[2], fit_dat6085_cs_cleaned_avg_scale_fig2a
 	
-	create_x_wave(fit_dat6082_cs_cleaned_avg_scale)
-	fit_dat6082_cs_cleaned_avg_scale -= (coef_dat6082_cs_cleaned_avg[5]*x_wave[p] + coef_dat6082_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_cs_cleaned_avg[4]
-//	setscale /I x x_wave[0]-coef_dat6082_cs_cleaned_avg[2], x_wave[inf]-coef_dat6082_cs_cleaned_avg[2], fit_dat6082_cs_cleaned_avg_scale
+	create_x_wave(fit_dat6082_cs_cleaned_avg_scale_fig2a)
+	fit_dat6082_cs_cleaned_avg_scale_fig2a -= (coef_dat6082_cs_cleaned_avg[5]*x_wave[p] + coef_dat6082_cs_cleaned_avg[6]*x_wave[p]^2) + coef_dat6082_cs_cleaned_avg[4]
+//	setscale /I x x_wave[0]-coef_dat6082_cs_cleaned_avg[2], x_wave[inf]-coef_dat6082_cs_cleaned_avg[2], fit_dat6082_cs_cleaned_avg_scale_fig2a
 	
 	
 //	// offset everything
 //	variable offset = 0.003
-//	dat6079_cs_cleaned_avg_scale += offset * 0
-//	dat6088_cs_cleaned_avg_scale += offset * 1
-//	dat6085_cs_cleaned_avg_scale += offset * 2
-//	dat6082_cs_cleaned_avg_scale += offset * 3
+//	dat6079_cs_cleaned_avg_scale_fig2a += offset * 0
+//	dat6088_cs_cleaned_avg_scale_fig2a += offset * 1
+//	dat6085_cs_cleaned_avg_scale_fig2a += offset * 2
+//	dat6082_cs_cleaned_avg_scale_fig2a += offset * 3
 //	
-//	fit_dat6079_cs_cleaned_avg_scale += offset * 0
-//	fit_dat6088_cs_cleaned_avg_scale += offset * 1
-//	fit_dat6085_cs_cleaned_avg_scale += offset * 2
-//	fit_dat6082_cs_cleaned_avg_scale += offset * 3
+//	fit_dat6079_cs_cleaned_avg_scale_fig2a += offset * 0
+//	fit_dat6088_cs_cleaned_avg_scale_fig2a += offset * 1
+//	fit_dat6085_cs_cleaned_avg_scale_fig2a += offset * 2
+//	fit_dat6082_cs_cleaned_avg_scale_fig2a += offset * 3
 	
 	
 	/////// charge transition //////
 	///// append data
-	AppendToGraph /W=paper_figure_2a dat6079_cs_cleaned_avg_scale; 
-	AppendToGraph /W=paper_figure_2a dat6088_cs_cleaned_avg_scale; 
-	AppendToGraph /W=paper_figure_2a dat6085_cs_cleaned_avg_scale; 
-	AppendToGraph /W=paper_figure_2a dat6082_cs_cleaned_avg_scale; 
+	AppendToGraph /W=paper_figure_2a dat6079_cs_cleaned_avg_scale_fig2a; 
+	AppendToGraph /W=paper_figure_2a dat6088_cs_cleaned_avg_scale_fig2a; 
+	AppendToGraph /W=paper_figure_2a dat6085_cs_cleaned_avg_scale_fig2a; 
+	AppendToGraph /W=paper_figure_2a dat6082_cs_cleaned_avg_scale_fig2a; 
 	
 	///// append fits
-	AppendToGraph /W=paper_figure_2a fit_dat6079_cs_cleaned_avg_scale;
-	AppendToGraph /W=paper_figure_2a fit_dat6088_cs_cleaned_avg_scale; 
-	AppendToGraph /W=paper_figure_2a fit_dat6085_cs_cleaned_avg_scale; 
-	AppendToGraph /W=paper_figure_2a fit_dat6082_cs_cleaned_avg_scale;
+	AppendToGraph /W=paper_figure_2a fit_dat6079_cs_cleaned_avg_scale_fig2a;
+	AppendToGraph /W=paper_figure_2a fit_dat6088_cs_cleaned_avg_scale_fig2a; 
+	AppendToGraph /W=paper_figure_2a fit_dat6085_cs_cleaned_avg_scale_fig2a; 
+	AppendToGraph /W=paper_figure_2a fit_dat6082_cs_cleaned_avg_scale_fig2a;
 	
 	// offset 
 	variable offset = 0.0015
 	variable const_offset = coef_dat6082_cs_cleaned_avg[4]
-	ModifyGraph /W=paper_figure_2a offset(dat6079_cs_cleaned_avg_scale)={0,offset * 0 + const_offset}
-	ModifyGraph /W=paper_figure_2a offset(dat6088_cs_cleaned_avg_scale)={0,offset * 1 + const_offset}
-	ModifyGraph /W=paper_figure_2a offset(dat6085_cs_cleaned_avg_scale)={0,offset * 2 + const_offset}
-	ModifyGraph /W=paper_figure_2a offset(dat6082_cs_cleaned_avg_scale)={0,offset * 3 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6079_cs_cleaned_avg_scale_fig2a)={0,offset * 0 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6088_cs_cleaned_avg_scale_fig2a)={0,offset * 1 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6085_cs_cleaned_avg_scale_fig2a)={0,offset * 2 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(dat6082_cs_cleaned_avg_scale_fig2a)={0,offset * 3 + const_offset}
 	
-	ModifyGraph /W=paper_figure_2a offset(fit_dat6079_cs_cleaned_avg_scale)={0,offset * 0 + const_offset}
-	ModifyGraph /W=paper_figure_2a offset(fit_dat6088_cs_cleaned_avg_scale)={0,offset * 1 + const_offset}
-	ModifyGraph /W=paper_figure_2a offset(fit_dat6085_cs_cleaned_avg_scale)={0,offset * 2 + const_offset}
-	ModifyGraph /W=paper_figure_2a offset(fit_dat6082_cs_cleaned_avg_scale)={0,offset * 3 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6079_cs_cleaned_avg_scale_fig2a)={0,offset * 0 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6088_cs_cleaned_avg_scale_fig2a)={0,offset * 1 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6085_cs_cleaned_avg_scale_fig2a)={0,offset * 2 + const_offset}
+	ModifyGraph /W=paper_figure_2a offset(fit_dat6082_cs_cleaned_avg_scale_fig2a)={0,offset * 3 + const_offset}
 	
+	
+	string marker_size
 	// modify data
-	ModifyGraph /W=paper_figure_2a mode(dat6079_cs_cleaned_avg_scale)=2, lsize(dat6079_cs_cleaned_avg_scale)=1, rgb(dat6079_cs_cleaned_avg_scale)=(0,0,65535)
-	ModifyGraph /W=paper_figure_2a mode(dat6088_cs_cleaned_avg_scale)=2, lsize(dat6088_cs_cleaned_avg_scale)=1, rgb(dat6088_cs_cleaned_avg_scale)=(29524,1,58982)
-	ModifyGraph /W=paper_figure_2a mode(dat6085_cs_cleaned_avg_scale)=2, lsize(dat6085_cs_cleaned_avg_scale)=1, rgb(dat6085_cs_cleaned_avg_scale)=(64981,37624,14500)
-	ModifyGraph /W=paper_figure_2a mode(dat6082_cs_cleaned_avg_scale)=2, lsize(dat6082_cs_cleaned_avg_scale)=1, rgb(dat6082_cs_cleaned_avg_scale)=(65535,0,0)
+	marker_size = "dat6079_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6079_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6079_cs_cleaned_avg_scale_fig2a)=3, marker(dat6079_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6079_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6079_cs_cleaned_avg_scale_fig2a)=(0,0,65535), mrkThick(dat6079_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6079_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	
+	marker_size = "dat6088_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6088_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6088_cs_cleaned_avg_scale_fig2a)=3, marker(dat6088_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6088_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6088_cs_cleaned_avg_scale_fig2a)=(29524,1,58982), mrkThick(dat6088_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6088_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	
+	marker_size = "dat6085_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6085_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6085_cs_cleaned_avg_scale_fig2a)=3, marker(dat6085_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6085_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6085_cs_cleaned_avg_scale_fig2a)=(64981,37624,14500), mrkThick(dat6085_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6085_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	
+	marker_size = "dat6082_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6082_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6082_cs_cleaned_avg_scale_fig2a)=3, marker(dat6082_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6082_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6082_cs_cleaned_avg_scale_fig2a)=(65535,0,0), mrkThick(dat6082_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6082_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
 	
 	// modify fits
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6079_cs_cleaned_avg_scale)=0, lsize(fit_dat6079_cs_cleaned_avg_scale)=2, rgb(fit_dat6079_cs_cleaned_avg_scale)=(0,0,65535)
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6088_cs_cleaned_avg_scale)=0, lsize(fit_dat6088_cs_cleaned_avg_scale)=2, rgb(fit_dat6088_cs_cleaned_avg_scale)=(29524,1,58982)
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6085_cs_cleaned_avg_scale)=0, lsize(fit_dat6085_cs_cleaned_avg_scale)=2, rgb(fit_dat6085_cs_cleaned_avg_scale)=(64981,37624,14500)
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6082_cs_cleaned_avg_scale)=0, lsize(fit_dat6082_cs_cleaned_avg_scale)=2, rgb(fit_dat6082_cs_cleaned_avg_scale)=(65535,0,0)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6079_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6079_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6079_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (0,0,65535)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6088_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6088_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6088_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (29524,1,58982)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6085_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6085_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6085_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (64981,37624,14500)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6082_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6082_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6082_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (65535,0,0)
 	
 	Label /W=paper_figure_2a left "Current (nA)"
 	SetAxis /W=paper_figure_2a bottom -10,10
 	
-	Legend /W=paper_figure_2a /C/N=text0/J/F=0/F=0 "\\Zr080\\s(fit_dat6079_cs_cleaned_avg_scale) 22.5 mK\r\\s(fit_dat6088_cs_cleaned_avg_scale) 100 mK\r\\s(fit_dat6085_cs_cleaned_avg_scale) 300 mK\r\\s(fit_dat6082_cs_cleaned_avg_scale) 500 mK"
-	
+//	Legend /W=paper_figure_2a /C/N=text0/J/F=0/F=0 "\\Zr080\\s(fit_dat6079_cs_cleaned_avg_scale_fig2a) 22.5 mK\r\\s(fit_dat6088_cs_cleaned_avg_scale_fig2a) 100 mK\r\\s(fit_dat6085_cs_cleaned_avg_scale_fig2a) 300 mK\r\\s(fit_dat6082_cs_cleaned_avg_scale_fig2a) 500 mK"
+//	Legend /W=paper_figure_2a /C/N=text0/J/F=0/F=0 "\\Zr080\\s(dat6079_cs_cleaned_avg_scale_fig2a) 22.5 mK\r\\s(dat6088_cs_cleaned_avg_scale_fig2a) 100 mK\r\\s(dat6085_cs_cleaned_avg_scale_fig2a) 300 mK\r\\s(dat6082_cs_cleaned_avg_scale_fig2a) 500 mK"
+
 	
 	//////////////////////////// occupation ///////////////////////////
 //	///// append data
@@ -771,10 +781,22 @@ macro paper_v2_figure_2a_strong()
 	
 	Label /W=paper_figure_2a bottom "Sweepgate  (mV)"
 //	Label /W=paper_figure_2a bottom "Sweepgate (centered by mid) (mV)"
-	ModifyGraph /W=paper_figure_2a muloffset={0.005,0}
+//	ModifyGraph /W=paper_figure_2a muloffset={0.005,0}
 	
 	
 	beautify_figure("paper_figure_2a")
+	
+	
+	AppendToGraph /W=paper_figure_2a /l=l1 /b=b1, dat6079_cs_cleaned_avg
+	
+	ModifyGraph /W=paper_figure_2a muloffset={0.005,0}
+	
+	ModifyGraph /W=paper_figure_2a axisEnab(l1)={0.1,0.5},axisEnab(b1)={0.1,0.5},freePos(l1)={-40,b1},freePos(b1)={0,l1}
+	SetAxis /W=paper_figure_2a b1 -40,40
+	
+	Legend /W=paper_figure_2a /C/N=text0/J/F=0/F=0 "\\Zr080\\s(dat6079_cs_cleaned_avg_scale_fig2a) 22.5 mK\r\\s(dat6088_cs_cleaned_avg_scale_fig2a) 100 mK\r\\s(dat6085_cs_cleaned_avg_scale_fig2a) 300 mK\r\\s(dat6082_cs_cleaned_avg_scale_fig2a) 500 mK"
+
+	
 	// dat1282_numerical_entropy_avg_interp vs dat1282_cs_cleaned_avg_occ_interp
 // fit_dat1282_numerical_entropy_avg_interp vs fit_dat1282_cs_cleaned_avg_occ_interp
 // fit_nrg_dat1282_numerical_entropy_avg_interp vs fit_dat1282_cs_cleaned_avg_occ_interp
@@ -1842,10 +1864,10 @@ function figure_2_entropy()
 	
 	///// AUTUMN EXPERIMENT /////
 	string gamma_type
-	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
+//	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
-//	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
+	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
 //	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
 //	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
 //	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
@@ -2040,7 +2062,9 @@ function figure_2_entropy()
 			
 			// interpolating occupation to have higher density of points
 			string dndt_vs_occ_data_wave_name_x = dndt_occ_avg + "_interp"
-			interpolate_wave(dndt_vs_occ_data_wave_name_x, $dndt_occ_avg, numpts_to_interp=10000)
+			
+			duplicate /o $dndt_occ_avg $dndt_vs_occ_data_wave_name_x
+//			interpolate_wave(dndt_vs_occ_data_wave_name_x, $dndt_occ_avg, numpts_to_interp=10000)
 			
 			// interpolating conduction to have data at same x points as occuptaion data
 			string dndt_vs_occ_data_wave_name_y = dndt_avg + "_interp"
@@ -2055,7 +2079,9 @@ function figure_2_entropy()
 			///// interpolating fit waves /////
 			///////////////////////////////////
 			string dndt_vs_occ_fit_wave_name_x = dndt_occ_avg_fit + "_interp"
-			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_occ_avg_fit, numpts_to_interp=10000)
+			
+			duplicate /o $dndt_occ_avg_fit $dndt_vs_occ_fit_wave_name_x
+//			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_occ_avg_fit, numpts_to_interp=10000)
 			
 			string dndt_vs_occ_fit_wave_name_y = dndt_avg_fit + "_interp"
 			interpolate_wave(dndt_vs_occ_fit_wave_name_y, $dndt_avg_fit, wave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
@@ -2122,9 +2148,9 @@ function figure_2_entropy()
 	Legend/W=figure_2c
 	Legend/W=figure_2b
 	
-	beautify_figure("figure_2a")
-	beautify_figure("figure_2b")
-	beautify_figure("figure_2c")
+//	beautify_figure("figure_2a")
+//	beautify_figure("figure_2b")
+//	beautify_figure("figure_2c")
 	
 	TileWindows/O=1/C/P
 end
