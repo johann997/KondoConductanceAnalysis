@@ -830,42 +830,42 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //		dot_min_val = -2000; dot_max_val = 1000
 //		cs_min_val = -3000; cs_max_val = 2000
 	if (cmpstr(datnum, "6079") == 0)
-		dot_min_val = -2500; dot_max_val = 2500
+		dot_min_val = -3000; dot_max_val = 3000
 		cs_min_val = -3000; cs_max_val = 1074
 	elseif (cmpstr(datnum, "6088") == 0)
-		dot_min_val = -2500; dot_max_val = 2500
+		dot_min_val = -3000; dot_max_val = 3000
 		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6085") == 0)
-		dot_min_val = -2500; dot_max_val = 2500
+		dot_min_val = -3000; dot_max_val = 3000
 		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6082") == 0)
-		dot_min_val = -2500; dot_max_val = 2500
+		dot_min_val = -3000; dot_max_val = 3000
 		cs_min_val = -3000; cs_max_val = 2000
 ////////// mid gamma low field  ////////////////////////////////////////////////////
-//	elseif (cmpstr(datnum, "6080") == 0)
-//		dot_min_val = -500; dot_max_val = 500
-//		cs_min_val = -1315; cs_max_val = 936
-//	elseif (cmpstr(datnum, "6089") == 0)
-//		dot_min_val = -500; dot_max_val = 500
-//		cs_min_val = -1873; cs_max_val = 980
-//	elseif (cmpstr(datnum, "6086") == 0)
-//		dot_min_val = -500; dot_max_val = 500
-//		cs_min_val = -3000; cs_max_val = 1286
-//	elseif (cmpstr(datnum, "6083") == 0)
-//		dot_min_val = -500; dot_max_val = 500
-//		cs_min_val = -1667; cs_max_val = 967
 	elseif (cmpstr(datnum, "6080") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -1000; cs_max_val = 1430
 	elseif (cmpstr(datnum, "6089") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -1873; cs_max_val = 980
 	elseif (cmpstr(datnum, "6086") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -3000; cs_max_val = 1286
 	elseif (cmpstr(datnum, "6083") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -1667; cs_max_val = 967
+//	elseif (cmpstr(datnum, "6080") == 0)
+//		dot_min_val = -2000; dot_max_val = 1000
+//		cs_min_val = -1000; cs_max_val = 1430
+//	elseif (cmpstr(datnum, "6089") == 0)
+//		dot_min_val = -2000; dot_max_val = 1000
+//		cs_min_val = -1873; cs_max_val = 980
+//	elseif (cmpstr(datnum, "6086") == 0)
+//		dot_min_val = -2000; dot_max_val = 1000
+//		cs_min_val = -3000; cs_max_val = 1286
+//	elseif (cmpstr(datnum, "6083") == 0)
+//		dot_min_val = -2000; dot_max_val = 1000
+//		cs_min_val = -1667; cs_max_val = 967
 ////////// low gamma low field  ////////////////////////////////////////////////////
 //	elseif (cmpstr(datnum, "6081") == 0)
 //		dot_min_val = -500; dot_max_val = 200
