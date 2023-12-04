@@ -24,7 +24,7 @@ function beautify_figure(figure_name)
 	string figure_name
 	int font_size = 8
 //	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
-	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01, width=2*200, height=2*200/1.6180339887
+	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01, width=1*200, height=1*200/1.6180339887
 end
 
 macro default_layout(layout_name)
@@ -724,23 +724,23 @@ macro paper_v2_figure_2a_strong()
 	
 	string marker_size
 	// modify data
-	marker_size = "dat6079_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6079_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2a mode(dat6079_cs_cleaned_avg_scale_fig2a)=3, marker(dat6079_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6079_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6079_cs_cleaned_avg_scale_fig2a)=(0,0,65535), mrkThick(dat6079_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6079_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	marker_size = "dat6079_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6079_cs_cleaned_avg_scale_fig2a, 30, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6079_cs_cleaned_avg_scale_fig2a)=3, marker(dat6079_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6079_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6079_cs_cleaned_avg_scale_fig2a)=(0,0,65535), mrkThick(dat6079_cs_cleaned_avg_scale_fig2a)=0.5, zmrkSize(dat6079_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,3} 	
 	
-	marker_size = "dat6088_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6088_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2a mode(dat6088_cs_cleaned_avg_scale_fig2a)=3, marker(dat6088_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6088_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6088_cs_cleaned_avg_scale_fig2a)=(29524,1,58982), mrkThick(dat6088_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6088_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	marker_size = "dat6088_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6088_cs_cleaned_avg_scale_fig2a, 30, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6088_cs_cleaned_avg_scale_fig2a)=3, marker(dat6088_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6088_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6088_cs_cleaned_avg_scale_fig2a)=(29524,1,58982), mrkThick(dat6088_cs_cleaned_avg_scale_fig2a)=0.5, zmrkSize(dat6088_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,3} 	
 	
-	marker_size = "dat6085_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6085_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2a mode(dat6085_cs_cleaned_avg_scale_fig2a)=3, marker(dat6085_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6085_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6085_cs_cleaned_avg_scale_fig2a)=(64981,37624,14500), mrkThick(dat6085_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6085_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	marker_size = "dat6085_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6085_cs_cleaned_avg_scale_fig2a, 30, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6085_cs_cleaned_avg_scale_fig2a)=3, marker(dat6085_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6085_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6085_cs_cleaned_avg_scale_fig2a)=(64981,37624,14500), mrkThick(dat6085_cs_cleaned_avg_scale_fig2a)=0.5, zmrkSize(dat6085_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,3} 	
 	
-	marker_size = "dat6082_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6082_cs_cleaned_avg_scale_fig2a, 18, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2a mode(dat6082_cs_cleaned_avg_scale_fig2a)=3, marker(dat6082_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6082_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6082_cs_cleaned_avg_scale_fig2a)=(65535,0,0), mrkThick(dat6082_cs_cleaned_avg_scale_fig2a)=1, zmrkSize(dat6082_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,5} 	
+	marker_size = "dat6082_cs_cleaned_avg_scale_fig2a" + "_marker_size"; create_marker_size(dat6082_cs_cleaned_avg_scale_fig2a, 30, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2a mode(dat6082_cs_cleaned_avg_scale_fig2a)=3, marker(dat6082_cs_cleaned_avg_scale_fig2a)=41, lsize(dat6082_cs_cleaned_avg_scale_fig2a)=1, rgb(dat6082_cs_cleaned_avg_scale_fig2a)=(65535,0,0), mrkThick(dat6082_cs_cleaned_avg_scale_fig2a)=0.5, zmrkSize(dat6082_cs_cleaned_avg_scale_fig2a)={$marker_size,*,*,0.01,3} 	
 	
 	// modify fits
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6079_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6079_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6079_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (0,0,65535)
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6088_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6088_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6088_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (29524,1,58982)
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6085_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6085_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6085_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (64981,37624,14500)
-	ModifyGraph /W=paper_figure_2a mode(fit_dat6082_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6082_cs_cleaned_avg_scale_fig2a)=2, rgb(fit_dat6082_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (65535,0,0)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6079_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6079_cs_cleaned_avg_scale_fig2a)=1, rgb(fit_dat6079_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (0,0,65535)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6088_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6088_cs_cleaned_avg_scale_fig2a)=1, rgb(fit_dat6088_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (29524,1,58982)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6085_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6085_cs_cleaned_avg_scale_fig2a)=1, rgb(fit_dat6085_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (64981,37624,14500)
+	ModifyGraph /W=paper_figure_2a mode(fit_dat6082_cs_cleaned_avg_scale_fig2a)=0, lsize(fit_dat6082_cs_cleaned_avg_scale_fig2a)=1, rgb(fit_dat6082_cs_cleaned_avg_scale_fig2a)=(0,0,0,49151) // (65535,0,0)
 	
 	Label /W=paper_figure_2a left "Current (nA)"
 	SetAxis /W=paper_figure_2a bottom -10,10
@@ -791,7 +791,7 @@ macro paper_v2_figure_2a_strong()
 	
 	ModifyGraph /W=paper_figure_2a muloffset={0.005,0}
 	
-	ModifyGraph /W=paper_figure_2a axisEnab(l1)={0.1,0.5},axisEnab(b1)={0.1,0.5},freePos(l1)={-40,b1},freePos(b1)={0,l1}
+	ModifyGraph /W=paper_figure_2a axisEnab(l1)={0.2,0.55},axisEnab(b1)={0.15,0.5},freePos(l1)={-40,b1},freePos(b1)={0,l1}
 	SetAxis /W=paper_figure_2a b1 -40,40
 	
 	Legend /W=paper_figure_2a /C/N=text0/J/F=0/F=0 "\\Zr080\\s(dat6079_cs_cleaned_avg_scale_fig2a) 22.5 mK\r\\s(dat6088_cs_cleaned_avg_scale_fig2a) 100 mK\r\\s(dat6085_cs_cleaned_avg_scale_fig2a) 300 mK\r\\s(dat6082_cs_cleaned_avg_scale_fig2a) 500 mK"
@@ -869,23 +869,23 @@ macro paper_v2_figure_2b_strong()
 	
 	string marker_size
 	// modify data
-	marker_size = "dat6079_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6079_dot_cleaned_avg_scale_fig2b, 10, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2b mode(dat6079_dot_cleaned_avg_scale_fig2b)=3, marker(dat6079_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6079_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6079_dot_cleaned_avg_scale_fig2b)=(0,0,65535), mrkThick(dat6079_dot_cleaned_avg_scale_fig2b)=1, zmrkSize(dat6079_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,5} 
+	marker_size = "dat6079_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6079_dot_cleaned_avg_scale_fig2b, 14, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2b mode(dat6079_dot_cleaned_avg_scale_fig2b)=3, marker(dat6079_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6079_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6079_dot_cleaned_avg_scale_fig2b)=(0,0,65535), mrkThick(dat6079_dot_cleaned_avg_scale_fig2b)=0.5, zmrkSize(dat6079_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,3} 
 	
-	marker_size = "dat6088_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6088_dot_cleaned_avg_scale_fig2b, 16, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2b mode(dat6088_dot_cleaned_avg_scale_fig2b)=3, marker(dat6088_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6088_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6088_dot_cleaned_avg_scale_fig2b)=(29524,1,58982), mrkThick(dat6088_dot_cleaned_avg_scale_fig2b)=1, zmrkSize(dat6088_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,5} 
+	marker_size = "dat6088_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6088_dot_cleaned_avg_scale_fig2b, 26, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2b mode(dat6088_dot_cleaned_avg_scale_fig2b)=3, marker(dat6088_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6088_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6088_dot_cleaned_avg_scale_fig2b)=(29524,1,58982), mrkThick(dat6088_dot_cleaned_avg_scale_fig2b)=0.5, zmrkSize(dat6088_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,3} 
 	
-	marker_size = "dat6085_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6085_dot_cleaned_avg_scale_fig2b, 20, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2b mode(dat6085_dot_cleaned_avg_scale_fig2b)=3, marker(dat6085_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6085_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6085_dot_cleaned_avg_scale_fig2b)=(64981,37624,14500), mrkThick(dat6085_dot_cleaned_avg_scale_fig2b)=1, zmrkSize(dat6085_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,5} 
+	marker_size = "dat6085_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6085_dot_cleaned_avg_scale_fig2b, 26, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2b mode(dat6085_dot_cleaned_avg_scale_fig2b)=3, marker(dat6085_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6085_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6085_dot_cleaned_avg_scale_fig2b)=(64981,37624,14500), mrkThick(dat6085_dot_cleaned_avg_scale_fig2b)=0.5, zmrkSize(dat6085_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,3} 
 	
-	marker_size = "dat6082_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6082_dot_cleaned_avg_scale_fig2b, 20, min_marker=0.01, max_marker=2)
-	ModifyGraph /W=paper_figure_2b mode(dat6082_dot_cleaned_avg_scale_fig2b)=3, marker(dat6082_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6082_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6082_dot_cleaned_avg_scale_fig2b)=(65535,0,0), mrkThick(dat6082_dot_cleaned_avg_scale_fig2b)=1, zmrkSize(dat6082_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,5}
+	marker_size = "dat6082_dot_cleaned_avg_scale_fig2b" + "_marker_size"; create_marker_size(dat6082_dot_cleaned_avg_scale_fig2b, 26, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2b mode(dat6082_dot_cleaned_avg_scale_fig2b)=3, marker(dat6082_dot_cleaned_avg_scale_fig2b)=41, lsize(dat6082_dot_cleaned_avg_scale_fig2b)=1, rgb(dat6082_dot_cleaned_avg_scale_fig2b)=(65535,0,0), mrkThick(dat6082_dot_cleaned_avg_scale_fig2b)=0.5, zmrkSize(dat6082_dot_cleaned_avg_scale_fig2b)={$marker_size,*,*,0.01,3}
 	
 	// modify gfits
-	ModifyGraph /W=paper_figure_2b mode(gfit_dat6079_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale_fig2b)=1.5, rgb(gfit_dat6079_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (0,0,65535)
-	ModifyGraph /W=paper_figure_2b mode(gfit_dat6088_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6088_dot_cleaned_avg_scale_fig2b)=1.5, rgb(gfit_dat6088_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (29524,1,58982)
-	ModifyGraph /W=paper_figure_2b mode(gfit_dat6085_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6085_dot_cleaned_avg_scale_fig2b)=1.5, rgb(gfit_dat6085_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (64981,37624,14500)
-	ModifyGraph /W=paper_figure_2b mode(gfit_dat6082_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6082_dot_cleaned_avg_scale_fig2b)=1.5, rgb(gfit_dat6082_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (65535,0,0)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6079_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale_fig2b)=1, rgb(gfit_dat6079_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (0,0,65535)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6088_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6088_dot_cleaned_avg_scale_fig2b)=1, rgb(gfit_dat6088_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (29524,1,58982)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6085_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6085_dot_cleaned_avg_scale_fig2b)=1, rgb(gfit_dat6085_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (64981,37624,14500)
+	ModifyGraph /W=paper_figure_2b mode(gfit_dat6082_dot_cleaned_avg_scale_fig2b)=0, lsize(gfit_dat6082_dot_cleaned_avg_scale_fig2b)=1, rgb(gfit_dat6082_dot_cleaned_avg_scale_fig2b)=(0,0,0,49151) // (65535,0,0)
 	
 	Label /W=paper_figure_2b left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
 
@@ -900,10 +900,118 @@ macro paper_v2_figure_2b_strong()
 endmacro
 
 
-//macro paper_v2_figure_3_layout()
-//	NewLayout/W=(663,53,1691,903)
-////	LayoutPageAction size(-1)=(288, 720), margins(-1)=(18, 18, 18, 18)
-//endmacro
+
+macro paper_v2_figure_2c_strong()
+// data from summer cool down
+//Temp	 22.5 100  300  500
+//Datnum 6079 6088 6085 6082
+
+
+// charge transition
+//dat1293_cs_cleaned_avg
+//GFit_dat1289_cs_cleaned_avg
+
+// occupation 
+//dat1289_cs_cleaned_avg_occ
+//Gfit_dat1297_cs_cleaned_avg_occ
+
+	Display; KillWindow /Z paper_figure_2c; DoWindow/C/O paper_figure_2c 
+	
+	
+	///// duplicating so that data can be re-scaled /////
+	duplicate /o dat6079_dot_cleaned_avg_interp dat6079_dot_cleaned_avg_scale_fig2c
+	duplicate /o dat6088_dot_cleaned_avg_interp dat6088_dot_cleaned_avg_scale_fig2c
+	duplicate /o dat6085_dot_cleaned_avg_interp dat6085_dot_cleaned_avg_scale_fig2c
+	duplicate /o dat6082_dot_cleaned_avg_interp dat6082_dot_cleaned_avg_scale_fig2c
+	
+	duplicate /o gfit_dat6079_dot_cleaned_avg_interp gfit_dat6079_dot_cleaned_avg_scale_fig2c
+	duplicate /o gfit_dat6088_dot_cleaned_avg_interp gfit_dat6088_dot_cleaned_avg_scale_fig2c
+	duplicate /o gfit_dat6085_dot_cleaned_avg_interp gfit_dat6085_dot_cleaned_avg_scale_fig2c
+	duplicate /o gfit_dat6082_dot_cleaned_avg_interp gfit_dat6082_dot_cleaned_avg_scale_fig2c
+	
+	
+	////////// removing linear and quadratic terms /////
+
+	/////// charge transition //////
+	
+//		///// translate data
+//	translate_wave_by_occupation(dat6079_dot_cleaned_avg_scale_fig2c, dat6079_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6088_dot_cleaned_avg_scale_fig2c, dat6088_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6085_dot_cleaned_avg_scale_fig2c, dat6085_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(dat6082_dot_cleaned_avg_scale_fig2c, dat6082_cs_cleaned_avg_occ_interp) 
+//
+//	///// translate fit
+//	translate_wave_by_occupation(gfit_dat6079_dot_cleaned_avg_scale_fig2c, fit_dat6079_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6088_dot_cleaned_avg_scale_fig2c, fit_dat6088_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6085_dot_cleaned_avg_scale_fig2c, fit_dat6085_cs_cleaned_avg_occ_interp) 
+//	translate_wave_by_occupation(gfit_dat6082_dot_cleaned_avg_scale_fig2c, fit_dat6082_cs_cleaned_avg_occ_interp)  
+	
+//	////////////////////////////////// SWEEPGATE //////////////////////////////////////////////////////////////
+
+
+//	///// append data
+//	AppendToGraph /W=paper_figure_2a dat6079_cs_cleaned_avg_occ; 
+//	AppendToGraph /W=paper_figure_2a dat6088_cs_cleaned_avg_occ; 
+//	AppendToGraph /W=paper_figure_2a dat6085_cs_cleaned_avg_occ; 
+//	AppendToGraph /W=paper_figure_2a dat6082_cs_cleaned_avg_occ; 
+//	
+//	///// append fits
+//	AppendToGraph /W=paper_figure_2a fit_dat6079_cs_cleaned_avg_occ;
+//	AppendToGraph /W=paper_figure_2a fit_dat6088_cs_cleaned_avg_occ; 
+//	AppendToGraph /W=paper_figure_2a fit_dat6085_cs_cleaned_avg_occ; 
+//	AppendToGraph /W=paper_figure_2a fit_dat6082_cs_cleaned_avg_occ;
+
+
+
+	///// append gfits
+	AppendToGraph /W=paper_figure_2c gfit_dat6079_dot_cleaned_avg_scale_fig2c vs fit_dat6079_cs_cleaned_avg_occ;
+	AppendToGraph /W=paper_figure_2c gfit_dat6088_dot_cleaned_avg_scale_fig2c vs fit_dat6088_cs_cleaned_avg_occ;
+	AppendToGraph /W=paper_figure_2c gfit_dat6085_dot_cleaned_avg_scale_fig2c vs fit_dat6085_cs_cleaned_avg_occ;
+	AppendToGraph /W=paper_figure_2c gfit_dat6082_dot_cleaned_avg_scale_fig2c vs fit_dat6082_cs_cleaned_avg_occ;
+	
+	
+	///// append data
+	AppendToGraph /W=paper_figure_2c dat6079_dot_cleaned_avg_scale_fig2c vs dat6079_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_2c dat6088_dot_cleaned_avg_scale_fig2c vs dat6088_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_2c dat6085_dot_cleaned_avg_scale_fig2c vs dat6085_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_2c dat6082_dot_cleaned_avg_scale_fig2c vs dat6082_cs_cleaned_avg_occ_interp; 
+	
+	
+	Label /W=paper_figure_2c bottom "Occupation (.arb)"
+	
+	
+	string marker_size
+	// modify data
+	marker_size = "dat6079_dot_cleaned_avg_scale_fig2c" + "_marker_size"; create_marker_size(dat6079_dot_cleaned_avg_scale_fig2c, 14, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2c mode(dat6079_dot_cleaned_avg_scale_fig2c)=3, marker(dat6079_dot_cleaned_avg_scale_fig2c)=41, lsize(dat6079_dot_cleaned_avg_scale_fig2c)=1, rgb(dat6079_dot_cleaned_avg_scale_fig2c)=(0,0,65535), mrkThick(dat6079_dot_cleaned_avg_scale_fig2c)=0.5, zmrkSize(dat6079_dot_cleaned_avg_scale_fig2c)={$marker_size,*,*,0.01,3} 
+	
+	marker_size = "dat6088_dot_cleaned_avg_scale_fig2c" + "_marker_size"; create_marker_size(dat6088_dot_cleaned_avg_scale_fig2c, 20, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2c mode(dat6088_dot_cleaned_avg_scale_fig2c)=3, marker(dat6088_dot_cleaned_avg_scale_fig2c)=41, lsize(dat6088_dot_cleaned_avg_scale_fig2c)=1, rgb(dat6088_dot_cleaned_avg_scale_fig2c)=(29524,1,58982), mrkThick(dat6088_dot_cleaned_avg_scale_fig2c)=0.5, zmrkSize(dat6088_dot_cleaned_avg_scale_fig2c)={$marker_size,*,*,0.01,3} 
+	
+	marker_size = "dat6085_dot_cleaned_avg_scale_fig2c" + "_marker_size"; create_marker_size(dat6085_dot_cleaned_avg_scale_fig2c, 30, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2c mode(dat6085_dot_cleaned_avg_scale_fig2c)=3, marker(dat6085_dot_cleaned_avg_scale_fig2c)=41, lsize(dat6085_dot_cleaned_avg_scale_fig2c)=1, rgb(dat6085_dot_cleaned_avg_scale_fig2c)=(64981,37624,14500), mrkThick(dat6085_dot_cleaned_avg_scale_fig2c)=0.5, zmrkSize(dat6085_dot_cleaned_avg_scale_fig2c)={$marker_size,*,*,0.01,3} 
+	
+	marker_size = "dat6082_dot_cleaned_avg_scale_fig2c" + "_marker_size"; create_marker_size(dat6082_dot_cleaned_avg_scale_fig2c, 30, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_2c mode(dat6082_dot_cleaned_avg_scale_fig2c)=3, marker(dat6082_dot_cleaned_avg_scale_fig2c)=41, lsize(dat6082_dot_cleaned_avg_scale_fig2c)=1, rgb(dat6082_dot_cleaned_avg_scale_fig2c)=(65535,0,0), mrkThick(dat6082_dot_cleaned_avg_scale_fig2c)=0.5, zmrkSize(dat6082_dot_cleaned_avg_scale_fig2c)={$marker_size,*,*,0.01,3}
+	
+	// modify gfits
+	ModifyGraph /W=paper_figure_2c mode(gfit_dat6079_dot_cleaned_avg_scale_fig2c)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale_fig2c)=1, rgb(gfit_dat6079_dot_cleaned_avg_scale_fig2c)=(0,0,0,49151) // (0,0,65535)
+	ModifyGraph /W=paper_figure_2c mode(gfit_dat6088_dot_cleaned_avg_scale_fig2c)=0, lsize(gfit_dat6088_dot_cleaned_avg_scale_fig2c)=1, rgb(gfit_dat6088_dot_cleaned_avg_scale_fig2c)=(0,0,0,49151) // (29524,1,58982)
+	ModifyGraph /W=paper_figure_2c mode(gfit_dat6085_dot_cleaned_avg_scale_fig2c)=0, lsize(gfit_dat6085_dot_cleaned_avg_scale_fig2c)=1, rgb(gfit_dat6085_dot_cleaned_avg_scale_fig2c)=(0,0,0,49151) // (64981,37624,14500)
+	ModifyGraph /W=paper_figure_2c mode(gfit_dat6082_dot_cleaned_avg_scale_fig2c)=0, lsize(gfit_dat6082_dot_cleaned_avg_scale_fig2c)=1, rgb(gfit_dat6082_dot_cleaned_avg_scale_fig2c)=(0,0,0,49151) // (65535,0,0)
+	
+	Label /W=paper_figure_2c left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+
+//	Legend /W=paper_figure_2c /C/N=text0/J/F=0 "\\Zr080\\s(gfit_dat6079_dot_cleaned_avg_scale_fig2c) 22.5 mK\r\\s(gfit_dat6088_dot_cleaned_avg_scale_fig2c) 100 mK\r\\s(gfit_dat6085_dot_cleaned_avg_scale_fig2c) 300 mK\r\\s(gfit_dat6082_dot_cleaned_avg_scale_fig2c) 500 mK"
+	Legend /W=paper_figure_2c /C/N=text0/J/F=0 "\\Zr080\\s(dat6079_dot_cleaned_avg_scale_fig2c) 22.5 mK\r\\s(dat6088_dot_cleaned_avg_scale_fig2c) 100 mK\r\\s(dat6085_dot_cleaned_avg_scale_fig2c) 300 mK\r\\s(dat6082_dot_cleaned_avg_scale_fig2c) 500 mK"
+
+//	SetAxis /W=paper_figure_2c bottom -10,10
+//	ModifyGraph /W=paper_figure_2c muloffset={0.005,0}
+	
+	beautify_figure("paper_figure_2c")
+
+endmacro
+
 
 macro paper_v2_figure_3a()
 // data from summer cool down
