@@ -3281,3 +3281,127 @@ macro compare_cold_entropy_vs_global()
 	legend
 	
 endmacro
+
+macro save_waves()
+	// conductance :: CT
+	Save/C/O/P=processed_data  dat6079_cs_cleaned_avg as "dat6079_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  dat6088_cs_cleaned_avg as "dat6088_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  dat6085_cs_cleaned_avg as "dat6085_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  dat6082_cs_cleaned_avg as "dat6082_cs_cleaned_avg.ibw"
+	
+	Save/C/O/P=processed_data  fit_dat6079_cs_cleaned_avg as "fit_dat6079_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  fit_dat6088_cs_cleaned_avg as "fit_dat6088_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  fit_dat6085_cs_cleaned_avg as "fit_dat6085_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  fit_dat6082_cs_cleaned_avg as "fit_dat6082_cs_cleaned_avg.ibw"
+	
+	Save/C/O/P=processed_data  coef_dat6079_cs_cleaned_avg as "coef_dat6079_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  coef_dat6088_cs_cleaned_avg as "coef_dat6088_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  coef_dat6085_cs_cleaned_avg as "coef_dat6085_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  coef_dat6082_cs_cleaned_avg as "coef_dat6082_cs_cleaned_avg.ibw"
+	
+	// conductance :: DOT
+	Save/C/O/P=processed_data  dat6079_dot_cleaned_avg_interp as "dat6079_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat6088_dot_cleaned_avg_interp as "dat6088_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat6085_dot_cleaned_avg_interp as "dat6085_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat6082_dot_cleaned_avg_interp as "dat6082_dot_cleaned_avg_interp.ibw"
+	
+	Save/C/O/P=processed_data  gfit_dat6079_dot_cleaned_avg_interp as "gfit_dat6079_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat6088_dot_cleaned_avg_interp as "gfit_dat6088_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat6085_dot_cleaned_avg_interp as "gfit_dat6085_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat6082_dot_cleaned_avg_interp as "gfit_dat6082_dot_cleaned_avg_interp.ibw"
+	
+	// conductance :: OCC
+	Save/C/O/P=processed_data  dat6079_cs_cleaned_avg_occ_interp as "dat6079_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat6088_cs_cleaned_avg_occ_interp as "dat6088_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat6085_cs_cleaned_avg_occ_interp as "dat6085_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat6082_cs_cleaned_avg_occ_interp as "dat6082_cs_cleaned_avg_occ_interp.ibw"
+	
+	Save/C/O/P=processed_data  fit_dat6079_cs_cleaned_avg_occ_interp as "fit_dat6079_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat6088_cs_cleaned_avg_occ_interp as "fit_dat6088_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat6085_cs_cleaned_avg_occ_interp as "fit_dat6085_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat6082_cs_cleaned_avg_occ_interp as "fit_dat6082_cs_cleaned_avg_occ_interp.ibw"
+	
+	// entropy
+	Save/C/O/P=processed_data  dat1281_numerical_entropy_avg_interp as "dat1281_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat1282_numerical_entropy_avg_interp as "dat1282_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat1283_numerical_entropy_avg_interp as "dat1283_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat1284_numerical_entropy_avg_interp as "dat1284_numerical_entropy_avg_interp.ibw"
+	
+	Save/C/O/P=processed_data  fit_dat1281_numerical_entropy_avg_interp as "fit_dat1281_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat1282_numerical_entropy_avg_interp as "fit_dat1282_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat1283_numerical_entropy_avg_interp as "fit_dat1283_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat1284_numerical_entropy_avg_interp as "fit_dat1284_numerical_entropy_avg_interp.ibw"
+	
+	// entropy cold
+	Save/C/O/P=processed_data  dat1281_cs_cleaned_avg_occ_interp as "dat1281_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat1282_cs_cleaned_avg_occ_interp as "dat1282_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat1283_cs_cleaned_avg_occ_interp as "dat1283_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat1284_cs_cleaned_avg_occ_interp as "dat1284_cs_cleaned_avg_occ_interp.ibw"
+	
+	Save/C/O/P=processed_data  fit_dat1281_cs_cleaned_avg_occ_interp as "fit_dat1281_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat1282_cs_cleaned_avg_occ_interp as "fit_dat1282_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat1283_cs_cleaned_avg_occ_interp as "fit_dat1283_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat1284_cs_cleaned_avg_occ_interp as "fit_dat1284_cs_cleaned_avg_occ_interp.ibw"
+	
+	
+	
+// conductance :: CT
+	Save/C/O/P=github_processed_data  dat6079_cs_cleaned_avg as "dat6079_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  dat6088_cs_cleaned_avg as "dat6088_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  dat6085_cs_cleaned_avg as "dat6085_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  dat6082_cs_cleaned_avg as "dat6082_cs_cleaned_avg.ibw"
+	
+	Save/C/O/P=github_processed_data  fit_dat6079_cs_cleaned_avg as "fit_dat6079_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6088_cs_cleaned_avg as "fit_dat6088_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6085_cs_cleaned_avg as "fit_dat6085_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6082_cs_cleaned_avg as "fit_dat6082_cs_cleaned_avg.ibw"
+	
+	Save/C/O/P=github_processed_data  coef_dat6079_cs_cleaned_avg as "coef_dat6079_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  coef_dat6088_cs_cleaned_avg as "coef_dat6088_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  coef_dat6085_cs_cleaned_avg as "coef_dat6085_cs_cleaned_avg.ibw"
+	Save/C/O/P=github_processed_data  coef_dat6082_cs_cleaned_avg as "coef_dat6082_cs_cleaned_avg.ibw"
+	
+	// conductance :: DOT
+	Save/C/O/P=github_processed_data  dat6079_dot_cleaned_avg_interp as "dat6079_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6088_dot_cleaned_avg_interp as "dat6088_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6085_dot_cleaned_avg_interp as "dat6085_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6082_dot_cleaned_avg_interp as "dat6082_dot_cleaned_avg_interp.ibw"
+	
+	Save/C/O/P=github_processed_data  gfit_dat6079_dot_cleaned_avg_interp as "gfit_dat6079_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  gfit_dat6088_dot_cleaned_avg_interp as "gfit_dat6088_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  gfit_dat6085_dot_cleaned_avg_interp as "gfit_dat6085_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  gfit_dat6082_dot_cleaned_avg_interp as "gfit_dat6082_dot_cleaned_avg_interp.ibw"
+	
+	// conductance :: OCC
+	Save/C/O/P=github_processed_data  dat6079_cs_cleaned_avg_occ_interp as "dat6079_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6088_cs_cleaned_avg_occ_interp as "dat6088_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6085_cs_cleaned_avg_occ_interp as "dat6085_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6082_cs_cleaned_avg_occ_interp as "dat6082_cs_cleaned_avg_occ_interp.ibw"
+	
+	Save/C/O/P=github_processed_data  fit_dat6079_cs_cleaned_avg_occ_interp as "fit_dat6079_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6088_cs_cleaned_avg_occ_interp as "fit_dat6088_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6085_cs_cleaned_avg_occ_interp as "fit_dat6085_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6082_cs_cleaned_avg_occ_interp as "fit_dat6082_cs_cleaned_avg_occ_interp.ibw"
+	
+	// entropy
+	Save/C/O/P=github_processed_data  dat1281_numerical_entropy_avg_interp as "dat1281_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat1282_numerical_entropy_avg_interp as "dat1282_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat1283_numerical_entropy_avg_interp as "dat1283_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat1284_numerical_entropy_avg_interp as "dat1284_numerical_entropy_avg_interp.ibw"
+	
+	Save/C/O/P=github_processed_data  fit_dat1281_numerical_entropy_avg_interp as "fit_dat1281_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat1282_numerical_entropy_avg_interp as "fit_dat1282_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat1283_numerical_entropy_avg_interp as "fit_dat1283_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat1284_numerical_entropy_avg_interp as "fit_dat1284_numerical_entropy_avg_interp.ibw"
+	
+	// entropy cold
+	Save/C/O/P=github_processed_data  dat1281_cs_cleaned_avg_occ_interp as "dat1281_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat1282_cs_cleaned_avg_occ_interp as "dat1282_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat1283_cs_cleaned_avg_occ_interp as "dat1283_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat1284_cs_cleaned_avg_occ_interp as "dat1284_cs_cleaned_avg_occ_interp.ibw"
+	
+	Save/C/O/P=github_processed_data  fit_dat1281_cs_cleaned_avg_occ_interp as "fit_dat1281_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat1282_cs_cleaned_avg_occ_interp as "fit_dat1282_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat1283_cs_cleaned_avg_occ_interp as "fit_dat1283_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat1284_cs_cleaned_avg_occ_interp as "fit_dat1284_cs_cleaned_avg_occ_interp.ibw"
+endmacro
