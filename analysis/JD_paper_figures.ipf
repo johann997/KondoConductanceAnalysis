@@ -3301,25 +3301,35 @@ macro save_waves()
 	
 	// conductance :: DOT
 	Save/C/O/P=processed_data  dat6079_dot_cleaned_avg_interp as "dat6079_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat6080_dot_cleaned_avg_interp as "dat6080_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat6081_dot_cleaned_avg_interp as "dat6081_dot_cleaned_avg_interp.ibw"
 	Save/C/O/P=processed_data  dat6088_dot_cleaned_avg_interp as "dat6088_dot_cleaned_avg_interp.ibw"
 	Save/C/O/P=processed_data  dat6085_dot_cleaned_avg_interp as "dat6085_dot_cleaned_avg_interp.ibw"
 	Save/C/O/P=processed_data  dat6082_dot_cleaned_avg_interp as "dat6082_dot_cleaned_avg_interp.ibw"
 	
 	Save/C/O/P=processed_data  gfit_dat6079_dot_cleaned_avg_interp as "gfit_dat6079_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat6080_dot_cleaned_avg_interp as "gfit_dat6080_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat6081_dot_cleaned_avg_interp as "gfit_dat6081_dot_cleaned_avg_interp.ibw"
 	Save/C/O/P=processed_data  gfit_dat6088_dot_cleaned_avg_interp as "gfit_dat6088_dot_cleaned_avg_interp.ibw"
 	Save/C/O/P=processed_data  gfit_dat6085_dot_cleaned_avg_interp as "gfit_dat6085_dot_cleaned_avg_interp.ibw"
 	Save/C/O/P=processed_data  gfit_dat6082_dot_cleaned_avg_interp as "gfit_dat6082_dot_cleaned_avg_interp.ibw"
 	
 	// conductance :: OCC
 	Save/C/O/P=processed_data  dat6079_cs_cleaned_avg_occ_interp as "dat6079_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat6080_cs_cleaned_avg_occ_interp as "dat6080_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat6081_cs_cleaned_avg_occ_interp as "dat6081_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  dat6088_cs_cleaned_avg_occ_interp as "dat6088_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  dat6085_cs_cleaned_avg_occ_interp as "dat6085_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  dat6082_cs_cleaned_avg_occ_interp as "dat6082_cs_cleaned_avg_occ_interp.ibw"
 	
 	Save/C/O/P=processed_data  fit_dat6079_cs_cleaned_avg_occ_interp as "fit_dat6079_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat6080_cs_cleaned_avg_occ_interp as "fit_dat6080_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat6081_cs_cleaned_avg_occ_interp as "fit_dat6081_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  fit_dat6088_cs_cleaned_avg_occ_interp as "fit_dat6088_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  fit_dat6085_cs_cleaned_avg_occ_interp as "fit_dat6085_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  fit_dat6082_cs_cleaned_avg_occ_interp as "fit_dat6082_cs_cleaned_avg_occ_interp.ibw"
+	
+	
 	
 	// entropy
 	Save/C/O/P=processed_data  dat1281_numerical_entropy_avg_interp as "dat1281_numerical_entropy_avg_interp.ibw"
