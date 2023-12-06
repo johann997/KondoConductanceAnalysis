@@ -3,7 +3,7 @@
 #pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 #include <Reduce Matrix Size>
 
-function master_cond_clean_average(wave wav, int refit, string kenner_out)
+function master_cond_clean_average(wave wav, int refit, string kenner_out, [int alternate_bias])
 	// wav is the wave containing original dotcurrent data
 	// refit tells whether to do new fits to each CT line
 	// kenner_out is the prefix to replace dat for this analysis
@@ -29,7 +29,7 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 	string neg_avg = split_neg + "_avg"
 	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params"
 	variable N
-	N=40  // how many sdevs in thetas are acceptable?
+	N=2  // how many sdevs in thetas are acceptable?
 
 
 	if (refit==1)
@@ -37,20 +37,37 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out)
 		plot_gammas(fit_params_name, N) //need to do this to refind good and bad gammas
 		duplicate/o/r=[][2] $fit_params_name mids
 		centering($datasetname, centered_wave_name, mids)// only need to center after redoing fits, centred plot; returns centered_wave_name
-		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
+
+//		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
+		duplicate /o $centered_wave_name $cleaned_wave_name
+		
+		split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
+		split_pos = cleaned_wave_name + "_pos"
+		split_neg = cleaned_wave_name + "_neg"
+		
+	else
+		split_wave($datasetname, 0) //makes condxxxxcentered
+		split_pos = datasetname + "_pos"
+		split_neg = datasetname + "_neg"
 	endif
 
-	split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
+	// commentating out the splitting if we reverse bias
+	if (alternate_bias == 1)
+		pos_avg = split_pos + "_avg"
+		neg_avg = split_neg + "_avg"
+		zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
+		zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
+		
+		avg_wav($split_pos) // pos average
+		avg_wav($split_neg) // neg average
+		
+		get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
+	else
+		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
+		avg_wav($cleaned_wave_name)
+	endif
 	
-	zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
-	zap_NaN_rows($split_neg, overwrite = 1, percentage_cutoff_inf = 0.15)
-	
-	avg_wav($split_pos) // pos average
-	avg_wav($split_neg) // neg average
-	
-	get_conductance_from_current($pos_avg, $neg_avg, avg_wave_name) // condxxxxavg
-	
-	plot_cond_figs(wavenum, N, kenner, kenner_out)
+	plot_cond_figs(wavenum, N, kenner, kenner_out, refit=refit)
 
 	ms=stopmstimer(refnum)
 	print "Cond: time taken = " + num2str(ms/1e6) + "s"
@@ -149,47 +166,69 @@ end
 
 
 function/wave split_wave(wave wav, variable flag)
-	// split the wave into positive and negative waves
-	wave kenner
-	redimension/n=-1 kenner
 	string base_wave_name = nameofwave(wav)
-
-	////////////////////////////
-	///// create _pos wave /////
-	////////////////////////////
-	Duplicate/o kenner, idx
-	idx = kenner[p] > flag ? p : NaN
-	WaveTransform zapnans idx
+	variable num_rows = dimsize(wav, 1)
+	int split_num_rows = round(num_rows/2)
+	int i
 	
 	string pos_wave_name = base_wave_name + "_pos"
-	duplicate/o wav $pos_wave_name
-	wave out_wav = $pos_wave_name
-	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav
-
-	variable i=0
-	do
-		out_wav[][i]=wav[p][idx[i]]
-		i=i+1
-	while(i<dimsize(idx,0))
-
-
-	////////////////////////////
-	///// create _neg wave /////
-	////////////////////////////
-	Duplicate/o kenner,idx
-	idx = kenner[p][q] < flag ? p : NaN
-	WaveTransform zapnans idx
-
+	duplicate /o /RMD=[][0, split_num_rows-1] wav $pos_wave_name
+	wave pos_wave = $pos_wave_name
+	
+	for (i=0; i<split_num_rows; i++)
+		pos_wave[][i] = wav[p][i*2 + flag]
+	endfor
+	
+	
 	string neg_wave_name = base_wave_name + "_neg"
-	duplicate/o wav $neg_wave_name
-	wave out_wav1 = $neg_wave_name
-	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav1
+	duplicate /o /RMD=[][0, split_num_rows-1] wav $neg_wave_name
+	wave neg_wave = $neg_wave_name
+	
+	for (i=0; i<split_num_rows; i++)
+		neg_wave[][i] = wav[p][i*2 + 1 + -1*flag]
+	endfor
 
-	i=0
-	do
-		out_wav1[][i]=wav[p][idx[i]]
-		i=i+1
-	while(i<dimsize(idx,0))
+//	// split the wave into positive and negative waves
+//	wave kenner
+//	redimension/n=-1 kenner // n = -1 :: convert to 1d with same rows (Python columns)
+//	string base_wave_name = nameofwave(wav)
+//
+//	////////////////////////////
+//	///// create _pos wave /////
+//	////////////////////////////
+//	Duplicate/o kenner, idx
+//	idx = kenner[p] > flag ? p : NaN
+//	WaveTransform zapnans idx
+//	
+//	string pos_wave_name = base_wave_name + "_pos"
+//	duplicate/o wav $pos_wave_name
+//	wave out_wav = $pos_wave_name
+//	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav
+//
+//	variable i=0
+//	do
+//		out_wav[][i]=wav[p][idx[i]]
+//		i=i+1
+//	while(i<dimsize(idx,0))
+//
+//
+//	////////////////////////////
+//	///// create _neg wave /////
+//	////////////////////////////
+//	Duplicate/o kenner,idx
+//	idx = kenner[p][q] < flag ? p : NaN
+//	WaveTransform zapnans idx
+//
+//	string neg_wave_name = base_wave_name + "_neg"
+//	duplicate/o wav $neg_wave_name
+//	wave out_wav1 = $neg_wave_name
+//	Redimension/E=1/N=(-1,dimsize(idx,0)) out_wav1
+//
+//	i=0
+//	do
+//		out_wav1[][i]=wav[p][idx[i]]
+//		i=i+1
+//	while(i<dimsize(idx,0))
 	
 end
 
@@ -199,8 +238,8 @@ end
 function plot_gammas(string fit_params_name, variable N)
 
 	int wavenum =getfirstnum(fit_params_name)
-	variable gammamean
-	variable gammastd
+	variable gammamean, gammastd
+	variable cond_mid_mean, cond_mid_std
 	variable i
 	int nr
 
@@ -208,10 +247,14 @@ function plot_gammas(string fit_params_name, variable N)
 	nr = dimsize(fit_params,0)
 
 	duplicate /O/R =[0,nr][3] fit_params gammas
+	duplicate /O/R =[0,nr][2] fit_params cond_mids
 	duplicate /O/R =[0,nr][1] fit_params amp
 
 	gammamean = mean(gammas)
 	gammastd = sqrt(variance(gammas))
+	
+	cond_mid_mean = mean(cond_mids)
+	cond_mid_std = sqrt(variance(cond_mids))
 
 	make /o/n =(nr) meanwave
 	make /o/n =(nr) stdwave
@@ -220,23 +263,35 @@ function plot_gammas(string fit_params_name, variable N)
 	make /o/n = 0 goodgammasx
 	make /o/n = 0 badgammas
 	make /o/n = 0 badgammasx
+	
+	// good and bad mid waves
+	make /o/n = 0 good_cond_mids
+	make /o/n = 0 good_cond_midsx
+	make /o/n = 0 bad_cond_mids
+	make /o/n = 0 bad_cond_midsx
 
 	meanwave = gammamean
 	stdwave = gammamean - N * gammastd
 	stdwave2 = gammamean + N * gammastd
 
 	for (i=0; i < nr ; i+=1)
-
+	
+		// find bad gammas
 		if (abs(gammas[i] - gammamean) < (N * gammastd))
-
 			insertPoints /v = (gammas[i]) nr, 1, goodgammas // value of gamma
 			insertpoints /v = (i) nr, 1, goodgammasx        // the repeat
-
 		else
-
 			insertPoints /v = (gammas[i]) nr, 1, badgammas // value of gamma
 			insertpoints /v = (i) nr, 1, badgammasx        // repeat
-
+		endif
+		
+		// find bad mids
+		if (abs(cond_mids[i] - cond_mid_mean) < (N * cond_mid_std))
+			insertPoints /v = (cond_mids[i]) nr, 1, good_cond_mids // value of gamma
+			insertpoints /v = (i) nr, 1, good_cond_midsx        // the repeat
+		else
+			insertPoints /v = (cond_mids[i]) nr, 1, bad_cond_mids // value of gamma
+			insertpoints /v = (i) nr, 1, bad_cond_midsx        // repeat
 		endif
 
 	endfor
@@ -297,10 +352,8 @@ function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
 	wave badgammasx
 	duplicate/o center $cleaned_wave_name
 	
-	//////////////////////////////////////////
-	///// removing lines with bad gammas /////
-	//////////////////////////////////////////
-
+	wave bad_cond_midsx
+	
 	//////////////////////////////////////////
 	///// removing lines with bad gammas /////
 	//////////////////////////////////////////
@@ -313,9 +366,18 @@ function /wave remove_bad_gammas(wave center, string cleaned_wave_name)
 		do
 			idx = badgammasx[i] - i // when deleting, I need the -i because if deleting in the loop the indeces of center change continously as points are deleted
 			DeletePoints/M=1 idx,1, $cleaned_wave_name
+			
+//			// check if bad gamma row is also a bad mid row
+//			FindValue /I=idx bad_cond_midsx
+//			if (V_value >= 1)
+//				DeletePoints/M=1 x2pnt(V_value), 0, bad_cond_midsx
+//				bad_cond_midsx[] = bad_cond_midsx[]
+//			endif
 			i += 1
 		while (i<nr)
 	endif
+	
+	
 	
 	
 	/////////////////////////////////////////////////
@@ -369,8 +431,12 @@ function/wave get_conductance_from_current(wave pos, wave neg, string newname)
 	temp = (pos-neg)
 	variable bias = (514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
 	duplicate/o temp cond
-	temp = (bias/temp)*1e9-21150;
-	temp = 1/temp/7.7483e-05
+//	temp = cond/(bias - cond * 21150)
+//	temp /= 7.7483e-05
+//	cond = bias - temp*21150
+//	temp = (temp/7.7483e-05)/cond
+//	temp = (bias/temp)*1e9-21150;
+//	temp = 1/temp/7.7483e-05
 end
 
 
@@ -466,16 +532,16 @@ end
 
 
 
-function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out)	
+function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out, [int refit])	
 	string dataset = "dat" + num2str(wavenum) + kenner
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_dot_centered"
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_dot_cleaned"
 	string avg_wave_name = cleaned_wave_name + "_avg"
 
-	string split_pos = cleaned_wave_name + "_pos"
-	string split_neg = cleaned_wave_name + "_neg"
-	string pos_avg = split_pos + "_avg"
-	string neg_avg = split_neg + "_avg"
+//	string split_pos = cleaned_wave_name + "_pos"
+//	string split_neg = cleaned_wave_name + "_neg"
+//	string pos_avg = split_pos + "_avg"
+//	string neg_avg = split_neg + "_avg"
 	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params" 
 //	closeallgraphs()
 
@@ -483,16 +549,17 @@ function plot_cond_figs(variable wavenum, variable N, string kenner, string kenn
 
 	plot2d_heatmap($dataset); // raw data
 	
-	plot2d_heatmap($split_pos) // positive bias
-	plot2d_heatmap($split_neg) // negative bias
+//	plot2d_heatmap($split_pos) // positive bias
+//	plot2d_heatmap($split_neg) // negative bias
 	
-	plot2d_heatmap($centered_wave_name) // plot centered traces
-	
-	plot_gammas(fit_params_name,N)	// plot gamma values (FWHM)
-	plot_badgammas($centered_wave_name) // plot traces with 'bad gammas'
-	 
-	plot2d_heatmap($cleaned_wave_name) // plot 2d with removed 'bad gamma' traces
-	
+	if (refit == 1)
+		plot2d_heatmap($centered_wave_name) // plot centered traces
+		
+		plot_gammas(fit_params_name,N)	// plot gamma values (FWHM)
+		plot_badgammas($centered_wave_name) // plot traces with 'bad gammas'
+		 
+		plot2d_heatmap($cleaned_wave_name) // plot 2d with removed 'bad gamma' traces
+	endif
 	
 	/////////////////// plot avg fit  //////////////////////////////////////
 	

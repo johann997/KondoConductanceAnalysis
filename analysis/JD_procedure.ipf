@@ -5,34 +5,33 @@
 
 /////  This .ipf contains some high level functions that help stitch multiple steps into one function
 
-///// Procedure for creating the NRG waves
+///// Procedure for creating the NRG waves /////
+
+// 1) Start by adding the IGOR binary waves from the data folder.
 // Go to Data/Load Waves/Load Igor Binary...
 
+
+// 2) Create the large interpolated IGRO waves
 // Run :: master_build_nrg_data()
 
-///// The general procedure of going from RAW data to global fit with NRG data is:
-///// run_clean_average_procedure()
-///// run_nrg_procedure()
 
-
-// Start by copying the IGOR waves into the experiment
-// •Data/Load Wave/Load IGOR Binary
-
-// Create the Interpolated NRG
-//
-
-// Set the data path by running the below and choosing the Github data folder
+// 3) Set the data path by running the below and choosing the Github data folder
 // newpath data
 
-// Upload the relevant dat files
+
+// 4) Upload the relevant dat files
 // •udh5(dat_min_max="6079,6102")
 
 
-// Run the cleaning procedure
+// 5) Notch filter, resample, fit conductance centre and average. Use conductance centers to fit transition and average.
+// run_clean_average_procedure()
 
 
-// Run the fitting and plotting procedure
-// figure_C_separate
+// 6) Run the NRG process :: Simultaneous fitting conductance. Use gamma and leverarm from conductance to fit transition and to determine N=0.5.
+// run_nrg_procedure()
+
+
+
 
 ////////////////////// FUNCTION DATABASE //////////////////////////////
 // denoise 
@@ -42,10 +41,10 @@
 ///////////////////////////////////////////////////////////////////////
 
 
-function denoise(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on]) 
+function denoise(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on, variable conductance_data]) 
 
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
-	
+	conductance_data = paramisdefault(notch_on) ? 1 : conductance_data
 
 	///// Defining wave names /////
 	string cs_data_name_nf = cs_data_name + "_nf"
@@ -67,10 +66,12 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 		spectrum_analyzer($cs_data_name_nf, freq, plot_on = 0)
 	endif
 	
-	spectrum_analyzer($dot_data_name, freq)
-	if (notch_on == 1)
-		notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
-		spectrum_analyzer($dot_data_name_nf, freq, plot_on = 0)
+	if (conductance_data == 1)
+		spectrum_analyzer($dot_data_name, freq)
+		if (notch_on == 1)
+			notch_filters($dot_data_name,Hzs="60;180;300;420;541", Qs="20;150;250;250;540")
+			spectrum_analyzer($dot_data_name_nf, freq, plot_on = 0)
+		endif
 	endif
 	
 //	closeallGraphs()
@@ -78,19 +79,29 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 	display 
 	AppendToGraph $cs_data_name_ps; ModifyGraph rgb($cs_data_name_ps)=(0,0,0)
 	AppendToGraph $dot_data_name_ps;
-
 	
-	string legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r\\s(" + dot_data_name_ps +  ")dot raw\r"
+	string legend_text
+
+	if (conductance_data == 0)
+		legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r"
+	else
+		legend_text = "\\s(" + cs_data_name_ps +  ")cs raw\r\\s(" + dot_data_name_ps +  ")dot raw\r"
+	endif
 	
 	if (notch_on == 1)
 		AppendToGraph $cs_data_name_nf_ps;
 		ModifyGraph rgb($cs_data_name_nf_ps)=(0,0,0)
 		ModifyGraph lstyle($cs_data_name_nf_ps)=1;
-	
-		AppendToGraph $dot_data_name_nf_ps;
-		ModifyGraph lstyle($dot_data_name_nf_ps)=1;
 		
-		legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r\\s(" + dot_data_name_nf_ps +  ")dot notch\r"
+		
+		if (conductance_data == 0)
+			legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r"
+		else
+			AppendToGraph $dot_data_name_nf_ps;
+			ModifyGraph lstyle($dot_data_name_nf_ps)=1;
+		
+			legend_text = legend_text + "\\s(" + cs_data_name_nf_ps +  ")cs notch\r\\s(" + dot_data_name_nf_ps +  ")dot notch\r"
+		endif
 	endif
 	
 	
@@ -99,9 +110,14 @@ function denoise(variable datnum, string cs_data_name, string dot_data_name, [va
 end
 
 
-function centerandaverage(variable datnum, string cs_data_name, string dot_data_name, [variable notch_on]) 
-
+function centerandaverage(datnum, cs_data_name, dot_data_name, [notch_on, conductance_data, fit_conductance]) 
+	variable datnum
+	string cs_data_name, dot_data_name
+	variable notch_on, conductance_data, fit_conductance
+	
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
+	conductance_data = paramisdefault(conductance_data) ? 1 : conductance_data
+	fit_conductance = paramisdefault(fit_conductance) ? 1 : fit_conductance
 	
 	string cs_wave_name, dot_wave_name
 	
@@ -114,24 +130,33 @@ function centerandaverage(variable datnum, string cs_data_name, string dot_data_
 	endif
 
 	string cleaned_dot_name = "dat"
-	master_cond_clean_average($dot_wave_name, 1, cleaned_dot_name)
-	master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
+	
+	if (conductance_data == 0)
+		master_ct_clean_average($cs_wave_name, 1, 0, "dat", condfit_prefix=cleaned_dot_name)
+	else
+		master_cond_clean_average($dot_wave_name, fit_conductance, cleaned_dot_name, alternate_bias=1)
+		duplicate /o $cs_wave_name $("dat" + num2str(datnum) + "_cs_cleaned")
+		avg_wav($("dat" + num2str(datnum) + "_cs_cleaned"))
+//		master_ct_clean_average($cs_wave_name, 0, 1, "dat", condfit_prefix=cleaned_dot_name)//, minx=1580, maxx=3050)
+	endif
 end
 
 
-function run_single_clean_average_procedure(variable datnum, [variable notch_on, variable plot])
+function run_single_clean_average_procedure(variable datnum, [variable notch_on, variable plot, variable conductance_data])
 	notch_on = paramisdefault(notch_on) ? 1 : notch_on
 	plot = paramisdefault(plot) ? 1 : plot
+	conductance_data = paramisdefault(conductance_data) ? 1 : conductance_data
 	
 	string cs_data_type = "cscurrent_2d"
 	string dot_data_type = "dotcurrent_2d"
+//	string dot_data_type = "dotcurrentx_2d"
 	
 	string cs_data_name = "dat" + num2str(datnum) + cs_data_type
 	string dot_data_name = "dat" + num2str(datnum) + dot_data_type
 	
 	
 	///// first denoise /////
-	denoise(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
+	denoise(datnum, cs_data_name, dot_data_name, notch_on=notch_on, conductance_data=conductance_data)
 	
 	///// resample /////
 //	if (datnum == 6084)
@@ -140,7 +165,7 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 //	endif
 	
 	//// center the charge transitions and conductions data then average
-	centerandaverage(datnum, cs_data_name, dot_data_name, notch_on=notch_on)
+	centerandaverage(datnum, cs_data_name, dot_data_name, notch_on=notch_on, fit_conductance=0)
 	
 	if (plot == 0)
 		closeallGraphs()
@@ -148,17 +173,36 @@ function run_single_clean_average_procedure(variable datnum, [variable notch_on,
 end
 
 
-function run_clean_average_procedure([string datnums])
-//	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6092;6093;6094;6095;6096;6097;6098;6099;6100;6101;6102"
-//	string default_datnums = "6079;6080;6081;6082;6083;6084;6085;6086;6087;6088;6089;6090;6091;6094;6097;6100" // low field, low, mid, high gamma && high field, high gamma
-//	string default_datnums = "6081;6090;6087;6084" // low gamma
-	string default_datnums = "6079;6088;6085;6082" // high gamma
-	
-	datnums = selectString(paramisdefault(datnums), datnums, default_datnums) // e.g. "RAW"
+function run_clean_average_procedure([datnums, dat_min_max])
+	string datnums, dat_min_max
+//	string default_datnums = "688;689;690;691;692;693;694;695;696;697;698;699"
+//	string default_datnums = "699"
 
+	datnums = selectString(paramisdefault(datnums), datnums, "") // e.g. "RAW"
+	dat_min_max = selectString(paramisdefault(dat_min_max), dat_min_max, "") // e.g. "302,310"
+
+	string dat_list = datnums
+	
+	int i
+	////////////////////////////////////////////////////////
+	///// Overwriting dat_list if dat_min_max specified /////
+	////////////////////////////////////////////////////////
+	variable dat_start = str2num(StringFromList(0, dat_min_max, ";"))
+	variable dat_end = str2num(StringFromList(1, dat_min_max, ";"))
+	
+	if (!stringmatch(dat_min_max, ""))
+		dat_list = ""
+		for(i=dat_start; i<dat_end+1; i+=1)
+			dat_list = dat_list + num2str(i) + ";"
+		endfor
+	endif
+	////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
+	
+	
 	variable notch_on = 1
 	
-	variable num_dats = ItemsInList(datnums, ";")
+	variable num_dats = ItemsInList(dat_list, ";")
 	
 	variable plot = 0
 	if (num_dats<2)
@@ -175,12 +219,12 @@ function run_clean_average_procedure([string datnums])
 //	DoWindow/C transition_vs_sweep
 	
 	string cond_avg, trans_avg
-	variable i, datnum
+	variable datnum
 	for (i=0;i<num_dats;i+=1)
-		datnum = str2num(stringfromlist(i, datnums))
+		datnum = str2num(stringfromlist(i, dat_list))
 		
 		try
-			run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on)
+			run_single_clean_average_procedure(datnum, plot=1, notch_on=notch_on, conductance_data=1)
 		catch
 			print "FAILED CLEAN AND AVERAGE :: DAT " + num2str(datnum)
 		endtry 

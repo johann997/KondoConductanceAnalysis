@@ -49,6 +49,7 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 
 
 	// these are the new wave names to be made
+	duplicate /o wav $(kenner_out + num2str(wavenum))
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_cs_centered"
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_cs_cleaned"
 	string avg_wave_name = cleaned_wave_name + "_avg"
@@ -60,8 +61,10 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 	wave badthetasx
 	wave badgammasx
 	
-	string quickavg = avg_wav($datasetname) // averages datasetname and returns the name of the averaged wave
-
+	string quickavg = avg_wav($("dat" + num2str(wavenum))) // averages datasetname and returns the name of the averaged wave
+	duplicate /o $quickavg $(quickavg+ "_BLIND")
+	quickavg += "_BLIND"
+	
 	if (refit==1)
 		// get a rough fit of average
 		get_initial_params($quickavg)
@@ -105,16 +108,20 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 		duplicate/o/r=[][2] condfit_params mids
 
 		centering($datasetname, centered_wave_name, mids)
-		remove_bad_thetas($centered_wave_name, badgammasx, cleaned_wave_name)
+//		remove_bad_thetas($centered_wave_name, badgammasx, cleaned_wave_name)
+		duplicate /o $centered_wave_name $cleaned_wave_name
 		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
 	endif
 
 	if(average==1)
 //		replace_nans_with_avg($cleaned_wave_name, overwrite=0) // remove any row with > 25% NaNs in the row
+		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
+		
 		avg_wav($cleaned_wave_name) // quick average plot
 		
 //		wavetransform/o zapnans $avg_wave_name
 //		zapnan_scaling_overwrite($avg_wave_name)
+		zap_NaNs($avg_wave_name, overwrite=1)
 		get_initial_params($avg_wave_name); //print W_coef
 		
 		fit_transition($avg_wave_name, minx, maxx, fit_width = fit_width)
@@ -196,7 +203,7 @@ function /wave get_initial_params(sweep, [update_amp_only, update_theta_only, up
 	variable const = mean(sweep)
 	
 	///// guess of theta term /////
-	variable theta = 10
+	variable theta = 50
 
 	///// guess of mid term ////
 	duplicate /o sweep sweepsmooth
@@ -363,7 +370,7 @@ function zap_bad_params(wave_2d, params, num_params, [overwrite, zap_bad_mids, z
 end
 
 
-function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width])
+function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width, plot_fit])
 	// fits the wave_to_fit, If condition is 0 it will get initial params, If 1:
 	// define a variable named W_coef_guess = {} with the correct number of arguments
 	// outputs wave named "fit_" + wave_to_fit
@@ -374,8 +381,10 @@ function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width])
 	wave wave_to_fit
 	variable minx, maxx
 	// optional param
-	variable fit_width
+	variable fit_width, plot_fit
 	fit_width = paramisdefault(fit_width) ? INF : fit_width // averaging ON is default
+	plot_fit = paramisdefault(plot_fit) ? 0 : plot_fit // averaging ON is default
+
 	
 	// update the minx and maxx based on the mid value and fit_width 
 	wave W_coef
@@ -393,7 +402,11 @@ function /wave fit_transition(wave_to_fit, minx, maxx, [fit_width])
 //	string hold_string = "000001"; W_coef[5] = 0 // holding quadterm 0
 	string hold_string = "000000"; // not holding any terms fixed
 	
-	FuncFit/q /H=(hold_string) /TBOX=768 ct_fit_function W_coef wave_to_fit[minx,maxx][0] /D
+	if (plot_fit == 1)
+		FuncFit /H=(hold_string) /TBOX=768 ct_fit_function W_coef wave_to_fit[minx,maxx][0] /D
+	else
+		FuncFit/q /H=(hold_string) /TBOX=768 ct_fit_function W_coef wave_to_fit[minx,maxx][0] /D
+	endif
 end
 
 
@@ -579,13 +592,13 @@ function plot_ct_figs(wavenum, N, kenner, kenner_out, minx, maxx, [average, fit_
 	repeats_on = paramisdefault(repeats_on) ? 1 : repeats_on // repeats_on ON is default
 	zap_params = paramisdefault(zap_params) ? 0 : zap_params // repeats_on ON is default
 	
-	string datasetname ="dat" + num2str(wavenum) + kenner // this was the original dataset name
+	string datasetname = "dat" + num2str(wavenum) + kenner // this was the original dataset name
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_cs_centered" // this is the centered 2D wave
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_cs_cleaned" // this is the centered 2D wave after removing outliers ("cleaning")
 	string avg_wave_name = cleaned_wave_name + "_avg" // this is the averaged wave produced by avg_wave($cleaned)
 	
 	string fit_params_name = kenner_out + num2str(wavenum) + "_cs_fit_params" // this is the fit parameters 
-	string quickavg = datasetname + "_avg" // this is the wave produced by avg_wave($datasetname)
+	string quickavg = "dat" + num2str(wavenum) + "_avg_BLIND" // this is the wave produced by avg_wave($datasetname)
 	wave W_coef
 
 

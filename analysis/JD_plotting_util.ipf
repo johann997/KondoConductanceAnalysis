@@ -116,20 +116,20 @@ End
 	string wvname;wvname=stringfromlist(0,imagenamelist("",";"));TextBox/C/N=text1/F=0/A=MT/E wvname
 
 
-
-function/wave DiffWave(w, [numpts])
-	wave w
-	variable numpts
-	
-	numpts = paramisdefault(numpts) ? 150 : numpts
-	
-	duplicate/o w, tempwave
-	print dimsize(w, 0)
-	print ceil(dimsize(w,0)/numpts)
-	resample/DIM=0 /down=(ceil(dimsize(w,0)/numpts)) tempwave
-	differentiate/DIM=0 tempwave	
-	return tempwave
-end
+//
+//function/wave DiffWave(w, [numpts])
+//	wave w
+//	variable numpts
+//	
+//	numpts = paramisdefault(numpts) ? 150 : numpts
+//	
+//	duplicate/o w, tempwave
+//	print dimsize(w, 0)
+//	print ceil(dimsize(w,0)/numpts)
+//	resample/DIM=0 /down=(ceil(dimsize(w,0)/numpts)) tempwave
+//	differentiate/DIM=0 tempwave	
+//	return tempwave
+//end
 //
 //
 //
