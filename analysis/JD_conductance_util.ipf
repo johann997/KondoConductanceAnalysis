@@ -168,7 +168,8 @@ end
 function/wave split_wave(wave wav, variable flag)
 	string base_wave_name = nameofwave(wav)
 	variable num_rows = dimsize(wav, 1)
-	int split_num_rows = round(num_rows/2)
+//	int split_num_rows = round(num_rows/2)
+	int split_num_rows = floor(num_rows/2)
 	int i
 	
 	string pos_wave_name = base_wave_name + "_pos"
@@ -478,12 +479,13 @@ function /wave fit_single_peak(wave current_array)
 	
 	// only fit to ±5% the number of points on either side of the peak
 	wavestats/q temp
-	variable min_fit_index = round(V_maxrowloc - V_npnts*0.050)
+	variable percentage_fit_width = 0.15
+	variable min_fit_index = round(V_maxrowloc - V_npnts*percentage_fit_width)
 	if (min_fit_index < 0)
 		min_fit_index = 0
 	endif
 	
-	variable max_fit_index = round(V_maxrowloc + V_npnts*0.050)
+	variable max_fit_index = round(V_maxrowloc + V_npnts*percentage_fit_width)
 	if (max_fit_index > V_npnts)
 		max_fit_index = V_npnts - 1
 	endif

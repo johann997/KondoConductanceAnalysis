@@ -667,17 +667,17 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.0 //3.4 // lnG/T for Tbase (linked)
+			coefwave[0][0] = 3.3 //3.0 //3.4 // lnG/T for Tbase (linked)
 //			coefwave[0][0] = 2.8 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.005 //0.0028 //0.005 // 0.01 // x scaling (linked)
+			coefwave[1][0] = 1e-2 //0.0028 //0.005 // 0.01 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
-			coefwave[0][0] = 1 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.012// 0.005  //0.002 //0.16 // 0.02 // x scaling (linked)
+			coefwave[0][0] = 0.1//1 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.005 // 0.012// 0.005  //0.002 //0.16 // 0.02 // x scaling (linked)
 			
 		elseif (cmpstr(gamma_over_temp_type, "low") == 0)
-			coefwave[0][0] = 1e-4 // lnG/Tbase (linked)
-			coefwave[1][0] = 0.3 //0.13 // 0.02 // x scaling (linked)
+			coefwave[0][0] = 1.04617//1e-4 // lnG/Tbase (linked)
+			coefwave[1][0] = 0.058 //0.3 //0.13 // 0.02 // x scaling (linked)
 		endif
 		
 		// Set index 1 == 1 to hold the value  
@@ -931,6 +931,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 ////////// autumn experiment ////////////////////////////////////////////////////
+	///// ENTROPY /////
 	elseif (cmpstr(datnum, "1281") == 0)
 		cs_max_val = 302
 	elseif (cmpstr(datnum, "1283") == 0)
@@ -951,6 +952,35 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_max_val = 2917
 	elseif (cmpstr(datnum, "1473") == 0)
 		cs_max_val = 1496
+	///// CONDUCTANCE /////
+	////// high gamma /////
+	elseif (cmpstr(datnum, "699") == 0)
+		cs_min_val = -1689; cs_max_val = 2500
+	elseif (cmpstr(datnum, "695") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+	elseif (cmpstr(datnum, "691") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+////// mid-high gamma /////
+	elseif (cmpstr(datnum, "698") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "694") == 0)
+		cs_min_val = -2000; cs_max_val = 1500
+	elseif (cmpstr(datnum, "690") == 0)
+		cs_min_val = -2000; cs_max_val = 1500
+////// mid-weak gamma /////
+	elseif (cmpstr(datnum, "697") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+	elseif (cmpstr(datnum, "693") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+	elseif (cmpstr(datnum, "689") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+////// weak gamma /////
+	elseif (cmpstr(datnum, "696") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+	elseif (cmpstr(datnum, "692") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
+	elseif (cmpstr(datnum, "688") == 0)
+		cs_min_val = -2500; cs_max_val = 2500
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
