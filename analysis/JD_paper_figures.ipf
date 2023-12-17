@@ -24,7 +24,7 @@ function beautify_figure(figure_name)
 	string figure_name
 	int font_size = 8
 //	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
-	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01, width=1*200, height=1*200/1.6180339887
+	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01//, width=1*200, height=1*200/1.6180339887
 end
 
 macro default_layout(layout_name)
@@ -1593,7 +1593,7 @@ endmacro
 
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
 //	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
 //	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
@@ -1601,13 +1601,24 @@ function figure_2_conductance()
 	
 //	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
+//	string e_temps = "23;100;300;500"
+//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	
 
-	string e_temps = "23;100;300;500"
-	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+
+
+	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
+	string e_temps = "22.5;275;500"
+	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+	string datnums = "696;692;688"; string gamma_type = "low"// high gamma
+//	string datnums = "697;693;689"; string gamma_type = "mid"// high gamma
+//	string datnums = "698;694;690"; string gamma_type = "mid"// high gamma
+//	string datnums = "699;695;691"; string gamma_type = "high"// high gamma
+	
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 1
+	int global_fit_conductance = 0
 	
 	
 	
@@ -1670,7 +1681,7 @@ function figure_2_conductance()
 		//////////////////////////////////////////
 		AppendToGraph /W=figure_ca /L=l3/B=b3 $cond_avg; AppendToGraph /W=figure_ca /L=l3/B=b3 $cond_avg_fit;
 		ModifyGraph /W=figure_ca mode($cond_avg)=2, lsize($cond_avg)=1, rgb($cond_avg)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($cond_avg_fit)=0, lsize($cond_avg_fit)=2, rgb($cond_avg_fit)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($cond_avg_fit)=0, lsize($cond_avg_fit)=2, rgb($cond_avg_fit)=(0,0,0)
 		
 		
 		//////////////////////////////////////////
@@ -1679,12 +1690,12 @@ function figure_2_conductance()
 		///// Appending traces to panel ca /////
 		AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg; AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg_fit;
 		ModifyGraph /W=figure_ca mode($trans_avg)=2, lsize($trans_avg)=1, rgb($trans_avg)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(0,0,0)
 		
 		///// Appending traces to panel cb /////
 		AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg; AppendToGraph /W=figure_ca /L=l4/B=b4 $occ_avg_fit;
 		ModifyGraph /W=figure_ca mode($occ_avg)=2, lsize($occ_avg)=1, rgb($occ_avg)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(red,green,blue)		
+		ModifyGraph /W=figure_ca mode($occ_avg_fit)=0, lsize($occ_avg_fit)=2, rgb($occ_avg_fit)=(0,0,0)		
 		
 		
 		///////////////////////////////////////////
@@ -1731,7 +1742,7 @@ function figure_2_conductance()
 
 		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
 		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=1, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
-		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(0,0,0)
 	endfor
 	
 	///// axis labelling goes from top plot to bottom plot
@@ -2023,19 +2034,23 @@ end
 
 
 function figure_2_entropy()
+
+	string gamma_type
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-//	string global_datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
-//	string global_datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-//	string global_datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+//	string global_datnums = "6079;6088;6085;6082";  gamma_type = "high"// high gamma
+//	string global_datnums = "6080;6089;6086;6083";  gamma_type = "mid" // mid gamma
+//	string global_datnums = "6081;6090;6087;6084";  gamma_type = "low" // low gamma
+
+//	string entropy_datnums = "6388"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"// high gamma
+	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"// high gamma
 	
 //	string global_datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
-	
 //	string global_datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
 	
 	///// AUTUMN EXPERIMENT /////
-	string gamma_type
-	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
+
+//	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
@@ -2052,7 +2067,7 @@ function figure_2_entropy()
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 0
+	int global_fit_conductance = 1
 	int fit_conductance = 0
 	int fit_entropy = 1
 	
@@ -3283,6 +3298,7 @@ macro compare_cold_entropy_vs_global()
 endmacro
 
 macro save_waves()
+	///// SUMMER /////
 	// conductance :: CT
 	Save/C/O/P=processed_data  dat6079_cs_cleaned_avg as "dat6079_cs_cleaned_avg.ibw"
 	Save/C/O/P=processed_data  dat6088_cs_cleaned_avg as "dat6088_cs_cleaned_avg.ibw"
@@ -3328,70 +3344,75 @@ macro save_waves()
 	Save/C/O/P=processed_data  fit_dat6088_cs_cleaned_avg_occ_interp as "fit_dat6088_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  fit_dat6085_cs_cleaned_avg_occ_interp as "fit_dat6085_cs_cleaned_avg_occ_interp.ibw"
 	Save/C/O/P=processed_data  fit_dat6082_cs_cleaned_avg_occ_interp as "fit_dat6082_cs_cleaned_avg_occ_interp.ibw"
-	
-	
-	
+
+
 	// entropy
-	Save/C/O/P=processed_data  dat1281_numerical_entropy_avg_interp as "dat1281_numerical_entropy_avg_interp.ibw"
-	Save/C/O/P=processed_data  dat1282_numerical_entropy_avg_interp as "dat1282_numerical_entropy_avg_interp.ibw"
-	Save/C/O/P=processed_data  dat1283_numerical_entropy_avg_interp as "dat1283_numerical_entropy_avg_interp.ibw"
-	Save/C/O/P=processed_data  dat1284_numerical_entropy_avg_interp as "dat1284_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6385_numerical_entropy_avg_interp as "dat6385_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6388_numerical_entropy_avg_interp as "dat6388_numerical_entropy_avg_interp.ibw"
 	
-	Save/C/O/P=processed_data  fit_dat1281_numerical_entropy_avg_interp as "fit_dat1281_numerical_entropy_avg_interp.ibw"
-	Save/C/O/P=processed_data  fit_dat1282_numerical_entropy_avg_interp as "fit_dat1282_numerical_entropy_avg_interp.ibw"
-	Save/C/O/P=processed_data  fit_dat1283_numerical_entropy_avg_interp as "fit_dat1283_numerical_entropy_avg_interp.ibw"
-	Save/C/O/P=processed_data  fit_dat1284_numerical_entropy_avg_interp as "fit_dat1284_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6385_numerical_entropy_avg_interp as "fit_dat6385_numerical_entropy_avg_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6388_numerical_entropy_avg_interp as "fit_dat6388_numerical_entropy_avg_interp.ibw"
 	
 	// entropy cold
-	Save/C/O/P=processed_data  dat1281_cs_cleaned_avg_occ_interp as "dat1281_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=processed_data  dat1282_cs_cleaned_avg_occ_interp as "dat1282_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=processed_data  dat1283_cs_cleaned_avg_occ_interp as "dat1283_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=processed_data  dat1284_cs_cleaned_avg_occ_interp as "dat1284_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6385_cs_cleaned_avg_occ_interp as "dat6385_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  dat6388_cs_cleaned_avg_occ_interp as "dat6388_cs_cleaned_avg_occ_interp.ibw"
 	
-	Save/C/O/P=processed_data  fit_dat1281_cs_cleaned_avg_occ_interp as "fit_dat1281_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=processed_data  fit_dat1282_cs_cleaned_avg_occ_interp as "fit_dat1282_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=processed_data  fit_dat1283_cs_cleaned_avg_occ_interp as "fit_dat1283_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=processed_data  fit_dat1284_cs_cleaned_avg_occ_interp as "fit_dat1284_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6385_cs_cleaned_avg_occ_interp as "fit_dat6385_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=github_processed_data  fit_dat6388_cs_cleaned_avg_occ_interp as "fit_dat6388_cs_cleaned_avg_occ_interp.ibw"
+
 	
 	
 	
-// conductance :: CT
-	Save/C/O/P=github_processed_data  dat6079_cs_cleaned_avg as "dat6079_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  dat6088_cs_cleaned_avg as "dat6088_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  dat6085_cs_cleaned_avg as "dat6085_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  dat6082_cs_cleaned_avg as "dat6082_cs_cleaned_avg.ibw"
 	
-	Save/C/O/P=github_processed_data  fit_dat6079_cs_cleaned_avg as "fit_dat6079_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  fit_dat6088_cs_cleaned_avg as "fit_dat6088_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  fit_dat6085_cs_cleaned_avg as "fit_dat6085_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  fit_dat6082_cs_cleaned_avg as "fit_dat6082_cs_cleaned_avg.ibw"
+	////// AUTUMN //////
 	
-	Save/C/O/P=github_processed_data  coef_dat6079_cs_cleaned_avg as "coef_dat6079_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  coef_dat6088_cs_cleaned_avg as "coef_dat6088_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  coef_dat6085_cs_cleaned_avg as "coef_dat6085_cs_cleaned_avg.ibw"
-	Save/C/O/P=github_processed_data  coef_dat6082_cs_cleaned_avg as "coef_dat6082_cs_cleaned_avg.ibw"
+	// conductance :: CT
+	Save/C/O/P=processed_data  dat699_cs_cleaned_avg as "dat699_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  dat695_cs_cleaned_avg as "dat695_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  dat691_cs_cleaned_avg as "dat691_cs_cleaned_avg.ibw"
+	
+	Save/C/O/P=processed_data  fit_dat699_cs_cleaned_avg as "fit_dat699_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  fit_dat695_cs_cleaned_avg as "fit_dat695_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  fit_dat691_cs_cleaned_avg as "fit_dat691_cs_cleaned_avg.ibw"
+	
+	Save/C/O/P=processed_data  coef_dat699_cs_cleaned_avg as "coef_dat699_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  coef_dat695_cs_cleaned_avg as "coef_dat695_cs_cleaned_avg.ibw"
+	Save/C/O/P=processed_data  coef_dat691_cs_cleaned_avg as "coef_dat691_cs_cleaned_avg.ibw"
 	
 	// conductance :: DOT
-	Save/C/O/P=github_processed_data  dat6079_dot_cleaned_avg_interp as "dat6079_dot_cleaned_avg_interp.ibw"
-	Save/C/O/P=github_processed_data  dat6088_dot_cleaned_avg_interp as "dat6088_dot_cleaned_avg_interp.ibw"
-	Save/C/O/P=github_processed_data  dat6085_dot_cleaned_avg_interp as "dat6085_dot_cleaned_avg_interp.ibw"
-	Save/C/O/P=github_processed_data  dat6082_dot_cleaned_avg_interp as "dat6082_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat696_dot_cleaned_avg_interp as "dat696_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat697_dot_cleaned_avg_interp as "dat697_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat698_dot_cleaned_avg_interp as "dat698_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat699_dot_cleaned_avg_interp as "dat699_dot_cleaned_avg_interp.ibw"
 	
-	Save/C/O/P=github_processed_data  gfit_dat6079_dot_cleaned_avg_interp as "gfit_dat6079_dot_cleaned_avg_interp.ibw"
-	Save/C/O/P=github_processed_data  gfit_dat6088_dot_cleaned_avg_interp as "gfit_dat6088_dot_cleaned_avg_interp.ibw"
-	Save/C/O/P=github_processed_data  gfit_dat6085_dot_cleaned_avg_interp as "gfit_dat6085_dot_cleaned_avg_interp.ibw"
-	Save/C/O/P=github_processed_data  gfit_dat6082_dot_cleaned_avg_interp as "gfit_dat6082_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat695_dot_cleaned_avg_interp as "dat695_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  dat691_dot_cleaned_avg_interp as "dat691_dot_cleaned_avg_interp.ibw"
+	
+	Save/C/O/P=processed_data  gfit_dat696_dot_cleaned_avg_interp as "gfit_dat696_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat697_dot_cleaned_avg_interp as "gfit_dat697_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat698_dot_cleaned_avg_interp as "gfit_dat698_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat699_dot_cleaned_avg_interp as "gfit_dat699_dot_cleaned_avg_interp.ibw"
+
+	Save/C/O/P=processed_data  gfit_dat695_dot_cleaned_avg_interp as "gfit_dat695_dot_cleaned_avg_interp.ibw"
+	Save/C/O/P=processed_data  gfit_dat691_dot_cleaned_avg_interp as "gfit_dat691_dot_cleaned_avg_interp.ibw"
 	
 	// conductance :: OCC
-	Save/C/O/P=github_processed_data  dat6079_cs_cleaned_avg_occ_interp as "dat6079_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=github_processed_data  dat6088_cs_cleaned_avg_occ_interp as "dat6088_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=github_processed_data  dat6085_cs_cleaned_avg_occ_interp as "dat6085_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=github_processed_data  dat6082_cs_cleaned_avg_occ_interp as "dat6082_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat696_cs_cleaned_avg_occ_interp as "dat696_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat697_cs_cleaned_avg_occ_interp as "dat697_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat698_cs_cleaned_avg_occ_interp as "dat698_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat699_cs_cleaned_avg_occ_interp as "dat699_cs_cleaned_avg_occ_interp.ibw"
+
+	Save/C/O/P=processed_data  dat695_cs_cleaned_avg_occ_interp as "dat695_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  dat691_cs_cleaned_avg_occ_interp as "dat691_cs_cleaned_avg_occ_interp.ibw"
 	
-	Save/C/O/P=github_processed_data  fit_dat6079_cs_cleaned_avg_occ_interp as "fit_dat6079_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=github_processed_data  fit_dat6088_cs_cleaned_avg_occ_interp as "fit_dat6088_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=github_processed_data  fit_dat6085_cs_cleaned_avg_occ_interp as "fit_dat6085_cs_cleaned_avg_occ_interp.ibw"
-	Save/C/O/P=github_processed_data  fit_dat6082_cs_cleaned_avg_occ_interp as "fit_dat6082_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat696_cs_cleaned_avg_occ_interp as "fit_dat696_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat697_cs_cleaned_avg_occ_interp as "fit_dat697_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat698_cs_cleaned_avg_occ_interp as "fit_dat698_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat699_cs_cleaned_avg_occ_interp as "fit_dat699_cs_cleaned_avg_occ_interp.ibw"
+
+	Save/C/O/P=processed_data  fit_dat695_cs_cleaned_avg_occ_interp as "fit_dat695_cs_cleaned_avg_occ_interp.ibw"
+	Save/C/O/P=processed_data  fit_dat691_cs_cleaned_avg_occ_interp as "fit_dat691_cs_cleaned_avg_occ_interp.ibw"
+	
 	
 	// entropy
 	Save/C/O/P=github_processed_data  dat1281_numerical_entropy_avg_interp as "dat1281_numerical_entropy_avg_interp.ibw"
