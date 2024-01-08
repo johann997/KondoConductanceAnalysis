@@ -106,6 +106,23 @@ function get_sweeplogs(datnum)
 	return sweeplogsID
 end
 
+function get_scanvars(datnum)
+	// Opens HDF5 file from current data folder and returns sweeplogs jsonID
+	// Remember to JSON_Release(jsonID) or JSONXOP_release/A to release all objects
+	// Can be converted to JSON string by using JSON_dump(jsonID)
+	variable datnum
+	variable fileid, metadataID, i, result
+	wave/t sc_scanvars
+	
+	HDF5OpenFile /P=data fileid as "dat"+num2str(datnum)+".h5"
+	HDF5LoadData /Q/O/Type=1/N=sc_sweeplogs /A="scan_vars" fileid, "metadata"
+	
+	variable scanvarsID
+	scanvarsID = JSON_Parse(sc_scanvars[0])
+
+	return scanvarsID
+end
+
 function getJSONXid(jsonID, path)
 	// Returns jsonID of json object located at "path" in jsonID passed in. e.g. get "BabyDAC" json from "Sweep_logs" json.
 	// Path should be able to be a true JSON pointer i.e. "/" separated path (e.g. "Magnets/Magx") but it is untested
