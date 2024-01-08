@@ -423,15 +423,36 @@ end
 
 
 
+
 function/wave get_conductance_from_current(wave pos, wave neg, string newname)
 	// using the positive and negative bias data gievn in current
-	// calculate the 2d array in units of conductance
+	// calculate the 1d array in units of conductance
 	// CHECK: bias and inline resistance is hard coded
+	
+	// Calcaultion for conductance: 
+	// Total R = Dot R + Inline R
+	// Inline R = 21150
+	// Total R = Bias / Current
+	// Condutcance = (1/Dot R) / quantum of conductance
+	
 	duplicate/o pos, $newname
-	wave temp = $newname;
-	temp = (pos-neg)
+	wave cond_wave = $newname;
+	cond_wave = (pos-neg)
+	cond_wave *= 1e-9 // units of A
+	
+	duplicate/o cond_wave current // keeping copy of current
+	duplicate/o cond_wave temp 
+	
 	variable bias = (514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
-	duplicate/o temp cond
+	cond_wave = bias/temp
+	
+	cond_wave -= 21150
+	duplicate/o cond_wave temp 
+	
+	cond_wave = 1/temp
+	
+	cond_wave /= 7.7483e-05 
+	
 //	temp = cond/(bias - cond * 21150)
 //	temp /= 7.7483e-05
 //	cond = bias - temp*21150

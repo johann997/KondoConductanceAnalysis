@@ -673,8 +673,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			coefwave[1][0] = 1e-2 //0.0028 //0.005 // 0.01 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
-			coefwave[0][0] = 0.1//1 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.005 // 0.012// 0.005  //0.002 //0.16 // 0.02 // x scaling (linked)
+			coefwave[0][0] =  1 //0.1 //1 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.02 // 0.012// 0.005  //0.002 //0.16 // 0.02 // x scaling (linked)
 			
 		elseif (cmpstr(gamma_over_temp_type, "low") == 0)
 			coefwave[0][0] = 1.04617//1e-4 // lnG/Tbase (linked)
@@ -852,7 +852,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -1873; cs_max_val = 980
 	elseif (cmpstr(datnum, "6086") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -3000; cs_max_val = 1286
+		cs_min_val = -2000; cs_max_val = 1286
 	elseif (cmpstr(datnum, "6083") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -1667; cs_max_val = 967
