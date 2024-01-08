@@ -1983,11 +1983,11 @@ macro paper_v3_figure_1b()
 // 1282 med weak
 	Display; KillWindow /Z paper_figure_v3_1b; DoWindow/C/O paper_figure_v3_1b 
 	
-	AppendToGraph /W=paper_figure_v3_1b dat1282_numerical_entropy_avg_interp_scaled_fig3b; 
+	AppendToGraph /W=paper_figure_v3_1b dat1282_numerical_entropy_avg_interp; 
 	AppendToGraph /W=paper_figure_v3_1b /r dat1282_cs_cleaned_avg_occ_interp
 	
 	
-	ModifyGraph /W=paper_figure_v3_1b rgb(dat1282_numerical_entropy_avg_interp_scaled_fig3b)=(0,0,0)
+	ModifyGraph /W=paper_figure_v3_1b rgb(dat1282_numerical_entropy_avg_interp)=(0,0,0)
 	
 	
 	ModifyGraph /W=paper_figure_v3_1b muloffset={0.005,0}
@@ -2000,13 +2000,13 @@ macro paper_v3_figure_1b()
 //	SetAxis /W=paper_figure_v3_1b left 0,*
 	SetAxis /W=paper_figure_v3_1b right 0,1
 
-	Legend/W=paper_figure_v3_1b  /C/N=text0/J/A=LT/X=2.50/Y=3.23 "\\s(dat1282_numerical_entropy_avg_interp_scaled_fig3b) dN/dT\r\\s(dat1282_cs_cleaned_avg_occ_interp) Occupation"
+	Legend/W=paper_figure_v3_1b  /C/N=text0/J/A=LT/X=2.50/Y=3.23 "\\s(dat1282_numerical_entropy_avg_interp) dN/dT\r\\s(dat1282_cs_cleaned_avg_occ_interp) Occupation"
 
 
 	SetAxis /W=paper_figure_v3_1b bottom -5,5
 	ModifyGraph /W=paper_figure_v3_1b mirror=0, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=8, tick=2, gFont="Calibri", gfSize=8, lowTrip(bottom)=0.0001, lowTrip(left)=0.01, width=1*200, height=1*200/1.6180339887
 	ModifyGraph /W=paper_figure_v3_1b mirror(bottom)=1
-	ModifyGraph /W=paper_figure_v3_1b muloffset(dat1282_numerical_entropy_avg_interp_scaled_fig3b)={0.005,100}
+	ModifyGraph /W=paper_figure_v3_1b muloffset(dat1282_numerical_entropy_avg_interp)={0.005,100}
 endmacro
 
 
