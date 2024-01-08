@@ -528,9 +528,10 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		// coef[2]: x-offset
 		// coef[3]: ln(T/Tbase) for different waves
 		// coef[4]: peak height
-		numcoefs = 5
+		// coef[5]: const offset
+		numcoefs = 6
 		make /o/n=(numcoefs) links
-		links={1,1,0,0,0}
+		links={1,1,0,0,0,0}
 		numlinks = sum(links)
 	else 
 	// CHANGE
@@ -688,6 +689,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			
 			if (global_fit_conductance == 1)
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
+				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
 			else
 				coefwave[4 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
@@ -1493,8 +1495,9 @@ Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc // original negative
 	// coef[2]: x-offset
 	// coef[3]: ln(T/Tbase) for different waves
 	// coef[4]: peak height
+	// coef[5]: const offset
 	
-	yw = pw[4] * interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
+	yw = pw[5] + pw[4] * interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
 end
 
 
