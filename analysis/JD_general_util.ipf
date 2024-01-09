@@ -132,7 +132,7 @@ function [variable minx, variable maxx] find_overlap_mask(wave wave1, wave wave2
 		endif
 		
 		if ((wave1[i] == 0) && (min_check == 1) && (max_check == 0))
-			maxx = x_wave[i]
+			maxx = x_wave[i - 1]
 			max_check = 1
 		endif
 	endfor
@@ -157,7 +157,7 @@ function [variable minx, variable maxx] find_overlap_mask(wave wave1, wave wave2
 		
 		if ((wave2[i] == 0) && (min_check == 1) && (max_check == 0))
 			if (x_wave[i] < maxx)
-				maxx = x_wave[i]
+				maxx = x_wave[i - 1]
 			endif
 			max_check = 1
 		endif
@@ -182,13 +182,13 @@ function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_in
 	
 	numpts_to_interp = paramisdefault(numpts_to_interp) ? 0 : numpts_to_interp // default 0 :: i.e. turned off
 
-
-	
-	create_x_wave(base_wave_to_interp)
-	wave x_wave
 		
 	if (numpts_to_interp != 0)
 		make /o /N=(numpts_to_interp) $wavename_to_interp
+		
+		create_x_wave(base_wave_to_interp)
+		wave x_wave
+	
 		setscale /I x x_wave[0], x_wave[INF], $wavename_to_interp
 		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
 	else
