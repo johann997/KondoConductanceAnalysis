@@ -964,25 +964,31 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -2500; cs_max_val = 2500
 ////// mid-high gamma /////
 	elseif (cmpstr(datnum, "698") == 0)
-		cs_min_val = -2000; cs_max_val = 2000
+		dot_min_val = -3000; dot_max_val = 3000
+		cs_min_val = -1500; cs_max_val = 1500
 	elseif (cmpstr(datnum, "694") == 0)
-		cs_min_val = -2000; cs_max_val = 1500
+		dot_min_val = -3000; dot_max_val = 3000
+		cs_min_val = -1500; cs_max_val = 1500
 	elseif (cmpstr(datnum, "690") == 0)
-		cs_min_val = -2000; cs_max_val = 1500
+		dot_min_val = -3000; dot_max_val = 3000
+		cs_min_val = -1000; cs_max_val = 1500
 ////// mid-weak gamma /////
 	elseif (cmpstr(datnum, "697") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -1000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "693") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -750; cs_max_val = 750
 	elseif (cmpstr(datnum, "689") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		dot_min_val = -1000; dot_max_val = 1000
+		cs_min_val = -1000; cs_max_val = 1000
 ////// weak gamma /////
 	elseif (cmpstr(datnum, "696") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "692") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "688") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		cs_min_val = -2000; cs_max_val = 2000
 //////////////////////////////////////////////////////////////
 	else
 		datnum_declared = 0
@@ -1144,6 +1150,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	variable total_cs_chisq, entropy_y_offset
 	variable scaling_dt, scaling_amplitude, scaling_factor
+	variable minx, maxx
 	
 	Display; KillWindow /Z global_fit; DoWindow/C/O global_fit
 	Display; KillWindow /Z global_fit_entropy; DoWindow/C/O global_fit_entropy
@@ -1172,10 +1179,20 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_fit_name = "fit_" + cs_data_name
 			duplicate /o $cs_data_name $cs_fit_name
 			
-			FuncFit/Q/H="11010110"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
-			FuncFit/Q/H="11010010"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
-//			FuncFit/Q/H="11010000"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-
+			// give data for full x-range but only fit within mask
+//			FuncFit/Q/H="11010110"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
+//			FuncFit/Q/H="11010010"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
+			
+			// give data for x-range within fit mask
+			[minx, maxx] = find_overlap_mask($(stringfromlist(i,data.occ_maskwvlist)), $(stringfromlist(i,data.occ_maskwvlist)))	
+			delete_points_from_x($cs_fit_name, minx, maxx)
+//			duplicate /o $cs_data_name cs_data
+//			wave cs_data
+//			delete_points_from_x(cs_data, minx, maxx)
+			
+			FuncFit/Q/H="11010110" fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			FuncFit/Q/H="11010010" fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D 
+			FuncFit/Q/H="11010000" fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 		else 
 			wave cs_coef = $("coef_" + stringfromlist(i,data.occ_wvlist))
 			cs_data_name = stringfromlist(i,data.occ_wvlist)
@@ -1234,14 +1251,15 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 				cond_fit_name = "fit_" + cond_data_name
 				cond_coef_name = "coef_" + cond_data_name
 				
-				make/o /n=5 $cond_coef_name = 0 
+				make/o /n=6 $cond_coef_name = 0 
 				wave cond_coef = $cond_coef_name
 				cond_coef[0,4] = cs_coef[p]
 				cond_coef[4] = 1
+				cond_coef[5] = 0
 				
 				duplicate /o $cond_data_name $cond_fit_name
 	
-				FuncFit/Q/TBOX=768/H="11010" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
+				FuncFit/Q/TBOX=768/H="110100" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
 			else
 				cond_fit_name = "Gfit_" + cond_data_name
 			endif
