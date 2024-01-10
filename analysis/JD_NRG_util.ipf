@@ -529,9 +529,10 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		// coef[3]: ln(T/Tbase) for different waves
 		// coef[4]: peak height
 		// coef[5]: const offset
-		numcoefs = 6
+		// coef[6]: linear
+		numcoefs = 7
 		make /o/n=(numcoefs) links
-		links={1,1,0,0,0,0}
+		links={1,1,0,0,0,0,0}
 		numlinks = sum(links)
 	else 
 	// CHANGE
@@ -645,7 +646,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 
 			
 			if (global_fit_conductance == 1)
-//				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
+				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
+				coefwave[6 + i*(numcoefs-numlinks)][1] = 0 // linear
 			else
 				if (linear_term != 0)
 					coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
@@ -669,7 +671,6 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
 			coefwave[0][0] = 3.3 //3.0 //3.4 // lnG/T for Tbase (linked)
-//			coefwave[0][0] = 2.8 // lnG/T for Tbase (linked)
 			coefwave[1][0] = 1e-2 //0.0028 //0.005 // 0.01 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
@@ -677,8 +678,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			coefwave[1][0] = 0.02 // 0.012// 0.005  //0.002 //0.16 // 0.02 // x scaling (linked)
 			
 		elseif (cmpstr(gamma_over_temp_type, "low") == 0)
-			coefwave[0][0] = 1.04617//1e-4 // lnG/Tbase (linked)
-			coefwave[1][0] = 0.058 //0.3 //0.13 // 0.02 // x scaling (linked)
+			coefwave[0][0] = 1e-4//1e-4 // lnG/Tbase (linked)
+			coefwave[1][0] = 0.2 //0.3 //0.13 // 0.02 // x scaling (linked)
 		endif
 		
 		// Set index 1 == 1 to hold the value  
@@ -690,6 +691,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			if (global_fit_conductance == 1)
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
+				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
+				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // linear
 			else
 				coefwave[4 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
@@ -819,79 +822,43 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	
 	
 ////////// high gamma low field ////////////////////////////////////////////////////
-//	if (cmpstr(datnum, "6079") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -3000; cs_max_val = 1074
-//	elseif (cmpstr(datnum, "6088") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -3000; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "6085") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -3000; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "6082") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -3000; cs_max_val = 2000
 	if (cmpstr(datnum, "6079") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
+		dot_min_val = -2000; dot_max_val = 700
 		cs_min_val = -3000; cs_max_val = 1074
 	elseif (cmpstr(datnum, "6088") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
+		dot_min_val = -2000; dot_max_val = 700
 		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6085") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
+		dot_min_val = -2000; dot_max_val = 700
 		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6082") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
+		dot_min_val = -2000; dot_max_val = 700
 		cs_min_val = -3000; cs_max_val = 2000
 ////////// mid gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
+		dot_min_val = -1400; dot_max_val = 1400
 		cs_min_val = -1000; cs_max_val = 1430
 	elseif (cmpstr(datnum, "6089") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
+		dot_min_val = -1400; dot_max_val = 1400
 		cs_min_val = -1873; cs_max_val = 980
 	elseif (cmpstr(datnum, "6086") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
+		dot_min_val = -1400; dot_max_val = 1400
 		cs_min_val = -2000; cs_max_val = 1286
 	elseif (cmpstr(datnum, "6083") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
+		dot_min_val = -1400; dot_max_val = 1400
 		cs_min_val = -1667; cs_max_val = 967
-//	elseif (cmpstr(datnum, "6080") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -1000; cs_max_val = 1430
-//	elseif (cmpstr(datnum, "6089") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -1873; cs_max_val = 980
-//	elseif (cmpstr(datnum, "6086") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -3000; cs_max_val = 1286
-//	elseif (cmpstr(datnum, "6083") == 0)
-//		dot_min_val = -2000; dot_max_val = 1000
-//		cs_min_val = -1667; cs_max_val = 967
 ////////// low gamma low field  ////////////////////////////////////////////////////
-//	elseif (cmpstr(datnum, "6081") == 0)
-//		dot_min_val = -500; dot_max_val = 200
-//		cs_min_val = -2000; cs_max_val = 1000
-//	elseif (cmpstr(datnum, "6090") == 0)
-//		dot_min_val = -500; dot_max_val = 200
-//		cs_min_val = -2000; cs_max_val = 1000
-//	elseif (cmpstr(datnum, "6087") == 0)
-//		dot_min_val = -750; dot_max_val = 200
-//		cs_min_val = -2000; cs_max_val = 500
-//	elseif (cmpstr(datnum, "6084") == 0)
-//		dot_min_val = -750; dot_max_val = 300
-//		cs_min_val = -2000; cs_max_val = 500
 	elseif (cmpstr(datnum, "6081") == 0)
-		dot_min_val = -800; dot_max_val = 800
+		dot_min_val = -300; dot_max_val = 200
 		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6090") == 0)
-		dot_min_val = -800; dot_max_val = 800
+		dot_min_val = -400; dot_max_val = 200
 		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6087") == 0)
-		dot_min_val = -800; dot_max_val = 800
+		dot_min_val = -500; dot_max_val = 500
 		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6084") == 0)
-		dot_min_val = -800; dot_max_val = 800
+		dot_min_val = -600; dot_max_val = 600
 		cs_min_val = -2000; cs_max_val = 1000
 ////////// high gamma high field ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6100") == 0)
@@ -957,10 +924,13 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	///// CONDUCTANCE /////
 	////// high gamma /////
 	elseif (cmpstr(datnum, "699") == 0)
+		dot_min_val = -3000; dot_max_val = 1000
 		cs_min_val = -1689; cs_max_val = 2500
 	elseif (cmpstr(datnum, "695") == 0)
+		dot_min_val = -3000; dot_max_val = 1000
 		cs_min_val = -2500; cs_max_val = 2500
 	elseif (cmpstr(datnum, "691") == 0)
+		dot_min_val = -3000; dot_max_val = 1000
 		cs_min_val = -2500; cs_max_val = 2500
 ////// mid-high gamma /////
 	elseif (cmpstr(datnum, "698") == 0)
@@ -974,13 +944,13 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -1000; cs_max_val = 1500
 ////// mid-weak gamma /////
 	elseif (cmpstr(datnum, "697") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1000
+		dot_min_val = -1000; dot_max_val = 400
+		cs_min_val = -750; cs_max_val = 750
 	elseif (cmpstr(datnum, "693") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
+		dot_min_val = -1000; dot_max_val = 400
 		cs_min_val = -750; cs_max_val = 750
 	elseif (cmpstr(datnum, "689") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
+		dot_min_val = -1000; dot_max_val = 400
 		cs_min_val = -1000; cs_max_val = 1000
 ////// weak gamma /////
 	elseif (cmpstr(datnum, "696") == 0)
@@ -1116,6 +1086,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
 			DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
 		endif
+	else
+		build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1)
+		options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
+		DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
 	endif
 	
 	ModifyGraph lsize=2,rgb(FitY)=(65535,16385,55749),rgb(FitY#1)=(65535,16385,55749),rgb(FitY#2)=(65535,16385,55749),rgb(FitY#3)=(65535,16385,55749)
@@ -1251,15 +1225,16 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 				cond_fit_name = "fit_" + cond_data_name
 				cond_coef_name = "coef_" + cond_data_name
 				
-				make/o /n=6 $cond_coef_name = 0 
+				make/o /n=7 $cond_coef_name = 0 
 				wave cond_coef = $cond_coef_name
 				cond_coef[0,4] = cs_coef[p]
 				cond_coef[4] = 1
 				cond_coef[5] = 0
+				cond_coef[6] = 0
 				
 				duplicate /o $cond_data_name $cond_fit_name
 	
-				FuncFit/Q/TBOX=768/H="110100" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
+				FuncFit/Q/TBOX=768/H="1101000" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name
 			else
 				cond_fit_name = "Gfit_" + cond_data_name
 			endif
@@ -1306,7 +1281,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			
 			
 			FuncFit/Q/TBOX=768/H="11010110" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
-			FuncFit/Q/TBOX=768/H="11010010" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name
+			FuncFit/Q/TBOX=768/H="11010110" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name /M=cold_entropy_mask_wave
+			FuncFit/Q/TBOX=768/H="11010010" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name /M=cold_entropy_mask_wave
 			FuncFit/Q/TBOX=768/H="11010000" fitfunc_nrgctAAO cold_entropy_coef $cold_entropy_data_name /D=$cold_entropy_fit_name /M=cold_entropy_mask_wave
 			
 			
@@ -1514,8 +1490,9 @@ Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc // original negative
 	// coef[3]: ln(T/Tbase) for different waves
 	// coef[4]: peak height
 	// coef[5]: const offset
+	// coef[6]: linear
 	
-	yw = pw[5] + pw[4] * interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
+	yw = pw[4] * interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[5] + pw[6]*xw
 end
 
 
@@ -1535,24 +1512,6 @@ Function fitfunc_nrgctAAO(pw, yw, xw) : FitFunc
 	// coef[7]: amplitude
 	
 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
-end
-
-
-
-Function fitfunc_nrgctAAO_tbasevary(pw, yw, xw) : FitFunc
-	WAVE pw, yw, xw
-	wave nrg = occ_nrg
-	// coef[0]: Tbase --linked
-	// coef[1]: x-scaling -- linked
-	// coef[2]: x-offset
-	// coef[3]: gamma -- linked
-	// coef[4]: const offset
-	// coef[5]: linear
-	// coef[6]: quadratic
-	// coef[7]: amplitude
-	// coef[8]: Tmeasure
-	
-	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (ln(pw[3]/pw[0]) + ln(pw[0]/pw[8]))) + pw[4] + pw[5]*xw + pw[6]*xw^2
 end
 
 
