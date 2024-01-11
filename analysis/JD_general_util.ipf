@@ -323,7 +323,7 @@ function translate_wave_by_occupation(wave1, wave2)
 	
 	variable num_rows_wave1 = dimsize(wave1_ref, 0)
 	
-	print wave1_name, gate_val_half
+//	print wave1_name, gate_val_half
 	
 	SetScale/I x (wave1_x_wave[0] - gate_val_half), (wave1_x_wave[num_rows_wave1 - 1] - gate_val_half), $wave1_name
 
