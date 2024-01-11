@@ -1092,6 +1092,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
 		endif
 	else
+		///// allow linear term to conduction fits
 //		build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1)
 //		options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
 //		DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
@@ -1099,7 +1100,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	ModifyGraph lsize=2,rgb(FitY)=(65535,16385,55749),rgb(FitY#1)=(65535,16385,55749),rgb(FitY#2)=(65535,16385,55749),rgb(FitY#3)=(65535,16385,55749)
 
-//	print "Base T = ",(GFin.CoefWave[0][0]),"mK :: Gamma/T = ", (GFin.CoefWave[3][0])/(GFin.CoefWave[0][0])
 	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ", (exp(GFin.CoefWave[0][0]))
 
 	variable /g GF_chisq
@@ -1133,6 +1133,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	Display; KillWindow /Z global_fit; DoWindow/C/O global_fit
 	Display; KillWindow /Z global_fit_entropy; DoWindow/C/O global_fit_entropy
+	
+	
 	for(i=0; i<numwvs; i++)
 		
 		///// getting correct colour for plot /////
@@ -1141,6 +1143,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		green = str2num(stringfromlist(1, colour, ","))
 		blue = str2num(stringfromlist(2, colour, ","))
 		
+		
+		//////////////////////////////////////////
+		///// Fitting Charge Transition data /////
+		//////////////////////////////////////////
 		if (global_fit_conductance == 1) // if fitting conductance, use conductance parameters to fit charge transitions
 			cs_coef_name = "coef_" + stringfromlist(i,data.occ_wvlist)
 			make/o /n=9 $cs_coef_name = 0 // Make coefficient wave for occupation fits
@@ -1157,20 +1163,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			
 			cs_fit_name = "fit_" + cs_data_name
 			duplicate /o $cs_data_name $cs_fit_name
-			
-			// give data for full x-range but only fit within mask
-//			FuncFit/Q/H="11010110"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
-//			FuncFit/Q/H="11010010"/X=1 fitfunc_nrgctAAO cs_coef cs_data  /M=$(stringfromlist(i,data.occ_maskwvlist)) /D=$cs_fit_name
-			
-			// give data for x-range within fit mask
-			[minx, maxx] = find_overlap_mask($(stringfromlist(i,data.occ_maskwvlist)), $(stringfromlist(i,data.occ_maskwvlist)))	
-			delete_points_from_x($cs_fit_name, minx, maxx)
-//			duplicate /o $cs_data_name cs_data
-//			wave cs_data
-//			delete_points_from_x(cs_data, minx, maxx)
-			
 
-//
 //
 //			if (i==0)
 ////				cs_coef = {1.9339,0.0038416,-700.86,0,1.0716,6.3449e-06,-1.0044e-10,-0.058078,0}
@@ -1184,11 +1177,10 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //				FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 //			endif
 //
-			FuncFit/Q/H="110101101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist))  /D
+			FuncFit/Q/H="110101101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			FuncFit/Q/H="110100101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			FuncFit/Q/H="110100000" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="110100000" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 
 
 		else 
@@ -1198,11 +1190,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_fit_name = "Gfit_" + cs_data_name
 		endif
 			///// add charge transition ot the graph /////
-//		appendtograph /W=global_fit /r cs_data
-//		ModifyGraph /W=global_fit mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
-//		appendtograph /W=global_fit /r $cs_fit_name
-//		ModifyGraph /W=global_fit mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(red,green,blue)
-//	
 		total_cs_chisq += V_chisq // sum the chisq from each fit
 			
 		
@@ -1210,10 +1197,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		///// Creating Occupation data /////
 		////////////////////////////////////
 		// charge transition coefficients are stored in cs_coef
-//		wave occ_coef
-//		duplicate /o cs_coef occ_coef
-		// need to force linear, quadratic terms to zero 
-//		occ_coef[4]=0; occ_coef[5]=0; occ_coef[6]=0; occ_coef[7]=1;
 		
 		// creating occupation data and fit
 		occ_data_name = cs_data_name + "_occ"
@@ -1225,13 +1208,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		// calculating occupation data
 		create_x_wave($occ_data_name)
 		wave x_wave
-//		fitfunc_nrgctAAO(occ_coef, $occ_data_name, x_wave)
 		fitfunc_ct_to_occ(cs_coef, $occ_data_name, x_wave)
 		
 		// calculating occupation fit
-		create_x_wave($occ_fit_name)
-		wave x_wave
-//		fitfunc_nrgctAAO(occ_coef, $occ_fit_name, x_wave)
 		fitfunc_nrgocc(cs_coef, $occ_fit_name)	
 			
 		///// add occupation to graph /////
@@ -1400,11 +1379,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			duplicate /o $cold_entropy_fit_name $entropy_fit_name
 			wave entropy_fit = $entropy_fit_name
 			
-//			FuncFit/Q/H="11111110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
-		
-//			entropy_y_mul = wavemax(entropy_fit,  pnt2x(entropy_fit, 9*dimsize(entropy_fit, 0)/20), pnt2x(entropy_fit, 19*dimsize(entropy_fit, 0)/20))
-//			entropy_fit /= entropy_y_mul
 
 			AppendToGraph /W=global_fit_entropy $entropy_fit_name
 			ModifyGraph /W=global_fit_entropy mode($entropy_fit_name)=0, lsize($entropy_fit_name)=2//,rgb($entropy_fit_name)=(0,0,0)
