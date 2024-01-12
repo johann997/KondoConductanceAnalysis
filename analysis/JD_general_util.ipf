@@ -169,16 +169,16 @@ return [minx, maxx]
 end
 
 
-function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_interp, wave_to_duplicate])
+function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_interp, xwave_to_duplicate])
 	string wavename_to_interp
 	wave base_wave_to_interp
 	variable numpts_to_interp
-	wave wave_to_duplicate
+	wave xwave_to_duplicate
 	// interpolates wave_to_interp and adds "_interp" to the end
 	// if numpts_to_interp is used then more points of wave_to_interp are increased
-	// if wave_to_duplicate is used then x wave from this wave is used for wavename_to_interp
+	// if xwave_to_duplicate is used then x wave from this wave is used for wavename_to_interp
 	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
-	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
+	// e.g. interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, xwave_to_duplicate=$cond_vs_occ_data_wave_name_x)
 	
 	numpts_to_interp = paramisdefault(numpts_to_interp) ? 0 : numpts_to_interp // default 0 :: i.e. turned off
 
@@ -192,7 +192,7 @@ function interpolate_wave(wavename_to_interp, base_wave_to_interp, [numpts_to_in
 		setscale /I x x_wave[0], x_wave[INF], $wavename_to_interp
 		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
 	else
-		duplicate /o wave_to_duplicate $wavename_to_interp
+		duplicate /o xwave_to_duplicate $wavename_to_interp
 		Interpolate2/T=1/E=2/Y=$wavename_to_interp /I=3 base_wave_to_interp
 	endif
 end

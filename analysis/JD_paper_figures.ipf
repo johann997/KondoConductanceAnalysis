@@ -2022,29 +2022,29 @@ endmacro
 
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
-////	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-////	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
-//	
-////	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
-//	
-////	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
-////	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
-//	string e_temps = "23;100;300;500"
-//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
-//	
-
-
-//
-//	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
-	string e_temps = "22.5;275;500"
-//	string e_temps = "15;275;500"
-	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
-//	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
-//	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
-//	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
-	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
+	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+//	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
+//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
+//	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
+	
+//	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
+//	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
+	string e_temps = "22.5;100;300;500"
+	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	
+
+
+////
+//////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
+//	string e_temps = "22.5;275;500"
+////	string e_temps = "15;275;500"
+//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+////	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
+////	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
+//	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
+////	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
+//	
 	
 	
 	
@@ -2146,7 +2146,6 @@ function figure_2_conductance()
 		///// interpolating data waves /////
 		////////////////////////////////////
 		variable minx, maxx
-//		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
 		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(occ_avg+"_mask"))	
 			
 		// interpolating occupation to have higher density of points
@@ -2154,49 +2153,36 @@ function figure_2_conductance()
 		
 		duplicate /o $occ_avg $cond_vs_occ_data_wave_name_x
 //		interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
-		
+		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
+
 		// interpolating conduction to have data at same x points as occuptaion data
 		string cond_vs_occ_data_wave_name_y = cond_avg + "_interp"
-		interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, wave_to_duplicate=$cond_vs_occ_data_wave_name_x)
+		interpolate_wave(cond_vs_occ_data_wave_name_y, $cond_avg, xwave_to_duplicate=$cond_vs_occ_data_wave_name_x)
 		
-		// deleting points outside of mask
-		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
-		delete_points_from_x($cond_vs_occ_data_wave_name_y, minx, maxx)
-		
+//		// deleting points outside of mask
+//		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
+//		delete_points_from_x($cond_vs_occ_data_wave_name_y, minx, maxx)
+//		
 		
 		///////////////////////////////////
 		///// interpolating fit waves /////
-		///////////////////////////////////
-		///// using the fit waves /////
-//		string cond_vs_occ_fit_wave_name_x = occ_avg_fit + "_interp"
-//		
-//		duplicate /o $occ_avg_fit $cond_vs_occ_fit_wave_name_x
-////		interpolate_wave(cond_vs_occ_fit_wave_name_x, $occ_avg_fit, numpts_to_interp=10000)
-//		
-//		string cond_vs_occ_fit_wave_name_y = cond_avg_fit + "_interp"
-//		
-//		delete_points_from_x($cond_vs_occ_fit_wave_name_x, minx, maxx)
-//		interpolate_wave(cond_vs_occ_fit_wave_name_y, $cond_avg_fit, wave_to_duplicate=$cond_vs_occ_fit_wave_name_x)
-//
-////		delete_points_from_x($cond_vs_occ_fit_wave_name_x, minx, maxx)
-//		delete_points_from_x($cond_vs_occ_fit_wave_name_y, minx, maxx)
-//		
-		
-		
+		///////////////////////////////////		
 //		///// re-finding fits from NRG /////
 		string cond_vs_occ_fit_wave_name_x = occ_avg_fit + "_interp"
 		string cond_vs_occ_fit_wave_name_y = cond_avg_fit + "_interp"
 		
-		// calculating occ
-		duplicate /o $occ_avg $cond_vs_occ_fit_wave_name_x
+		// pulling x-wave from NRG
+		wave g_nrg
+		create_x_wave(g_nrg)
+		wave x_wave
+		
+		// pulling NRG occ
+		duplicate /o x_wave $cond_vs_occ_fit_wave_name_x
 		fitfunc_rawnrgocc($coef_trans, $cond_vs_occ_fit_wave_name_x)
 		
-		// calculating occcond
-		duplicate /o $occ_avg $cond_vs_occ_fit_wave_name_y
+		// pulling NRG cond
+		duplicate /o x_wave $cond_vs_occ_fit_wave_name_y
 		fitfunc_rawnrgcond($coef_cond, $cond_vs_occ_fit_wave_name_y)
-		
-		
-		
 		
 		////// plotting
 		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
@@ -2713,7 +2699,7 @@ function figure_2_entropy()
 			
 			// interpolating conduction to have data at same x points as occuptaion data
 			string dndt_vs_occ_data_wave_name_y = dndt_avg + "_interp"
-			interpolate_wave(dndt_vs_occ_data_wave_name_y, $dndt_avg, wave_to_duplicate=$dndt_vs_occ_data_wave_name_x)
+			interpolate_wave(dndt_vs_occ_data_wave_name_y, $dndt_avg, xwave_to_duplicate=$dndt_vs_occ_data_wave_name_x)
 			
 			// deleting points outside of mask
 	//		delete_points_from_x($dndt_vs_occ_data_wave_name_x, minx, maxx)
@@ -2729,7 +2715,7 @@ function figure_2_entropy()
 //			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_occ_avg_fit, numpts_to_interp=10000)
 			
 			string dndt_vs_occ_fit_wave_name_y = dndt_avg_fit + "_interp"
-			interpolate_wave(dndt_vs_occ_fit_wave_name_y, $dndt_avg_fit, wave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
+			interpolate_wave(dndt_vs_occ_fit_wave_name_y, $dndt_avg_fit, xwave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
 	
 	//		delete_points_from_x($dndt_vs_occ_fit_wave_name_x, minx, maxx)
 	//		delete_points_from_x($dndt_vs_occ_fit_wave_name_y, minx, maxx)
@@ -2740,7 +2726,7 @@ function figure_2_entropy()
 //			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_nrg_avg_fit, numpts_to_interp=10000)
 //			
 			string dndt_nrg_vs_occ_fit_wave_name_y = dndt_nrg_avg_fit + "_interp"
-			interpolate_wave(dndt_nrg_vs_occ_fit_wave_name_y, $dndt_nrg_avg_fit, wave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
+			interpolate_wave(dndt_nrg_vs_occ_fit_wave_name_y, $dndt_nrg_avg_fit, xwave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
 			
 	
 			AppendToGraph /W=figure_2c /L=left/B=bottom $dndt_vs_occ_data_wave_name_y vs $dndt_vs_occ_data_wave_name_x

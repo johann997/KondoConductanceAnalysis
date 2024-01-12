@@ -828,17 +828,17 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	
 ////////// high gamma low field ////////////////////////////////////////////////////
 	if (cmpstr(datnum, "6079") == 0)
-		dot_min_val = -2000; dot_max_val = 700
-		cs_min_val = -3000; cs_max_val = 1074
+		dot_min_val = -1000; dot_max_val = 650
+		cs_min_val = -1500; cs_max_val = 1050
 	elseif (cmpstr(datnum, "6088") == 0)
-		dot_min_val = -2000; dot_max_val = 700
-		cs_min_val = -3000; cs_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 650
+		cs_min_val = -1500; cs_max_val = 1050
 	elseif (cmpstr(datnum, "6085") == 0)
-		dot_min_val = -2000; dot_max_val = 700
-		cs_min_val = -3000; cs_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 650
+		cs_min_val = -1500; cs_max_val = 1050
 	elseif (cmpstr(datnum, "6082") == 0)
-		dot_min_val = -2000; dot_max_val = 700
-		cs_min_val = -3000; cs_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 650
+		cs_min_val = -1500; cs_max_val = 1050
 ////////// mid gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
 		dot_min_val = -1400; dot_max_val = 1400
@@ -929,13 +929,13 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	///// CONDUCTANCE /////
 	////// high gamma /////
 	elseif (cmpstr(datnum, "699") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 800
 		cs_min_val = -1400.7; cs_max_val = 1300
 	elseif (cmpstr(datnum, "695") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 800
 		cs_min_val = -2500; cs_max_val = 2500
 	elseif (cmpstr(datnum, "691") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
+		dot_min_val = -2000; dot_max_val = 800
 		cs_min_val = -2500; cs_max_val = 2500
 ////// mid-high gamma /////
 	elseif (cmpstr(datnum, "698") == 0)
@@ -1149,15 +1149,18 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		//////////////////////////////////////////
 		if (global_fit_conductance == 1) // if fitting conductance, use conductance parameters to fit charge transitions
 			cs_coef_name = "coef_" + stringfromlist(i,data.occ_wvlist)
-			make/o /n=9 $cs_coef_name = 0 // Make coefficient wave for occupation fits
-			wave curr_coef = $("coef_" + stringfromlist(i,data.g_wvlist))
+			make/o /n=10 $cs_coef_name = 0 // Make coefficient wave for occupation fits
 			wave cs_coef = $cs_coef_name
+			
+			wave curr_coef = $("coef_" + stringfromlist(i,data.g_wvlist))
 			
 			cs_data_name = stringfromlist(i,data.occ_wvlist)
 			wave cs_data = $cs_data_name
 			
 			// fit cs data using gamma and theta from conductance fits
-			cs_coef[0,3] = curr_coef[p]; wavestats /q cs_data; cs_coef[4]=v_avg; cs_coef[5]=0; cs_coef[6]=0; cs_coef[7]=-abs((v_min-v_max)); cs_coef[8]=0;  
+			cs_coef[0,3] = curr_coef[p]; wavestats /q cs_data; 
+			cs_coef[4]=v_avg; cs_coef[5]=0; cs_coef[6]=0; cs_coef[7]=-abs((v_min-v_max)); cs_coef[8]=0; cs_coef[9]=0;  
+			
 			create_x_wave(cs_data)
 			wave x_wave
 			
@@ -1176,13 +1179,20 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //				FuncFit/Q/H="110100101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 //				FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 //			endif
-//
-			FuncFit/Q/H="110101101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-			FuncFit/Q/H="110100101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-			FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-			FuncFit/Q/H="110100000" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-
-
+////
+//			FuncFit/Q/H="110101101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="110100101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="110100000" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			
+			///// with capacitance change
+			FuncFit/Q/H="1101011011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			FuncFit/Q/H="1101001011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			FuncFit/Q/H="1101001010" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="1111101110" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="1101000010" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="1101000000" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			
 		else 
 			wave cs_coef = $("coef_" + stringfromlist(i,data.occ_wvlist))
 			cs_data_name = stringfromlist(i,data.occ_wvlist)
@@ -1472,12 +1482,12 @@ Endstructure
 /////////////////////////////////
 ///// conductance functions /////
 /////////////////////////////////
-Function fitfunc_rawnrgcond(pw, yw) : FitFunc
+Function fitfunc_RAWnrgcond(pw, yw) : FitFunc
+	///// RAW NRG (no shift) ///// 
 	Wave pw, yw
 	wave nrg=g_nrg
 	
-//	yw = 1 *  interp2d(nrg, (x), (pw[0]+pw[3]))
-	yw = pw[4] *  interp2d(nrg, (x), (pw[0]+pw[3]))
+	yw = pw[4] *  interp2d(nrg, x, (pw[0]+pw[3]))
 
 End
 
@@ -1495,6 +1505,42 @@ Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc // original negative
 	
 	yw = pw[4] * interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[5] + pw[6]*xw
 end
+
+
+////////////////////////////////
+///// occupation functions /////
+////////////////////////////////
+Function fitfunc_RAWnrgocc(pw, yw) : FitFunc
+	///// RAW NRG (no shift) ///// 
+	WAVE pw, yw
+	wave nrg=occ_nrg
+	
+	yw = interp2d(nrg, x, (pw[0]+pw[3]))
+end
+
+Function fitfunc_nrgocc(pw, yw) : FitFunc
+	// calculating NRG occupation fit to occupation data
+	WAVE pw, yw
+	wave nrg=occ_nrg
+	
+	yw = interp2d(nrg, (pw[1]*(x-pw[2])), (pw[0]+pw[3]))
+end
+
+Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
+	// calculating data occupation from charge transition
+	WAVE pw, yw, xw
+	wave nrg=occ_nrg
+	
+//	yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3
+// 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
+
+	duplicate /o yw temp_yw
+	
+	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2 + pw[8]*xw[p]^3)
+	yw[] = yw[p]/(pw[7] + pw[9]*xw)
+	
+end
+
 
 
 ////////////////////////////////
@@ -1516,35 +1562,24 @@ Function fitfunc_nrgctAAO(pw, yw, xw) : FitFunc
 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3
 end
 
-
-Function fitfunc_rawnrgocc(pw, yw) : FitFunc
-	///// RAW NRG ///// 
-	WAVE pw, yw
-	wave nrg=occ_nrg
-	
-	yw = interp2d(nrg, (x), (pw[0]+pw[3]))
-end
-
-
-Function fitfunc_nrgocc(pw, yw) : FitFunc
-	WAVE pw, yw
-	wave nrg=occ_nrg
-	
-	yw = interp2d(nrg, (pw[1]*(x-pw[2])), (pw[0]+pw[3]))
-//	yw = interp2d(nrg, x, (pw[0]+pw[3]))
-end
-
-
-Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
+Function fitfunc_nrgctAA1(pw, yw, xw) : FitFunc
 	WAVE pw, yw, xw
-	wave nrg=occ_nrg
+	wave nrg = occ_nrg
+	// coef[0]: lnG/T for Tbase -- linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: ln(T/Tbase) for different waves
+	// coef[4]: const offset
+	// coef[5]: linear
+	// coef[6]: quadratic
+	// coef[7]: amplitude
+	// coef[8]: cubic
+	// coef[9]: capacitance change
 	
-//	yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2
-	
-	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2 + pw[8]*xw[p]^3)
-	yw[] = yw[p]/pw[7]
-	
+	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
 end
+
+
 
 
 /////////////////////////////
