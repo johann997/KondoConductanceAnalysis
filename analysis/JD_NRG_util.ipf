@@ -648,8 +648,16 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 
 			
 			if (global_fit_conductance == 1)
-				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
-				coefwave[6 + i*(numcoefs-numlinks)][1] = 0 // linear
+			
+				if (linear_term == 0)
+					coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // constant offset
+					coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // constant offset
+				endif
+			
+				if (linear_term != 0)
+					coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
+					coefwave[6 + i*(numcoefs-numlinks)][1] = 0 // linear
+				endif
 			else
 				if (linear_term != 0)
 					coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
@@ -673,7 +681,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
 			coefwave[0][0] = 3.3 //3.0 //3.4 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.0055 // 0.01 // 0.0028 // x scaling (linked)
+			coefwave[1][0] = 0.01 // 0.01 // 0.0045 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] =  1.5 //0.1 //1 // lnG/T for Tbase (linked)
@@ -828,16 +836,16 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	
 ////////// high gamma low field ////////////////////////////////////////////////////
 	if (cmpstr(datnum, "6079") == 0)
-		dot_min_val = -1000; dot_max_val = 650
+		dot_min_val = -9000; dot_max_val = 650
 		cs_min_val = -1500; cs_max_val = 1050
 	elseif (cmpstr(datnum, "6088") == 0)
-		dot_min_val = -1000; dot_max_val = 650
+		dot_min_val = -9000; dot_max_val = 650
 		cs_min_val = -1500; cs_max_val = 1050
 	elseif (cmpstr(datnum, "6085") == 0)
-		dot_min_val = -1000; dot_max_val = 650
+		dot_min_val = -9000; dot_max_val = 650
 		cs_min_val = -1500; cs_max_val = 1050
 	elseif (cmpstr(datnum, "6082") == 0)
-		dot_min_val = -1000; dot_max_val = 650
+		dot_min_val = -9000; dot_max_val = 650
 		cs_min_val = -1500; cs_max_val = 1050
 ////////// mid gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
@@ -929,23 +937,24 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	///// CONDUCTANCE /////
 	////// high gamma /////
 	elseif (cmpstr(datnum, "699") == 0)
-		dot_min_val = -2000; dot_max_val = 800
-		cs_min_val = -1400.7; cs_max_val = 1300
+		dot_min_val = -2000; dot_max_val = 1000
+//		cs_min_val = -1400.7; cs_max_val = 1300
+		cs_min_val = -1300; cs_max_val = 1300
 	elseif (cmpstr(datnum, "695") == 0)
-		dot_min_val = -2000; dot_max_val = 800
+		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -2500; cs_max_val = 2500
 	elseif (cmpstr(datnum, "691") == 0)
-		dot_min_val = -2000; dot_max_val = 800
+		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -2500; cs_max_val = 2500
 ////// mid-high gamma /////
 	elseif (cmpstr(datnum, "698") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
-		cs_min_val = -1500; cs_max_val = 1500
+		dot_min_val = -1000; dot_max_val = 400
+		cs_min_val = -800; cs_max_val = 800
 	elseif (cmpstr(datnum, "694") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
-		cs_min_val = -1500; cs_max_val = 1500
+		dot_min_val = -1000; dot_max_val = 400
+		cs_min_val = -1000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "690") == 0)
-		dot_min_val = -3000; dot_max_val = 3000
+		dot_min_val = -1000; dot_max_val = 400
 		cs_min_val = -1000; cs_max_val = 1500
 ////// mid-weak gamma /////
 	elseif (cmpstr(datnum, "697") == 0)
@@ -1092,8 +1101,14 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
 		endif
 	else
-		///// allow linear term to conduction fits
-//		build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1)
+//		///// FIRST ALLOW FOR CONSTANT OFFSET /////
+//		build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1, linear_term=0)
+//		options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
+//		DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
+//
+//		
+//		///// SECOND ALLOW FOR LINEAR TERM /////
+//		build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1, linear_term=1)
 //		options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
 //		DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
 	endif
@@ -1188,10 +1203,15 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			///// with capacitance change
 			FuncFit/Q/H="1101011011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			FuncFit/Q/H="1101001011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+			FuncFit/Q/H="1111101110" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			FuncFit/Q/H="1101001010" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="1111101110" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="1101000010" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="1101000000" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+
+
+//			///// without capacitance change
+//			FuncFit/Q/H="1101011011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="1101001011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="1101000011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
+//			FuncFit/Q/H="1101000001" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			
 		else 
 			wave cs_coef = $("coef_" + stringfromlist(i,data.occ_wvlist))
@@ -1529,15 +1549,12 @@ end
 Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
 	// calculating data occupation from charge transition
 	WAVE pw, yw, xw
-	wave nrg=occ_nrg
 	
 //	yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3
 // 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
-
-	duplicate /o yw temp_yw
 	
 	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2 + pw[8]*xw[p]^3)
-	yw[] = yw[p]/(pw[7] + pw[9]*xw)
+	yw[] = yw[p]/(pw[7] + pw[9]*xw[p])
 	
 end
 

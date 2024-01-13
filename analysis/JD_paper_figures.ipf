@@ -2022,31 +2022,27 @@ endmacro
 
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
-//	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
-	
-//	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
-	
-//	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
-//	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
-	string e_temps = "22.5;100;300;500"
-	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
-	
-
-
-////
-//////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
-//	string e_temps = "22.5;275;500"
-////	string e_temps = "15;275;500"
-//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
-////	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
-////	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
-//	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
-////	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
+//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+////	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
+////	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 //	
+////	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
+//	
+////	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
+////	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
+//	string e_temps = "22.5;100;300;500"
+//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	
 	
+////
+//	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
+	string e_temps = "22.5;275;500"
+//	string e_temps = "15;275;500"
+	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+//	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
+//	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
+	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
+//	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
 	
 	
 	
@@ -2153,7 +2149,8 @@ function figure_2_conductance()
 		
 		duplicate /o $occ_avg $cond_vs_occ_data_wave_name_x
 //		interpolate_wave(cond_vs_occ_data_wave_name_x, $occ_avg, numpts_to_interp=10000)
-		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
+
+//		delete_points_from_x($cond_vs_occ_data_wave_name_x, minx, maxx)
 
 		// interpolating conduction to have data at same x points as occuptaion data
 		string cond_vs_occ_data_wave_name_y = cond_avg + "_interp"
