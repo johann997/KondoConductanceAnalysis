@@ -115,7 +115,8 @@ function get_scanvars(datnum)
 	wave/t sc_scanvars
 	
 	HDF5OpenFile /P=data fileid as "dat"+num2str(datnum)+".h5"
-	HDF5LoadData /Q/O/Type=1/N=sc_sweeplogs /A="scan_vars" fileid, "metadata"
+//	HDF5LoadData /Q/O/Type=1/N=sc_sweeplogs /A="ScanVars" fileid, "metadata"
+	HDF5LoadData /Q/O/Type=1/N=sc_sweeplogs /A="sweep_logs" fileid, "metadata"
 	
 	variable scanvarsID
 	scanvarsID = JSON_Parse(sc_scanvars[0])

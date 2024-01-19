@@ -1136,7 +1136,7 @@ macro paper_v2_figure_3a()
 	
 	Label /W=paper_figure_3a left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
 	
-	Legend /W=paper_figure_3a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(dat6079_dot_cleaned_avg_scale_fig3a) Γ/T = 24.29\r\\s(dat6080_dot_cleaned_avg_scale_fig3a) Γ/T = 9.48\r\\s(dat6081_dot_cleaned_avg_scale_fig3a) Γ/T = 0.99"
+	Legend /W=paper_figure_3a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(dat6079_dot_cleaned_avg_scale_fig3a) Γ/T = 19.3\r\\s(dat6080_dot_cleaned_avg_scale_fig3a) Γ/T = 7.24\r\\s(dat6081_dot_cleaned_avg_scale_fig3a) Γ/T = 0.77"
 //	Legend /W=paper_figure_3a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(gfit_dat6079_dot_cleaned_avg_scale_fig3a) Γ/T = 24.29\r\\s(gfit_dat6080_dot_cleaned_avg_scale_fig3a) Γ/T = 9.48\r\\s(gfit_dat6081_dot_cleaned_avg_scale_fig3a) Γ/T = 0.99"
 
 	Label /W=paper_figure_3a bottom "Sweepgate (w.r.t N = 0.5) (mV)"
@@ -1147,7 +1147,7 @@ macro paper_v2_figure_3a()
 
 endmacro
 
-
+	
 
 macro paper_v2_figure_3b()
 // entropy 1281 1282 1283 1284
@@ -1485,7 +1485,7 @@ macro paper_v2_figure_4a()
 	Label /W=paper_figure_4a left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
 	
 //	Legend /W=paper_figure_4a /C/N=text0/J/F=0/A=LT "\\Zr080\\s(gfit_dat6079_dot_cleaned_avg_scale_fig4a) Γ/T = 24.29\r\\s(gfit_dat6080_dot_cleaned_avg_scale_fig4a) Γ/T = 9.48\r\\s(gfit_dat6081_dot_cleaned_avg_scale_fig4a) Γ/T = 0.99"
-	Legend /W=paper_figure_4a /C/N=text0/J/F=0/A=LT "\\Zr080\\s(dat6079_dot_cleaned_avg_scale_fig4a) Γ/T = 24.29\r\\s(dat6080_dot_cleaned_avg_scale_fig4a) Γ/T = 9.48\r\\s(dat6081_dot_cleaned_avg_scale_fig4a) Γ/T = 0.99"
+	Legend /W=paper_figure_4a /C/N=text0/J/F=0/A=LT "\\Zr080\\s(dat6079_dot_cleaned_avg_scale_fig4a) Γ/T = 19.3\r\\s(dat6080_dot_cleaned_avg_scale_fig4a) Γ/T = 7.24\r\\s(dat6081_dot_cleaned_avg_scale_fig4a) Γ/T = 0.77"
 
 //	Label /W=paper_figure_4a bottom "Sweepgate (centered by mid) (mV)"
 	
@@ -1936,7 +1936,7 @@ macro paper_v3_figure_3a()
 	Label /W=paper_figure_v3_3a left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
 	
 
-	Legend /W=paper_figure_v3_3a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(dat699_dot_cleaned_avg_scale_fig3a) Γ/T = 28.39\r\\s(dat698_dot_cleaned_avg_scale_fig3a) Γ/T = 20.30\r\\s(dat697_dot_cleaned_avg_scale_fig3a) Γ/T = 7.02\r\\s(dat696_dot_cleaned_avg_scale_fig3a) Γ/T = 3.45"
+	Legend /W=paper_figure_v3_3a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(dat699_dot_cleaned_avg_scale_fig3a) Γ/T = 27.6\r\\s(dat698_dot_cleaned_avg_scale_fig3a) Γ/T = 19.8\r\\s(dat697_dot_cleaned_avg_scale_fig3a) Γ/T = 7.1\r\\s(dat696_dot_cleaned_avg_scale_fig3a) Γ/T = 3.3"
 
 	Label /W=paper_figure_v3_3a bottom "Sweepgate (w.r.t N = 0.5) (mV)"
 	
@@ -2017,7 +2017,7 @@ macro paper_v3_figure_4a()
 	ModifyGraph /W=paper_figure_v3_4a mode(gfit_dat696_dot_cleaned_avg_scale_fig4a)=0, lsize(gfit_dat696_dot_cleaned_avg_scale_fig4a)=1, rgb(gfit_dat696_dot_cleaned_avg_scale_fig4a)=(0,0,0,49151)
 
 	Label /W=paper_figure_v3_4a left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
-	Legend /W=paper_figure_v3_4a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(dat699_dot_cleaned_avg_scale_fig4a) Γ/T = 28.39\r\\s(dat698_dot_cleaned_avg_scale_fig4a) Γ/T = 20.30\r\\s(dat697_dot_cleaned_avg_scale_fig4a) Γ/T = 7.02\r\\s(dat696_dot_cleaned_avg_scale_fig4a) Γ/T = 3.45"
+	Legend /W=paper_figure_v3_4a /C/N=text0/J/F=0/A=LT/X=73.00/Y=4.51 "\\Zr080\\s(dat699_dot_cleaned_avg_scale_fig4a) Γ/T = 27.6\r\\s(dat698_dot_cleaned_avg_scale_fig4a) Γ/T = 19.8\r\\s(dat697_dot_cleaned_avg_scale_fig4a) Γ/T = 7.1\r\\s(dat696_dot_cleaned_avg_scale_fig4a) Γ/T = 3.3"
 
 	SetAxis /W=paper_figure_v3_4a bottom 0,1
 
@@ -2025,7 +2025,9 @@ macro paper_v3_figure_4a()
 
 endmacro
 
-
+// 0.77 7.24 19.3 :: SUMMER
+	//3.3  7.1  19.8  27.6 :: AUTUMN
+	
 macro paper_v3_figure_1a()
 	Display; KillWindow /Z paper_figure_v3_1a; DoWindow/C/O paper_figure_v3_1a 
 	
@@ -2089,34 +2091,35 @@ endmacro
 
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
 //	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
 //	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 	
 //	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
-	string e_temps = "22.5;100;300;500"
+	string e_temps = "55;100;300;500"
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
-	
-	
-////
+	// 0.765173 7.2439 19.3344 :: SUMMER
+
+//
 ////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
-//	string e_temps = "22.5;275;500"
+//	string e_temps = "15;275;500"
 ////	string e_temps = "15;275;500"
 //	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
 //	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
 ////	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
 ////	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
 ////	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
-	
-	
+//	
+	//3.30077  7.09738  19.7605  27.6116 :: AUTUMN
 	
 	string colour, e_temp
 	variable red, green, blue
 	
 	int global_fit_conductance = 1
+	
 	
 	
 	
@@ -2545,22 +2548,24 @@ end
 function figure_2_entropy()
 
 	string gamma_type
+	
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
+	string e_temps = "22.5;100;300;500"
 //	string global_datnums = "6079;6088;6085;6082";  gamma_type = "high"// high gamma
 //	string global_datnums = "6080;6089;6086;6083";  gamma_type = "mid" // mid gamma
 //	string global_datnums = "6081;6090;6087;6084";  gamma_type = "low" // low gamma
 
-	string entropy_datnums = "6388"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"// high gamma
-//	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"// high gamma
+//	string entropy_datnums = "6388"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"; info_mask_waves("6388", base_wave_name="_cs_cleaned_avg")
+	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"; info_mask_waves("6385", base_wave_name="_cs_cleaned_avg")
 	
 //	string global_datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 //	string global_datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
 	
-	///// AUTUMN EXPERIMENT /////
-
+//	///// AUTUMN EXPERIMENT /////
+//	string e_temps = "55;90;275;400"
 //	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
-//	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"
+//	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"; info_mask_waves("1282", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
 //	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
@@ -2569,14 +2574,12 @@ function figure_2_entropy()
 //	string entropy_datnums = "1439"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 1000uV bias
 //	string entropy_datnums = "1473"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias :: symmetric
 
-//	string e_temps = "23;100;300;500"
-	string e_temps = "22.5;90;275;400"
 	
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 1
+	int global_fit_conductance = 0
 	int fit_conductance = 0
 	int fit_entropy = 1
 	
@@ -2603,8 +2606,8 @@ function figure_2_entropy()
 	string cond_avg, cond_avg_fit
 	string trans_avg, trans_avg_fit
 	string occ_avg, occ_avg_fit
-	string dndt_avg, dndt_avg_fit
-	string dndt_nrg_avg_fit
+	string dndt_avg, dndt_avg_fit, dndt_coef
+	string dndt_nrg_avg_fit, dndt_nrg_coef
 	string dndt_occ_avg, dndt_occ_avg_fit, dndt_occ_avg_coef
 	string entropy_avg, entropy_avg_fit
 	
@@ -2647,15 +2650,19 @@ function figure_2_entropy()
 		dndt_avg_fit = "fit_" + dndt_avg
 		dndt_nrg_avg_fit = "fit_nrg_" + dndt_avg
 		
+		dndt_coef = "coef_" + dndt_avg
+		dndt_nrg_coef = "coef_nrg_" + dndt_avg
+		
 		// setting dndt occupation names
 		dndt_occ_avg = "dat" + num2str(entropy_datnum) + "_cs_cleaned_avg_occ"
-		dndt_occ_avg_fit = "fit_" + dndt_occ_avg
-		
 		dndt_occ_avg_coef = "coef_dat" + num2str(entropy_datnum) + "_cs_cleaned_avg"
+		
+		dndt_occ_avg_fit = "fit_" + dndt_occ_avg
 		
 		// setting entropy names
 		entropy_avg = "dat" + num2str(entropy_datnum) + "_numerical_entropy_int_avg"
 		entropy_avg_fit = "fit_" + entropy_avg
+		
 
 		
 		legend_text = legend_text + "\\s(" + trans_avg_fit +  ") " +  e_temp + "mK\r"
@@ -2698,9 +2705,9 @@ function figure_2_entropy()
 			wave dndt_nrg_avg_fit_wav = $dndt_nrg_avg_fit
 			
 			variable dndt_offset = dndt_avg_fit_wav[0]
-			dndt_avg_wav -= dndt_offset
-			dndt_avg_fit_wav -= dndt_offset
-			dndt_nrg_avg_fit_wav -= dndt_offset
+//			dndt_avg_wav -= dndt_offset
+//			dndt_avg_fit_wav -= dndt_offset
+//			dndt_nrg_avg_fit_wav -= dndt_offset
 			
 			AppendToGraph /W=figure_2b /L=left/B=bottom $dndt_avg
 			ModifyGraph /W=figure_2b mode($dndt_avg)=2, lsize($dndt_avg)=1, rgb($dndt_avg)=(red,green,blue)
@@ -2720,7 +2727,7 @@ function figure_2_entropy()
 			
 			variable int_entropy_scale
 			
-			wave occ_coef = $dndt_occ_avg_coef
+			wave occ_coef = $dndt_coef
 			
 			int_entropy_scale = abs((1/(2*occ_coef[7]*8.617e-5*0.0067))*0.0225*8.617e-5*2*(occ_coef[1]))*50
 			
@@ -2752,8 +2759,8 @@ function figure_2_entropy()
 			////////////////////////////////////
 			///// interpolating data waves /////
 			////////////////////////////////////
-	//		variable minx, maxx
-	//		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
+			variable minx, maxx
+			[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(trans_avg+"_mask"))
 			
 			// interpolating occupation to have higher density of points
 			string dndt_vs_occ_data_wave_name_x = dndt_occ_avg + "_interp"
@@ -2766,32 +2773,54 @@ function figure_2_entropy()
 			interpolate_wave(dndt_vs_occ_data_wave_name_y, $dndt_avg, xwave_to_duplicate=$dndt_vs_occ_data_wave_name_x)
 			
 			// deleting points outside of mask
-	//		delete_points_from_x($dndt_vs_occ_data_wave_name_x, minx, maxx)
-	//		delete_points_from_x($dndt_vs_occ_data_wave_name_y, minx, maxx)
+			delete_points_from_x($dndt_vs_occ_data_wave_name_x, minx, maxx)
+			delete_points_from_x($dndt_vs_occ_data_wave_name_y, minx, maxx)
 			
 			
 			///////////////////////////////////
 			///// interpolating fit waves /////
 			///////////////////////////////////
-			string dndt_vs_occ_fit_wave_name_x = dndt_occ_avg_fit + "_interp"
-			
-			duplicate /o $dndt_occ_avg_fit $dndt_vs_occ_fit_wave_name_x
-//			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_occ_avg_fit, numpts_to_interp=10000)
-			
-			string dndt_vs_occ_fit_wave_name_y = dndt_avg_fit + "_interp"
-			interpolate_wave(dndt_vs_occ_fit_wave_name_y, $dndt_avg_fit, xwave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
-	
-	//		delete_points_from_x($dndt_vs_occ_fit_wave_name_x, minx, maxx)
-	//		delete_points_from_x($dndt_vs_occ_fit_wave_name_y, minx, maxx)
-	
-	
-			///// interpolating nrg fit wave /////
-//			string dndt_nrg_vs_occ_fit_wave_name_x = dndt_nrg_avg_fit + "_interp"
-//			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_nrg_avg_fit, numpts_to_interp=10000)
+//			///// version 1
+//			string dndt_vs_occ_fit_wave_name_x = dndt_occ_avg_fit + "_interp"
 //			
+//			duplicate /o $dndt_occ_avg_fit $dndt_vs_occ_fit_wave_name_x
+////			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_occ_avg_fit, numpts_to_interp=10000)
+//			
+//			string dndt_vs_occ_fit_wave_name_y = dndt_avg_fit + "_interp"
+//			interpolate_wave(dndt_vs_occ_fit_wave_name_y, $dndt_avg_fit, xwave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
+//	
+//				///// interpolating nrg fit wave /////
+////			string dndt_nrg_vs_occ_fit_wave_name_x = dndt_nrg_avg_fit + "_interp"
+////			interpolate_wave(dndt_vs_occ_fit_wave_name_x, $dndt_nrg_avg_fit, numpts_to_interp=10000)
+////			
+//			string dndt_nrg_vs_occ_fit_wave_name_y = dndt_nrg_avg_fit + "_interp"
+//			interpolate_wave(dndt_nrg_vs_occ_fit_wave_name_y, $dndt_nrg_avg_fit, xwave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
+//			
+
+			///// version 2
+	//		///// re-finding fits from NRG /////
+			string dndt_vs_occ_fit_wave_name_x = dndt_occ_avg_fit + "_interp"
+			string dndt_vs_occ_fit_wave_name_y = dndt_avg_fit + "_interp"
 			string dndt_nrg_vs_occ_fit_wave_name_y = dndt_nrg_avg_fit + "_interp"
-			interpolate_wave(dndt_nrg_vs_occ_fit_wave_name_y, $dndt_nrg_avg_fit, xwave_to_duplicate=$dndt_vs_occ_fit_wave_name_x)
 			
+			// pulling x-wave from NRG
+			wave dndt_nrg
+			create_x_wave(dndt_nrg)
+			wave x_wave
+			
+			// pulling NRG occ
+			duplicate /o x_wave $dndt_vs_occ_fit_wave_name_x
+			fitfunc_rawnrgocc($dndt_occ_avg_coef, $dndt_vs_occ_fit_wave_name_x)
+			
+			// pulling NRG dndt
+			duplicate /o x_wave $dndt_vs_occ_fit_wave_name_y
+			fitfunc_rawnrgdndt($dndt_coef, $dndt_vs_occ_fit_wave_name_y)
+			
+			// pulling NRG dndt
+			duplicate /o x_wave $dndt_nrg_vs_occ_fit_wave_name_y
+			fitfunc_rawnrgdndt($dndt_nrg_coef, $dndt_nrg_vs_occ_fit_wave_name_y)
+	
+
 	
 			AppendToGraph /W=figure_2c /L=left/B=bottom $dndt_vs_occ_data_wave_name_y vs $dndt_vs_occ_data_wave_name_x
 			AppendToGraph /W=figure_2c /L=left/B=bottom $dndt_vs_occ_fit_wave_name_y vs $dndt_vs_occ_fit_wave_name_x;
