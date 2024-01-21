@@ -848,6 +848,33 @@ macro paper_v2_figure_2b_strong()
 //	translate_wave_by_occupation(gfit_dat6085_dot_cleaned_avg_scale_fig2b, fit_dat6085_cs_cleaned_avg_occ_interp) 
 //	translate_wave_by_occupation(gfit_dat6082_dot_cleaned_avg_scale_fig2b, fit_dat6082_cs_cleaned_avg_occ_interp)  
 	
+	
+//	// scaling occupation fits
+//	create_x_wave(gfit_dat6079_dot_cleaned_avg_scale_fig2b)
+//	setscale /I x 1/coef_dat6079_cs_cleaned_avg[1]*x_wave[0]+coef_dat6079_cs_cleaned_avg[2], 1/coef_dat6079_cs_cleaned_avg[1]*x_wave[inf]+coef_dat6079_cs_cleaned_avg[2], gfit_dat6079_dot_cleaned_avg_scale_fig2b
+//
+//	create_x_wave(gfit_dat6088_dot_cleaned_avg_scale_fig2b)
+//	setscale /I x 1/coef_dat6088_cs_cleaned_avg[1]*x_wave[0]+coef_dat6088_cs_cleaned_avg[2], 1/coef_dat6088_cs_cleaned_avg[1]*x_wave[inf]+coef_dat6088_cs_cleaned_avg[2], gfit_dat6088_dot_cleaned_avg_scale_fig2b
+//
+//	create_x_wave(gfit_dat6085_dot_cleaned_avg_scale_fig2b)
+//	setscale /I x 1/coef_dat6085_cs_cleaned_avg[1]*x_wave[0]+coef_dat6085_cs_cleaned_avg[2], 1/coef_dat6085_cs_cleaned_avg[1]*x_wave[inf]+coef_dat6085_cs_cleaned_avg[2], gfit_dat6085_dot_cleaned_avg_scale_fig2b
+//
+//	create_x_wave(gfit_dat6082_dot_cleaned_avg_scale_fig2b)
+//	setscale /I x 1/coef_dat6082_cs_cleaned_avg[1]*x_wave[0]+coef_dat6082_cs_cleaned_avg[2], 1/coef_dat6082_cs_cleaned_avg[1]*x_wave[inf]+coef_dat6082_cs_cleaned_avg[2], gfit_dat6082_dot_cleaned_avg_scale_fig2b
+	
+	// scaling occupation fits
+	create_x_wave(gfit_dat6079_dot_cleaned_avg_scale_fig2b)
+	setscale /I x 1/coef_dat6079_dot_cleaned_avg[1]*x_wave[0]+coef_dat6079_dot_cleaned_avg[2], 1/coef_dat6079_dot_cleaned_avg[1]*x_wave[inf]+coef_dat6079_dot_cleaned_avg[2], gfit_dat6079_dot_cleaned_avg_scale_fig2b
+
+	create_x_wave(gfit_dat6088_dot_cleaned_avg_scale_fig2b)
+	setscale /I x 1/coef_dat6088_dot_cleaned_avg[1]*x_wave[0]+coef_dat6088_dot_cleaned_avg[2], 1/coef_dat6088_dot_cleaned_avg[1]*x_wave[inf]+coef_dat6088_dot_cleaned_avg[2], gfit_dat6088_dot_cleaned_avg_scale_fig2b
+
+	create_x_wave(gfit_dat6085_dot_cleaned_avg_scale_fig2b)
+	setscale /I x 1/coef_dat6085_dot_cleaned_avg[1]*x_wave[0]+coef_dat6085_dot_cleaned_avg[2], 1/coef_dat6085_dot_cleaned_avg[1]*x_wave[inf]+coef_dat6085_dot_cleaned_avg[2], gfit_dat6085_dot_cleaned_avg_scale_fig2b
+
+	create_x_wave(gfit_dat6082_dot_cleaned_avg_scale_fig2b)
+	setscale /I x 1/coef_dat6082_dot_cleaned_avg[1]*x_wave[0]+coef_dat6082_dot_cleaned_avg[2], 1/coef_dat6082_dot_cleaned_avg[1]*x_wave[inf]+coef_dat6082_dot_cleaned_avg[2], gfit_dat6082_dot_cleaned_avg_scale_fig2b
+	
 //	////////////////////////////////// SWEEPGATE //////////////////////////////////////////////////////////////
 
 	///// append gfits
@@ -928,46 +955,14 @@ macro paper_v2_figure_2c_strong()
 	duplicate /o gfit_dat6088_dot_cleaned_avg_interp gfit_dat6088_dot_cleaned_avg_scale_fig2c
 	duplicate /o gfit_dat6085_dot_cleaned_avg_interp gfit_dat6085_dot_cleaned_avg_scale_fig2c
 	duplicate /o gfit_dat6082_dot_cleaned_avg_interp gfit_dat6082_dot_cleaned_avg_scale_fig2c
-	
-	
-	////////// removing linear and quadratic terms /////
-
-	/////// charge transition //////
-	
-//		///// translate data
-//	translate_wave_by_occupation(dat6079_dot_cleaned_avg_scale_fig2c, dat6079_cs_cleaned_avg_occ_interp) 
-//	translate_wave_by_occupation(dat6088_dot_cleaned_avg_scale_fig2c, dat6088_cs_cleaned_avg_occ_interp) 
-//	translate_wave_by_occupation(dat6085_dot_cleaned_avg_scale_fig2c, dat6085_cs_cleaned_avg_occ_interp) 
-//	translate_wave_by_occupation(dat6082_dot_cleaned_avg_scale_fig2c, dat6082_cs_cleaned_avg_occ_interp) 
-//
-//	///// translate fit
-//	translate_wave_by_occupation(gfit_dat6079_dot_cleaned_avg_scale_fig2c, fit_dat6079_cs_cleaned_avg_occ_interp) 
-//	translate_wave_by_occupation(gfit_dat6088_dot_cleaned_avg_scale_fig2c, fit_dat6088_cs_cleaned_avg_occ_interp) 
-//	translate_wave_by_occupation(gfit_dat6085_dot_cleaned_avg_scale_fig2c, fit_dat6085_cs_cleaned_avg_occ_interp) 
-//	translate_wave_by_occupation(gfit_dat6082_dot_cleaned_avg_scale_fig2c, fit_dat6082_cs_cleaned_avg_occ_interp)  
-	
-//	////////////////////////////////// SWEEPGATE //////////////////////////////////////////////////////////////
-
-
-//	///// append data
-//	AppendToGraph /W=paper_figure_2a dat6079_cs_cleaned_avg_occ; 
-//	AppendToGraph /W=paper_figure_2a dat6088_cs_cleaned_avg_occ; 
-//	AppendToGraph /W=paper_figure_2a dat6085_cs_cleaned_avg_occ; 
-//	AppendToGraph /W=paper_figure_2a dat6082_cs_cleaned_avg_occ; 
-//	
-//	///// append fits
-//	AppendToGraph /W=paper_figure_2a fit_dat6079_cs_cleaned_avg_occ;
-//	AppendToGraph /W=paper_figure_2a fit_dat6088_cs_cleaned_avg_occ; 
-//	AppendToGraph /W=paper_figure_2a fit_dat6085_cs_cleaned_avg_occ; 
-//	AppendToGraph /W=paper_figure_2a fit_dat6082_cs_cleaned_avg_occ;
 
 
 
 	///// append gfits
-	AppendToGraph /W=paper_figure_2c gfit_dat6079_dot_cleaned_avg_scale_fig2c vs fit_dat6079_cs_cleaned_avg_occ;
-	AppendToGraph /W=paper_figure_2c gfit_dat6088_dot_cleaned_avg_scale_fig2c vs fit_dat6088_cs_cleaned_avg_occ;
-	AppendToGraph /W=paper_figure_2c gfit_dat6085_dot_cleaned_avg_scale_fig2c vs fit_dat6085_cs_cleaned_avg_occ;
-	AppendToGraph /W=paper_figure_2c gfit_dat6082_dot_cleaned_avg_scale_fig2c vs fit_dat6082_cs_cleaned_avg_occ;
+	AppendToGraph /W=paper_figure_2c gfit_dat6079_dot_cleaned_avg_scale_fig2c vs fit_dat6079_cs_cleaned_avg_occ_interp;
+	AppendToGraph /W=paper_figure_2c gfit_dat6088_dot_cleaned_avg_scale_fig2c vs fit_dat6088_cs_cleaned_avg_occ_interp;
+	AppendToGraph /W=paper_figure_2c gfit_dat6085_dot_cleaned_avg_scale_fig2c vs fit_dat6085_cs_cleaned_avg_occ_interp;
+	AppendToGraph /W=paper_figure_2c gfit_dat6082_dot_cleaned_avg_scale_fig2c vs fit_dat6082_cs_cleaned_avg_occ_interp;
 	
 	
 	///// append data
@@ -1496,6 +1491,68 @@ macro paper_v2_figure_4a()
 endmacro
 
 
+
+
+macro paper_v2_figure_4a_field()
+// data from summer cool down
+// base temp
+//Datnum 6079 6100 6081
+
+
+	Display; KillWindow /Z paper_figure_4a_field; DoWindow/C/O paper_figure_4a_field 
+	
+	
+	///// duplicating so that data can be re-scaled /////
+	duplicate /o dat6079_dot_cleaned_avg_interp dat6079_dot_cleaned_avg_scale_fig4a
+	duplicate /o dat6100_dot_cleaned_avg_interp dat6100_dot_cleaned_avg_scale_fig4a
+	
+	duplicate /o gfit_dat6079_dot_cleaned_avg_interp gfit_dat6079_dot_cleaned_avg_scale_fig4a
+	duplicate /o gfit_dat6100_dot_cleaned_avg_interp gfit_dat6100_dot_cleaned_avg_scale_fig4a
+	
+	
+	
+	/////// charge transition //////
+	
+
+	////////////////////////////////// OCCUPATION //////////////////////////////////////////////////////////////
+	///// append data
+	AppendToGraph /W=paper_figure_4a_field dat6079_dot_cleaned_avg_scale_fig4a vs dat6079_cs_cleaned_avg_occ_interp; 
+	AppendToGraph /W=paper_figure_4a_field dat6100_dot_cleaned_avg_scale_fig4a vs dat6100_cs_cleaned_avg_occ_interp; 
+	
+	///// append gfits
+	AppendToGraph /W=paper_figure_4a_field gfit_dat6079_dot_cleaned_avg_scale_fig4a vs fit_dat6079_cs_cleaned_avg_occ_interp;
+	AppendToGraph /W=paper_figure_4a_field gfit_dat6100_dot_cleaned_avg_scale_fig4a vs fit_dat6100_cs_cleaned_avg_occ_interp; 
+	Label /W=paper_figure_4a_field bottom "Occupation  (.arb)"
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// "0,0,0;	24158,34695,23901;	52685,33924,12336;	47802,0,2056;	14906,27499,34438" // black, green, yellow, red
+	string marker_size
+
+	// modify data	
+	marker_size = "dat6079_dot_cleaned_avg_scale_fig4a" + "_marker_size"; create_marker_size(dat6079_dot_cleaned_avg_scale_fig4a, 16, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_4a_field mode(dat6079_dot_cleaned_avg_scale_fig4a)=3, marker(dat6079_dot_cleaned_avg_scale_fig4a)=41, lsize(dat6079_dot_cleaned_avg_scale_fig4a)=1, rgb(dat6079_dot_cleaned_avg_scale_fig4a)=(52685,33924,12336), mrkThick(dat6079_dot_cleaned_avg_scale_fig4a)=1, zmrkSize(dat6079_dot_cleaned_avg_scale_fig4a)={$marker_size,*,*,0.01,3} 
+
+
+	marker_size = "dat6100_dot_cleaned_avg_scale_fig4a" + "_marker_size"; create_marker_size(dat6100_dot_cleaned_avg_scale_fig4a, 10, min_marker=0.01, max_marker=2)
+	ModifyGraph /W=paper_figure_4a_field mode(dat6100_dot_cleaned_avg_scale_fig4a)=3, marker(dat6100_dot_cleaned_avg_scale_fig4a)=41, lsize(dat6100_dot_cleaned_avg_scale_fig4a)=1, rgb(dat6100_dot_cleaned_avg_scale_fig4a)=(24158,34695,23901), mrkThick(dat6100_dot_cleaned_avg_scale_fig4a)=1, zmrkSize(dat6100_dot_cleaned_avg_scale_fig4a)={$marker_size,*,*,0.01,3} 
+
+
+	// modify gfits
+	ModifyGraph /W=paper_figure_4a_field mode(gfit_dat6079_dot_cleaned_avg_scale_fig4a)=0, lsize(gfit_dat6079_dot_cleaned_avg_scale_fig4a)=1, rgb(gfit_dat6079_dot_cleaned_avg_scale_fig4a)=(52685,33924,12336,49151)
+	ModifyGraph /W=paper_figure_4a_field mode(gfit_dat6100_dot_cleaned_avg_scale_fig4a)=0, lsize(gfit_dat6100_dot_cleaned_avg_scale_fig4a)=1, rgb(gfit_dat6100_dot_cleaned_avg_scale_fig4a)=(24158,34695,23901,49151)
+	
+	Label /W=paper_figure_4a_field left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	
+//	Legend /W=paper_figure_4a_field /C/N=text0/J/F=0/A=LT "\\Zr080\\s(gfit_dat6079_dot_cleaned_avg_scale_fig4a) Γ/T = 24.29\r\\s(gfit_dat6100_dot_cleaned_avg_scale_fig4a) Γ/T = 9.48\r\\s(gfit_dat6081_dot_cleaned_avg_scale_fig4a) Γ/T = 0.99"
+	Legend /W=paper_figure_4a_field /C/N=text0/J/F=0/A=LT "\\Zr080\\s(dat6079_dot_cleaned_avg_scale_fig4a) Field = 70mT\r\\s(dat6100_dot_cleaned_avg_scale_fig4a) Field = 2000mT"
+
+//	Label /W=paper_figure_4a_field bottom "Sweepgate (centered by mid) (mV)"
+	
+//	ModifyGraph /W=paper_figure_4a_field muloffset={0.005,0}
+	SetAxis /W=paper_figure_4a_field bottom 0,1
+	beautify_figure("paper_figure_4a_field")
+
+endmacro
 
 
 macro paper_v2_figure_4b()
@@ -2091,15 +2148,16 @@ endmacro
 
 function figure_2_conductance()
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+//	string datnums = "6386;6088;6085;6082"; string gamma_type = "high"// high gamma (just before entropy scan 22.5 fits well 15mK fits best)
 //	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
 //	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
 	
 //	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 	
-//	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
+	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
-	string e_temps = "55;100;300;500"
+	string e_temps = "22.5;100;300;500"
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 	// 0.765173 7.2439 19.3344 :: SUMMER
 

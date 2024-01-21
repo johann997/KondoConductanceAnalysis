@@ -685,8 +685,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.9 // 3.3 // 3.0 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.02 // 0.02 // 0.01 // 0.0045 // x scaling (linked)
+			coefwave[0][0] = 3.5 // 3.3 // 3.0 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 1e-3 //0.02 // 0.02 // 0.01 // 0.0045 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] =  1 // 1.5 //0.1 //1 // lnG/T for Tbase (linked)
@@ -842,9 +842,13 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	
 ///// SUMMER EXPERIMENT /////
 ////////// high gamma low field ////////////////////////////////////////////////////
-	if (cmpstr(datnum, "6079") == 0)
+	if (cmpstr(datnum, "6386") == 0)
 		dot_min_val = -1000; dot_max_val = 650
-		cs_min_val = -1500; cs_max_val = 1050
+		cs_min_val = -1000; cs_max_val = 690
+//		cs_min_val = -900; cs_max_val = 1000
+	elseif (cmpstr(datnum, "6079") == 0)
+		dot_min_val = -1000; dot_max_val = 650
+		cs_min_val = -1000; cs_max_val = 1050
 //		cs_min_val = -900; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6088") == 0)
 		dot_min_val = -1000; dot_max_val = 650
@@ -899,16 +903,16 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 ////////// high gamma 2-3 transition ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6225") == 0)
 		dot_min_val = -6000; dot_max_val = -3200
-		cs_min_val = -7900; cs_max_val = -1425
+		cs_min_val = -7000; cs_max_val = -1425//-1425
 	elseif (cmpstr(datnum, "6234") == 0)
 		dot_min_val = -6000; dot_max_val = -3200
-		cs_min_val = -7900; cs_max_val = -1425
+		cs_min_val = -7000; cs_max_val = -1425//-1425
 	elseif (cmpstr(datnum, "6231") == 0)
 		dot_min_val = -6000; dot_max_val = -3200
-		cs_min_val = -7900; cs_max_val = -1425
+		cs_min_val = -7000; cs_max_val = -1425//-1425
 	elseif (cmpstr(datnum, "6228") == 0)
 		dot_min_val = -6000; dot_max_val = -3200
-		cs_min_val = -7900; cs_max_val = -1425
+		cs_min_val = -7000; cs_max_val = -1425// -1425
 ////////// mid gamma 2-3 transition ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6226") == 0)
 		dot_min_val = -6000; dot_max_val = -3000
