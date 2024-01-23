@@ -2537,7 +2537,92 @@ end
 
 
 
-function etemp_test()
+function etemp_test_single()
+	wave wave_to_fit = dat1473_numerical_entropy_avg_interp
+	wave wave_to_fit_mask = dat1473_cs_cleaned_avg_mask
+	wave coef_wave = coef_dat1288_cs_cleaned_avg
+
+	// lngt and leverarm ranges
+	variable num_lngt = 50, min_lngt = 0.5, max_lngt = 3.95
+	variable num_leverarm = 50, min_leverarm = 1e-4, max_leverarm = 7e-3
+	
+	// duplicating wave to fit
+	duplicate /o wave_to_fit wave_to_fit_etemp
+	wave wave_to_fit_etemp
+	
+	// setting coef
+//	duplicate /o coef_dat1288_cs_cleaned_avg etemp_test_single_coef
+	make/o /n=8 etemp_test_single_coef = 0
+	wave etemp_test_single_coef
+	
+	// for entropy wave
+	etemp_test_single_coef[0,3] = coef_wave[p]; 
+	etemp_test_single_coef[4]=0;  etemp_test_single_coef[5]=0; etemp_test_single_coef[6]=0; etemp_test_single_coef[7]=1;
+
+	
+	variable lngt, leverarm, chisq
+	
+	make /o/n=(num_lngt,num_leverarm) chisq_wave
+	wave chisq_wave
+	
+	int i,j
+	for (i=0; i < num_lngt; i++)
+		for (j=0; j < num_leverarm; j++)
+		
+			lngt = min_lngt + (max_lngt - min_lngt)*i/num_lngt
+			leverarm = min_leverarm + (max_leverarm - min_leverarm)*j/num_leverarm
+			
+			etemp_test_single_coef[0] = lngt
+			etemp_test_single_coef[1] = leverarm
+			
+			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO etemp_test_single_coef wave_to_fit_etemp /D ///M=wave_to_fit_mask /D
+			chisq =  V_chisq
+			
+			chisq_wave[i][j] = chisq
+		endfor
+	endfor
+	setscale /I x, min_lngt, max_lngt, chisq_wave
+	setscale /I y, min_leverarm, max_leverarm, chisq_wave
+	
+	NewImage/K=0 root:chisq_wave
+	Label left "Leverarm";DelayUpdate
+	Label top "ln(G/T)"
+	
+	ModifyImage chisq_wave ctab= {*,*,BlackBody,0}
+	
+	ColorScale/C/N=text3/A=RT image=chisq_wave;DelayUpdate
+	ColorScale/C/N=text3 "chi-squared"
+	
+	create_x_wave(chisq_wave)
+	wave x_wave
+
+	create_y_wave(chisq_wave)
+	wave y_wave
+
+	ImageStats /q chisq_wave
+	make /o/n=1 min_val_wave_x = {x_wave[V_minRowLoc]}
+	make /o/n=1 min_val_wave_y = {y_wave[V_minColLoc]}
+	
+	print min_val_wave_x, V_minRowLoc
+	print min_val_wave_y, V_minColLoc
+
+	appendtograph /l=left/t=top min_val_wave_y vs min_val_wave_x
+	
+	ModifyGraph mode=3,lsize=3,rgb=(0,0,0)
+	ModifyGraph msize=15
+	ModifyGraph marker=1
+	ModifyGraph mrkThick=2
+	
+	ModifyGraph mirror=1, nticks=3, axThick=0.5, fsize=14, tick=2, gFont="Calibri", gfSize=14, lowTrip(top)=0.0001, lowTrip(left)=0.01, width=1*400, height=1*400/1.6180339887
+
+	
+	
+end
+
+
+
+
+function etemp_test_global()
 	string gamma_over_temp_type = "high"
 	string datnums = "6079;6088;6085;6082" // high gamma
 //	run_clean_average_procedure(datnums=datnums)
@@ -2608,29 +2693,31 @@ function figure_2_entropy()
 	string gamma_type
 	
 	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
-	string e_temps = "22.5;100;300;500"
-//	string global_datnums = "6079;6088;6085;6082";  gamma_type = "high"// high gamma
-//	string global_datnums = "6080;6089;6086;6083";  gamma_type = "mid" // mid gamma
-//	string global_datnums = "6081;6090;6087;6084";  gamma_type = "low" // low gamma
-
+//	string e_temps = "30;100;300;500"
+////	string global_datnums = "6079;6088;6085;6082";  gamma_type = "high"// high gamma
+////	string global_datnums = "6080;6089;6086;6083";  gamma_type = "mid" // mid gamma
+////	string global_datnums = "6081;6090;6087;6084";  gamma_type = "low" // low gamma
+//
 //	string entropy_datnums = "6388"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"; info_mask_waves("6388", base_wave_name="_cs_cleaned_avg")
-	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"; info_mask_waves("6385", base_wave_name="_cs_cleaned_avg")
-	
+////	string entropy_datnums = "6385"; string global_datnums = "6079;6088;6085;6082"; gamma_type = "high"; info_mask_waves("6385", base_wave_name="_cs_cleaned_avg")
+//	
 //	string global_datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
 //	string global_datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
 	
 //	///// AUTUMN EXPERIMENT /////
-//	string e_temps = "55;90;275;400"
+	string e_temps = "65;90;275;400"
 //	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"; info_mask_waves("1282", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1284"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
-//	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias
-//	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 250uV bias
-//	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 500uV bias
-//	string entropy_datnums = "1439"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 1000uV bias
-//	string entropy_datnums = "1473"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high" // 50uV bias :: symmetric
+
+//	string entropy_datnums = "1372"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1372", base_wave_name="_cs_cleaned_avg") // 50uV bias
+//	string entropy_datnums = "1373"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1373", base_wave_name="_cs_cleaned_avg") // 250uV bias
+//	string entropy_datnums = "1374"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1374", base_wave_name="_cs_cleaned_avg") // 500uV bias
+//	string entropy_datnums = "1439"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1439", base_wave_name="_cs_cleaned_avg") // 1000uV bias
+	
+	string entropy_datnums = "1473"; string global_datnums = "1288;1300;1296;1292"; gamma_type = "high"; info_mask_waves("1473", base_wave_name="_cs_cleaned_avg") // 50uV bias :: symmetric
 
 	
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"

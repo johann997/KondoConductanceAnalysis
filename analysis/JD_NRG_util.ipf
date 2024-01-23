@@ -685,8 +685,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.5 // 3.3 // 3.0 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 1e-3 //0.02 // 0.02 // 0.01 // 0.0045 // x scaling (linked)
+			coefwave[0][0] = 3.9 // 3.3 // 3.0 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.02 //0.02 // 0.02 // 0.01 // 0.0045 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] =  1 // 1.5 //0.1 //1 // lnG/T for Tbase (linked)
@@ -931,6 +931,28 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 ////////// AUTUMN experiment ////////////////////////////////////////////////////
 
 	///// ENTROPY /////
+	///// 50uV /////
+	elseif (cmpstr(datnum, "1372") == 0)
+		cs_min_val = -3488.3; cs_max_val = 3432.5
+	///// 250uV /////
+	elseif (cmpstr(datnum, "1373") == 0)
+		cs_min_val = -2780; cs_max_val = 2783.3
+	///// 500uV /////
+	elseif (cmpstr(datnum, "1374") == 0)
+		cs_min_val = -3275.7; cs_max_val = 2686.4
+	///// 1000uV /////
+	elseif (cmpstr(datnum, "1439") == 0)
+		cs_min_val = -3275.7; cs_max_val = 2686.4
+	///// symmetric /////
+	elseif (cmpstr(datnum, "1473") == 0)
+		cs_min_val = -3275.7; cs_max_val = 2686.4
+	///// 2nd plateau /////
+	elseif (cmpstr(datnum, "1505") == 0)
+		cs_min_val = -3488.3; cs_max_val = 3432.5
+	///// 2nd plateau /////
+	elseif (cmpstr(datnum, "1537") == 0)
+		cs_min_val = -3488.3; cs_max_val = 3432.5
+		
 	///// high gamma /////
 	elseif (cmpstr(datnum, "1284") == 0)
 		cs_min_val = -3000; cs_max_val = 2900
@@ -1511,9 +1533,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			
 			AppendToGraph /W=global_fit_entropy $entropy_data_name
 			ModifyGraph /W=global_fit_entropy mode($entropy_data_name)=2, lsize($entropy_data_name)=1, rgb($entropy_data_name)=(0,0,0)
-			
-//			smooth 50, entropy_data
-			
+						
 			entropy_y_offset = mean($entropy_data_name, pnt2x($entropy_data_name, 0), pnt2x($entropy_data_name, dimsize(entropy_data, 0)/4))
 			
 //			entropy_data -= entropy_y_offset
