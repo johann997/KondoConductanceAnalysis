@@ -685,8 +685,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.9 // 3.3 // 3.0 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.02 //0.02 // 0.02 // 0.01 // 0.0045 // x scaling (linked)
+			coefwave[0][0] = 2.82095 // 3.3 // 3.0 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.002 //0.02 // 0.00373536 // 0.01 // 0.0045 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] =  1 // 1.5 //0.1 //1 // lnG/T for Tbase (linked)
