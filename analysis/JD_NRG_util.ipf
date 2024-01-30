@@ -685,8 +685,8 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 2.82095 // 3.3 // 3.0 // lnG/T for Tbase (linked)
-			coefwave[1][0] = 0.002 //0.02 // 0.00373536 // 0.01 // 0.0045 // x scaling (linked)
+			coefwave[0][0] = 3.3 // 3.3 // 3.0 // lnG/T for Tbase (linked)
+			coefwave[1][0] = 0.02 //0.02 // 0.00373536 // 0.01 // 0.0045 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
 			coefwave[0][0] =  1 // 1.5 //0.1 //1 // lnG/T for Tbase (linked)
@@ -861,17 +861,17 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -1500; cs_max_val = 1050
 ////////// mid gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
-		dot_min_val = -1400; dot_max_val = 1400
+		dot_min_val = -1400; dot_max_val = 500
 		cs_min_val = -1000; cs_max_val = 1430
 //		cs_min_val = -600; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6089") == 0)
-		dot_min_val = -1400; dot_max_val = 1400
+		dot_min_val = -1400; dot_max_val = 500
 		cs_min_val = -1873; cs_max_val = 980
 	elseif (cmpstr(datnum, "6086") == 0)
-		dot_min_val = -1400; dot_max_val = 1400
+		dot_min_val = -1400; dot_max_val = 600
 		cs_min_val = -2000; cs_max_val = 1286
 	elseif (cmpstr(datnum, "6083") == 0)
-		dot_min_val = -1400; dot_max_val = 1400
+		dot_min_val = -1400; dot_max_val = 600
 		cs_min_val = -1667; cs_max_val = 967
 ////////// low gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6081") == 0)
@@ -1013,7 +1013,8 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	elseif (cmpstr(datnum, "699") == 0)
 		dot_min_val = -1000; dot_max_val = 1000
 //		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1100
+//		cs_min_val = -1000; cs_max_val = 1100
+		cs_min_val = -1500; cs_max_val = 1500
 //		cs_min_val = -1700; cs_max_val = 1700
 	elseif (cmpstr(datnum, "695") == 0)
 //		dot_min_val = -2000; dot_max_val = 1000
@@ -1113,13 +1114,17 @@ end
 
 
 
-function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(string global_temps, string datnums, string gamma_over_temp_type, [variable global_fit_conductance, variable fit_conductance, variable fit_entropy, string fit_entropy_dats])
+function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(string global_temps, string datnums, string gamma_over_temp_type, [variable global_fit_conductance, variable fit_conductance, variable fit_entropy, string fit_entropy_dats, variable gamma_value, variable leverarm_value, variable load_previous_fit])
 		
 	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 	fit_entropy = paramisdefault(fit_entropy) ? 0 : fit_entropy // default is to not fit to entropy
 	fit_entropy_dats = selectString(paramisdefault(fit_entropy_dats), fit_entropy_dats, datnums) // fit to datnums if fit_entropy_dats not specified
 	fit_conductance = paramisdefault(fit_conductance) ? 0 : fit_conductance
+	gamma_value = paramisdefault(gamma_value) ? 0 : gamma_value
+	leverarm_value = paramisdefault(leverarm_value) ? 0 : leverarm_value
+	load_previous_fit = paramisdefault(load_previous_fit) ? 0 : load_previous_fit
 
+	
 	/////// build struct giving information on wave names /////
 	STRUCT g_occdata data
 	STRUCT GFinputs GFin
@@ -1163,6 +1168,22 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	/////// Define inputs for global fit to conductance data /////
 	// (check out help in Global Fit 2 Help -- not Global Fit Help)
 	build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=0)
+	
+	if (gamma_value != 0)
+		GFin.coefwave[0][0] = gamma_value
+	endif
+	if (leverarm_value != 0)
+		GFin.coefwave[1][0] = leverarm_value
+	endif
+	if (load_previous_fit == 1)
+		wave GlobalFitCoefficients
+		GFin.coefwave[][0] = GlobalFitCoefficients[p]
+		GFin.coefwave[8][0] = ln(data.temps[0]/data.temps[1])
+		GFin.coefwave[13][0] = ln(data.temps[0]/data.temps[2])
+//		GFin.coefwave[18][0] = ln(data.temps[0]/data.temps[3])
+	endif
+	
+	
 	options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
 	DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)	
 	
