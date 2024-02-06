@@ -1431,7 +1431,8 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 	duplicate/o wave_not_centered $centered_wave_name
 	wave new2dwave=$centered_wave_name
 	copyscales wave_not_centered new2dwave
-	new2dwave=interp2d(wave_not_centered,(x + mids[q]),(y)) // mids is the shift in x
+	variable mean_mid = mean(mids)
+	new2dwave=interp2d(wave_not_centered,(x + mids[q] - mean_mid),(y)) // mids is the shift in x
 end
 
 

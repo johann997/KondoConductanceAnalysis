@@ -4487,6 +4487,9 @@ macro save_waves()
 //	Save/C/O/P=github_processed_data  fit_dat1283_cs_cleaned_avg_occ_interp as "fit_dat1283_cs_cleaned_avg_occ_interp.ibw"
 //	Save/C/O/P=github_processed_data  fit_dat1284_cs_cleaned_avg_occ_interp as "fit_dat1284_cs_cleaned_avg_occ_interp.ibw"
 endmacroendmacro
+
+
+Function dot_fit_function(w,ys,xs) : FitFunc
 	Wave w, xs, ys
 	// f(x) = Amp*tanh((x - Mid)/(2*theta)) + Linear*x + Const+Quad*x^2
 	// w[0] = Amp

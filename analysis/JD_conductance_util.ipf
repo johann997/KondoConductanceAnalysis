@@ -65,6 +65,7 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out, [int 
 	else
 		zap_NaN_rows($cleaned_wave_name, overwrite = 1, percentage_cutoff_inf = 0.15)
 		avg_wav($cleaned_wave_name)
+		zap_NaNs($avg_wave_name, overwrite=1)
 	endif
 	
 	plot_cond_figs(wavenum, N, kenner, kenner_out, refit=refit)
