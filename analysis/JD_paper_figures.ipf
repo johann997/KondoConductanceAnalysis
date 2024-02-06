@@ -2412,10 +2412,44 @@ endmacro
 
 
 function figure_2_conductance()
-	variable gamma_value =  3.5
-	variable leverarm_value = 0.2
+	variable gamma_value =  2.5
+	variable leverarm_value = 0.010
+	
+	
+//	///// SPRING CONDUCTANCE 2024 AND TRANSITION DATA ///// 
 
-//	///// SPRING CONDUCTANCE AND TRANSITION DATA ///// 
+//	string datnums = "681;699;693;687"; string gamma_type = "mid" // low gamma - 640 2uV
+//	string datnums = "682;700;694;688"; string gamma_type = "mid" // mid gamma - 640 2uV
+//	string datnums = "683;701;695;689"; string gamma_type = "mid" // high gamma - 640 2uV
+
+//	string datnums = "737;701;695;689"; string gamma_type = "mid" // high gamma - 640 1uV
+//	string datnums = "738;701;695;689"; string gamma_type = "mid" // high gamma - 640 2uV
+//	string datnums = "739;701;695;689"; string gamma_type = "mid" // high gamma - 640 5uV
+	
+//	string datnums = "684;702;696;690"; string gamma_type = "mid" // low gamma - 840 2uV
+//	string datnums = "685;703;697;691"; string gamma_type = "mid" // mid gamma - 840 2uV
+//	string datnums = "686;704;698;692"; string gamma_type = "mid" // high gamma - 840 2uV
+
+//	string e_temps = "22.5;90;275;400"
+//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+//	
+//	string datnums = "810;826;822;818;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//	string datnums = "811;827;823;819;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
+//	string datnums = "812;828;824;820;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
+//	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
+
+//	string e_temps = "22.5;90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
+	
+	
+	string datnums = "810;826;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//	string datnums = "811;827;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
+//	string datnums = "812;828;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
+//	string datnums = "813;829;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
+	string e_temps = "22.5;90;400"
+	string colours = "0,0,65535;29524,1,58982;65535,0,0"
+
+//	///// SPRING CONDUCTANCE 2023 AND TRANSITION DATA ///// 
 ////	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
 ////	string datnums = "6386;6088;6085;6082"; string gamma_type = "high"// high gamma (just before entropy scan 22.5 fits well 15mK fits best)
 ////	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
@@ -2430,15 +2464,15 @@ function figure_2_conductance()
 //	// 0.765173 7.2439 19.3344 :: SUMMER
 
 ////
-//////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
-	string e_temps = "12;275;500"
-//	string e_temps = "15;275;500"
-	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
-//	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
-//	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
-//	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
-	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
-	
+////////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
+//	string e_temps = "12;275;500"
+////	string e_temps = "15;275;500"
+//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+////	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
+////	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
+////	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
+//	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
+//	
 	//3.30077  7.09738  19.7605  27.6116 :: AUTUMN
 	
 	string colour, e_temp
@@ -2806,13 +2840,16 @@ end
 
 
 function etemp_test_single()
-	wave wave_to_fit = dat1372_numerical_entropy_avg_interp
-	wave wave_to_fit_mask = dat1284_cs_cleaned_avg_mask
-	wave coef_wave = coef_dat1288_cs_cleaned_avg
-
+//	wave wave_to_fit = dat1372_numerical_entropy_avg_interp
+//	wave wave_to_fit_mask = dat1284_cs_cleaned_avg_mask
+//	wave coef_wave = coef_dat1288_cs_cleaned_avg
+	wave wave_to_fit = dat684_dot_cleaned_avg
+	wave wave_to_fit_mask = dat684_dot_cleaned_avg_mask
+	wave coef_wave = coef_dat684_dot_cleaned_avg
+	
 	// lngt and leverarm ranges
-	variable num_lngt = 50, min_lngt = 0.3, max_lngt = 3.95
-	variable num_leverarm = 50, min_leverarm = 1e-4, max_leverarm = 7e-3
+	variable num_lngt = 50, min_lngt = 1e-4, max_lngt = 1
+	variable num_leverarm = 50, min_leverarm = 1e-2, max_leverarm = 1
 	
 	// duplicating wave to fit
 	duplicate /o wave_to_fit wave_to_fit_etemp
@@ -2820,12 +2857,12 @@ function etemp_test_single()
 	
 	// setting coef
 //	duplicate /o coef_dat1288_cs_cleaned_avg etemp_test_single_coef
-	make/o /n=8 etemp_test_single_coef = 0
+	make/o /n=7 etemp_test_single_coef = 0
 	wave etemp_test_single_coef
 	
 	// for entropy wave
-	etemp_test_single_coef[0,3] = coef_wave[p]; 
-	etemp_test_single_coef[4]=0;  etemp_test_single_coef[5]=0; etemp_test_single_coef[6]=0; etemp_test_single_coef[7]=1;
+	etemp_test_single_coef[0,6] = coef_wave[p]; 
+	//etemp_test_single_coef[4]=wavemax(wave_to_fit);  etemp_test_single_coef[5]=0; etemp_test_single_coef[6]=0; //etemp_test_single_coef[7]=1;
 
 	
 	variable lngt, leverarm, chisq
@@ -2842,8 +2879,27 @@ function etemp_test_single()
 			
 			etemp_test_single_coef[0] = lngt
 			etemp_test_single_coef[1] = leverarm
+			// coef[0]: lnG/T for Tbase -- linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: ln(T/Tbase) for different waves
+	// coef[4]: const offset
+	// coef[5]: linear
+	// coef[6]: quadratic
+	// coef[7]: amplitude
+//			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO etemp_test_single_coef wave_to_fit_etemp /D ///M=wave_to_fit_mask /D
+
+// coef[0]: lnG/T for Tbase -- linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: ln(T/Tbase) for different waves
+	// coef[4]: peak height
+	// coef[5]: const offset
+	// coef[6]: linear
+			etemp_test_single_coef[2] = coef_wave[2]
+			etemp_test_single_coef[4] = coef_wave[4]
 			
-			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO etemp_test_single_coef wave_to_fit_etemp /D ///M=wave_to_fit_mask /D
+			FuncFit/Q/H="1101011" fitfunc_nrgcondAAO etemp_test_single_coef wave_to_fit_etemp /D ///M=wave_to_fit_mask /D
 			chisq =  V_chisq
 			
 			chisq_wave[i][j] = chisq
@@ -2852,13 +2908,13 @@ function etemp_test_single()
 	setscale /I x, min_lngt, max_lngt, chisq_wave
 	setscale /I y, min_leverarm, max_leverarm, chisq_wave
 	
-	NewImage/K=0 root:chisq_wave
+	display; appendimage chisq_wave
 	Label left "Leverarm";DelayUpdate
-	Label top "ln(G/T)"
+	Label bottom "ln(G/T)"
 	
 	ModifyImage chisq_wave ctab= {*,*,BlackBody,0}
 	
-	ColorScale/C/N=text3/A=RT image=chisq_wave;DelayUpdate
+	ColorScale/C/N=text3/A=RT image=chisq_wave
 	ColorScale/C/N=text3 "chi-squared"
 	
 	create_x_wave(chisq_wave)
@@ -2871,14 +2927,14 @@ function etemp_test_single()
 	make /o/n=1 min_val_wave_x = {x_wave[V_minRowLoc]}
 	make /o/n=1 min_val_wave_y = {y_wave[V_minColLoc]}
 
-	appendtograph /l=left/t=top min_val_wave_y vs min_val_wave_x
+	appendtograph /l=left/b=bottom min_val_wave_y vs min_val_wave_x
 	
 	ModifyGraph mode=3,lsize=3,rgb=(0,0,0)
 	ModifyGraph msize=15
 	ModifyGraph marker=1
 	ModifyGraph mrkThick=2
 	
-	ModifyGraph mirror=1, nticks=3, axThick=0.5, fsize=14, tick=2, gFont="Calibri", gfSize=14, lowTrip(top)=0.0001, lowTrip(left)=0.01, width=1*400, height=1*400/1.6180339887
+	ModifyGraph mirror=1, nticks=3, axThick=0.5, fsize=14, tick=2, gFont="Calibri", gfSize=14, lowTrip(top)=0.0001, lowTrip(left)=0.01//, width=1*400, height=1*400/1.6180339887
 
 	
 	
@@ -4430,4 +4486,15 @@ macro save_waves()
 //	Save/C/O/P=github_processed_data  fit_dat1282_cs_cleaned_avg_occ_interp as "fit_dat1282_cs_cleaned_avg_occ_interp.ibw"
 //	Save/C/O/P=github_processed_data  fit_dat1283_cs_cleaned_avg_occ_interp as "fit_dat1283_cs_cleaned_avg_occ_interp.ibw"
 //	Save/C/O/P=github_processed_data  fit_dat1284_cs_cleaned_avg_occ_interp as "fit_dat1284_cs_cleaned_avg_occ_interp.ibw"
-endmacro
+endmacroendmacro
+	Wave w, xs, ys
+	// f(x) = Amp*tanh((x - Mid)/(2*theta)) + Linear*x + Const+Quad*x^2
+	// w[0] = Amp
+	// w[1] = Const
+	// w[2] = Theta
+	// w[3] = Mid
+	// w[4] = Linear
+	// w[5] = Quad
+
+	ys= w[0] + (w[1])/((xs - w[2])^2 + w[3])
+End
