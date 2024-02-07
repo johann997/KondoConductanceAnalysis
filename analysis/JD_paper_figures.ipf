@@ -2412,8 +2412,8 @@ endmacro
 
 
 function figure_2_conductance()
-	variable gamma_value =  2.5
-	variable leverarm_value = 0.010
+	variable gamma_value =  2.457
+	variable leverarm_value = 0.0104
 	
 	
 //	///// SPRING CONDUCTANCE 2024 AND TRANSITION DATA ///// 
@@ -2433,21 +2433,32 @@ function figure_2_conductance()
 //	string e_temps = "22.5;90;275;400"
 //	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 //	
+	///// P = -1040 Symmetric
 //	string datnums = "810;826;822;818;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
-//	string datnums = "811;827;823;819;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
-//	string datnums = "812;828;824;820;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
-//	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
-
+////	string datnums = "811;827;823;819;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
+////	string datnums = "812;828;824;820;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
+////	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
+//
 //	string e_temps = "22.5;90;175;275;400"
 //	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
 	
-	
-	string datnums = "810;826;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//	string datnums = "810;826;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
 //	string datnums = "811;827;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
 //	string datnums = "812;828;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
 //	string datnums = "813;829;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
-	string e_temps = "22.5;90;400"
-	string colours = "0,0,65535;29524,1,58982;65535,0,0"
+//	string e_temps = "22.5;90;400"
+//	string colours = "0,0,65535;29524,1,58982;65535,0,0"
+
+	///// Asymmetric
+	string datnums = "1171;1195;1189;1183;1177"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//	string datnums = "1197;1191;1185;1179;1179"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//	string datnums = "1175;1199;1193;1187;1181"; string gamma_type = "mid" // mid gamma - 1040 1uV
+
+	string e_temps = "22.5;90;175;275;400"
+	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
+
+
+
 
 //	///// SPRING CONDUCTANCE 2023 AND TRANSITION DATA ///// 
 ////	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
@@ -4486,7 +4497,73 @@ macro save_waves()
 //	Save/C/O/P=github_processed_data  fit_dat1282_cs_cleaned_avg_occ_interp as "fit_dat1282_cs_cleaned_avg_occ_interp.ibw"
 //	Save/C/O/P=github_processed_data  fit_dat1283_cs_cleaned_avg_occ_interp as "fit_dat1283_cs_cleaned_avg_occ_interp.ibw"
 //	Save/C/O/P=github_processed_data  fit_dat1284_cs_cleaned_avg_occ_interp as "fit_dat1284_cs_cleaned_avg_occ_interp.ibw"
-endmacroendmacro
+endmacro
+
+
+
+function plot_SNR(wave_name [dot_data])
+	// assumes the averaged and centered dataset has been taken. 
+	string wave_name
+	int dot_data
+	
+	
+	dot_data = paramisdefault(dot_data) ? 1 : dot_data // default is to fit to use conductance data
+	
+	string temp_avg_name = wave_name + "_temp"
+	string fit_name = "fit_" + temp_avg_name
+	
+	
+	variable num_columns = dimSize($wave_name, 0)
+	variable num_rows = dimSize($wave_name, 1)
+	
+	make /o /n=(num_rows) snr_wave
+	setscale /P x, 1, 1, snr_wave
+	
+	variable std
+	
+	
+	if (dot_data == 1)
+		duplicate /o $(wave_name + "_avg") $temp_avg_name
+		duplicate /o $(wave_name + "_avg") $fit_name
+		
+//		fit_single_peak($temp_avg_name)
+		CurveFit/q lor $temp_avg_name /D=$fit_name
+		wave W_coef
+		wave fit_wave = $fit_name
+	endif
+	
+
+	
+	display
+	int i
+	for (i=0; i<num_rows; i++)
+		ReduceMatrixSize($wave_name, 0, -1, num_columns, 0, i, 1, 1, temp_avg_name)
+		redimension/n=-1 $temp_avg_name
+		zap_NaNs($temp_avg_name, overwrite=1)
+		
+		wave temp_wave = $temp_avg_name
+
+		Duplicate /o temp_wave temp_wav_scale; temp_wave = temp_wav_scale/1e9/7.75e-5/(1e-6-temp_wav_scale/1e9*24790)
+				
+
+		duplicate /o $temp_avg_name $fit_name
+		FuncFit/q/H="1111" dot_fit_function W_coef $temp_avg_name /D=$fit_name
+		
+		wave fit_wave = $fit_name
+		
+		temp_wave[] = fit_wave[p] - temp_wave[p]
+//		fit_wave += 0.05
+//		appendtograph fit_wave
+		appendtograph temp_wave
+		
+		
+		
+	
+	endfor
+	
+
+end
+
 
 
 Function dot_fit_function(w,ys,xs) : FitFunc

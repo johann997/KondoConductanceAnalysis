@@ -706,7 +706,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		for(i=0; i<numwvs; i++)
 			FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
 			
-			coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX // x offset
+			coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX//+300 // x offset
 			coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnTbase/T offest for various T's
 			coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnTbase/T offsets
 			
@@ -1157,59 +1157,74 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //		cs_min_val = 500; cs_max_val = 1500
 
 //	////// -1040 mid gamma /////
+//	elseif (cmpstr(datnum, "810") == 0)
+//		 dot_min_val = -2000; dot_max_val = 2000
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "826") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "822") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "818") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "814") == 0)
+//		dot_min_val = -2000; dot_max_val = 2000
+//		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "810") == 0)
-		 dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		 dot_min_val = 700; dot_max_val = 1500
+		cs_min_val = -300; cs_max_val = 2000
 	elseif (cmpstr(datnum, "826") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		dot_min_val = 250; dot_max_val = 1200
+		cs_min_val = -300; cs_max_val = 2000
 	elseif (cmpstr(datnum, "822") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		dot_min_val = 250; dot_max_val = 1200
+		cs_min_val = -300; cs_max_val = 2000
 	elseif (cmpstr(datnum, "818") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		dot_min_val = 250; dot_max_val = 1200
+		cs_min_val = -300; cs_max_val = 2000
 	elseif (cmpstr(datnum, "814") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		dot_min_val = 250; dot_max_val = 1250
+		cs_min_val = -300; cs_max_val = 2000
 
 //	////// -1040 mid-stong gamma /////
 	elseif (cmpstr(datnum, "811") == 0)
-		 dot_min_val = -500; dot_max_val = 2000
+		 dot_min_val = -1000; dot_max_val = 2000
 		cs_min_val = -1000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "827") == 0)
-		dot_min_val = -500; dot_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 2000
 		cs_min_val = -1000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "823") == 0)
-		dot_min_val = -500; dot_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 2000
 		cs_min_val = -1000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "819") == 0)
-		dot_min_val = -500; dot_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 2000
 		cs_min_val = -1000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "815") == 0)
-		dot_min_val = -500; dot_max_val = 2000
+		dot_min_val = -1000; dot_max_val = 2000
 		cs_min_val = -1000; cs_max_val = 2000
 		
 //	////// -1040 stong gamma /////
 	elseif (cmpstr(datnum, "812") == 0)
-		 dot_min_val = -2500; dot_max_val = 2000
+		 dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "828") == 0)
-		dot_min_val = -2500; dot_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "824") == 0)
-		dot_min_val = -2500; dot_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "820") == 0)
-		dot_min_val = -2500; dot_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "816") == 0)
-		dot_min_val = -2500; dot_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 
 //	////// -1040 very-stong gamma /////
 	elseif (cmpstr(datnum, "813") == 0)
-		 dot_min_val = -2000; dot_max_val = 2000
+		 dot_min_val = 2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "829") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
@@ -1221,6 +1236,57 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "817") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+		
+//	////// asymmetric mid-weak gamma /////
+	elseif (cmpstr(datnum, "1171") == 0)
+		 dot_min_val = -1500; dot_max_val = 500
+		cs_min_val = -1500; cs_max_val = 1500
+	elseif (cmpstr(datnum, "1195") == 0)
+		dot_min_val = -1500; dot_max_val = 500
+		cs_min_val = -1500; cs_max_val = 1500
+	elseif (cmpstr(datnum, "1189") == 0)
+		dot_min_val = -1500; dot_max_val = 500
+		cs_min_val = -1500; cs_max_val = 1500
+	elseif (cmpstr(datnum, "1183") == 0)
+		dot_min_val = -1500; dot_max_val = 500
+		cs_min_val = -1500; cs_max_val = 1500
+	elseif (cmpstr(datnum, "1177") == 0)
+		dot_min_val = -1500; dot_max_val = 500
+		cs_min_val = -1500; cs_max_val = 1500
+		
+//	////// asymmetric mid gamma /////
+	elseif (cmpstr(datnum, "1197") == 0)
+		 dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1191") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1185") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1179") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1179") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+
+//	////// asymmetric mid-strong gamma /////
+	elseif (cmpstr(datnum, "1175") == 0)
+		 dot_min_val = 2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1199") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1193") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1187") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1181") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	else
@@ -1281,7 +1347,18 @@ end
 
 
 
-function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(string global_temps, string datnums, string gamma_over_temp_type, [variable global_fit_conductance, variable fit_conductance, variable fit_entropy, string fit_entropy_dats, variable gamma_value, variable leverarm_value, variable load_previous_fit])
+function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_global_fit(string global_temps, 
+																							string datnums, 
+																							string gamma_over_temp_type, 
+																							[
+																							variable global_fit_conductance, 
+																							variable fit_conductance, 
+																							variable fit_entropy, 
+																							string fit_entropy_dats, 
+																							variable gamma_value, 
+																							variable leverarm_value, 
+																							variable load_previous_fit
+																							])
 		
 	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 	fit_entropy = paramisdefault(fit_entropy) ? 0 : fit_entropy // default is to not fit to entropy
