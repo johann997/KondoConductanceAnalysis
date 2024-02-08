@@ -828,7 +828,11 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 	base_wave_name = selectString(paramisdefault(base_wave_name), base_wave_name, "") // fit to datnums if fit_entropy_dats not specified
 
-
+	//////////////////////////////////////////
+	int auto_mask_wave = 1
+	variable auto_percent_mask = 0.15
+	/////////////////////////////////////////
+	
 	string dot_wave_name, dot_mask_wave_name
 	string cs_wave_name, cs_mask_wave_name
 	if (paramisdefault(base_wave_name) == 1)
@@ -1157,36 +1161,36 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //		cs_min_val = 500; cs_max_val = 1500
 
 //	////// -1040 mid gamma /////
-//	elseif (cmpstr(datnum, "810") == 0)
-//		 dot_min_val = -2000; dot_max_val = 2000
-//		cs_min_val = 0; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "826") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-//		cs_min_val = 0; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "822") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-//		cs_min_val = 0; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "818") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-//		cs_min_val = 0; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "814") == 0)
-//		dot_min_val = -2000; dot_max_val = 2000
-//		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "810") == 0)
-		 dot_min_val = 700; dot_max_val = 1500
-		cs_min_val = -300; cs_max_val = 2000
+		 dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "826") == 0)
-		dot_min_val = 250; dot_max_val = 1200
-		cs_min_val = -300; cs_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "822") == 0)
-		dot_min_val = 250; dot_max_val = 1200
-		cs_min_val = -300; cs_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "818") == 0)
-		dot_min_val = 250; dot_max_val = 1200
-		cs_min_val = -300; cs_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "814") == 0)
-		dot_min_val = 250; dot_max_val = 1250
-		cs_min_val = -300; cs_max_val = 2000
+		dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "810") == 0)
+//		 dot_min_val = 700; dot_max_val = 1500
+//		cs_min_val = 0; cs_max_val = 3000
+//	elseif (cmpstr(datnum, "826") == 0)
+//		dot_min_val = 250; dot_max_val = 1200
+//		cs_min_val = 0; cs_max_val = 3000
+//	elseif (cmpstr(datnum, "822") == 0)
+//		dot_min_val = 250; dot_max_val = 1200
+//		cs_min_val = 0; cs_max_val = 3000
+//	elseif (cmpstr(datnum, "818") == 0)
+//		dot_min_val = 250; dot_max_val = 1200
+//		cs_min_val = 0; cs_max_val = 3000
+//	elseif (cmpstr(datnum, "814") == 0)
+//		dot_min_val = 250; dot_max_val = 1250
+//		cs_min_val = 0; cs_max_val = 3000
 
 //	////// -1040 mid-stong gamma /////
 	elseif (cmpstr(datnum, "811") == 0)
@@ -1242,23 +1246,26 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //	////// asymmetric mid-weak gamma /////
 	elseif (cmpstr(datnum, "1171") == 0)
 		 dot_min_val = -1500; dot_max_val = 500
-		cs_min_val = -1500; cs_max_val = 1500
+		cs_min_val = -2000; cs_max_val = 1300
 	elseif (cmpstr(datnum, "1195") == 0)
 		dot_min_val = -1500; dot_max_val = 500
-		cs_min_val = -1500; cs_max_val = 1500
+		cs_min_val = -2000; cs_max_val = 1300
 	elseif (cmpstr(datnum, "1189") == 0)
 		dot_min_val = -1500; dot_max_val = 500
-		cs_min_val = -1500; cs_max_val = 1500
+		cs_min_val = -2000; cs_max_val = 1300
 	elseif (cmpstr(datnum, "1183") == 0)
 		dot_min_val = -1500; dot_max_val = 500
-		cs_min_val = -1500; cs_max_val = 1500
+		cs_min_val = -2000; cs_max_val = 1300
 	elseif (cmpstr(datnum, "1177") == 0)
 		dot_min_val = -1500; dot_max_val = 500
-		cs_min_val = -1500; cs_max_val = 1500
+		cs_min_val = -2000; cs_max_val = 1300
 		
 //	////// asymmetric mid gamma /////
-	elseif (cmpstr(datnum, "1197") == 0)
+	elseif (cmpstr(datnum, "1173") == 0)
 		 dot_min_val = -2000; dot_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1197") == 0)
+		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1191") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
@@ -1269,20 +1276,17 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	elseif (cmpstr(datnum, "1179") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
-	elseif (cmpstr(datnum, "1179") == 0)
-		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
 
 //	////// asymmetric mid-strong gamma /////
 	elseif (cmpstr(datnum, "1175") == 0)
 		 dot_min_val = 2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 360
 	elseif (cmpstr(datnum, "1199") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 800
 	elseif (cmpstr(datnum, "1193") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "1187") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
@@ -1292,6 +1296,8 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	else
 		datnum_declared = 0
 	endif
+	
+
 	
 //	make /o/N=(dimsize($dot_wave_name, 0)) $dot_mask_wave_name = 1
 //	make /o/N=(dimsize($cs_wave_name, 0)) $cs_mask_wave_name = 1
@@ -1319,8 +1325,17 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 				dot_max_index = dimsize($dot_wave_name, 0)
 			endif
 			
+			if (auto_mask_wave == 1)
+				variable max_dot = wavemax($dot_wave_name)
+				FindLevels/Q/D=risingEdges/EDGE=1 $dot_wave_name, max_dot*auto_percent_mask;  
+				FindLevels/Q/D=fallingEdges/EDGE=2 $dot_wave_name, max_dot*auto_percent_mask
+				dot_min_index = x2pnt($dot_wave_name, risingEdges[0])
+				dot_max_index = x2pnt($dot_wave_name, fallingEdges[0])
+			endif
+			
 			dot_mask_wave[0, dot_min_index] = 0
 			dot_mask_wave[dot_max_index, dimsize($dot_wave_name, 0) - 1] = 0
+			
 		endif
 		
 		///// CALCULATING MIN AND MAX INDEX /////
@@ -1466,7 +1481,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //		DoNewGlobalFit(GFin.fitfuncs, GFin.fitdata, GFin.linking, GFin.CoefWave, $"", GFin.ConstraintWave, options, 2000, 1)
 	endif
 	
-	ModifyGraph lsize=2,rgb(FitY)=(65535,16385,55749),rgb(FitY#1)=(65535,16385,55749),rgb(FitY#2)=(65535,16385,55749),rgb(FitY#3)=(65535,16385,55749)
+	ModifyGraph lsize=2,rgb(FitY)=(65535,16385,55749),rgb(FitY#1)=(65535,16385,55749),rgb(FitY#2)=(65535,16385,55749),rgb(FitY#3)=(65535,16385,55749),rgb(FitY#4)=(65535,16385,55749)
 
 	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ", (exp(GFin.CoefWave[0][0]))
 
@@ -1476,7 +1491,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	
 	///// hard coding 4 colours from blue to red
-	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
 	string colour
 	variable red, green, blue
 	//////////////////////////////////////////////////////////////////////
@@ -1500,6 +1516,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	variable minx, maxx
 	
 	Display; KillWindow /Z global_fit; DoWindow/C/O global_fit
+	Display; KillWindow /Z ct_fit; DoWindow/C/O ct_fit
 	
 	if (fit_entropy == 1)
 		Display; KillWindow /Z global_fit_entropy; DoWindow/C/O global_fit_entropy
@@ -1575,6 +1592,15 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			wave cs_data = $cs_data_name
 			cs_fit_name = "Gfit_" + cs_data_name
 		endif
+		
+		///// add occupation to graph /////
+		appendtograph /W=ct_fit /r $cs_data_name
+		ModifyGraph /W=ct_fit mode($cs_data_name)=2, lsize($cs_data_name)=2, rgb($cs_data_name)=(red,green,blue)
+		appendtograph /W=ct_fit /r $cs_fit_name
+		ModifyGraph /W=ct_fit mode($cs_fit_name)=0, lsize($cs_fit_name)=2, rgb($cs_fit_name)=(0,0,0)//(red,green,blue)
+		
+//		ModifyGraph offset($occ_data_name)={0,0.2*i}
+//		ModifyGraph offset($occ_fit_name)={0,0.2*i}
 			///// add charge transition ot the graph /////
 		total_cs_chisq += V_chisq // sum the chisq from each fit
 			
@@ -1604,6 +1630,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		ModifyGraph /W=global_fit mode($occ_data_name)=2, lsize($occ_data_name)=2, rgb($occ_data_name)=(red,green,blue)
 		appendtograph /W=global_fit /r $occ_fit_name
 		ModifyGraph /W=global_fit mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(0,0,0)//(red,green,blue)
+		
+		ModifyGraph offset($occ_data_name)={0,0.2*i}
+		ModifyGraph offset($occ_fit_name)={0,0.2*i}
 		
 		////////////////////////////////////////
 		/////// Creating Conductance fit ///////
@@ -1638,11 +1667,11 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 				cond_fit_name = "Gfit_" + cond_data_name
 			endif
 			
-			// add conduction to graph
-			appendtograph /W=global_fit /l $cond_data_name
-			ModifyGraph /W=global_fit mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
-			appendtograph /W=global_fit /l $cond_fit_name
-			ModifyGraph /W=global_fit mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
+//			// add conduction to graph
+//			appendtograph /W=global_fit /l $cond_data_name
+//			ModifyGraph /W=global_fit mode($cond_data_name)=2, lsize($cond_data_name)=2, rgb($cond_data_name)=(red,green,blue)
+//			appendtograph /W=global_fit /l $cond_fit_name
+//			ModifyGraph /W=global_fit mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
 		endif
 		
 		////////////////////////////////////

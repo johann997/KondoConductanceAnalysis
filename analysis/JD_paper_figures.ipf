@@ -2435,9 +2435,9 @@ function figure_2_conductance()
 //	
 	///// P = -1040 Symmetric
 //	string datnums = "810;826;822;818;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
-////	string datnums = "811;827;823;819;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
-////	string datnums = "812;828;824;820;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
-////	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
+//	string datnums = "811;827;823;819;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
+//	string datnums = "812;828;824;820;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
+//	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
 //
 //	string e_temps = "22.5;90;175;275;400"
 //	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
@@ -2450,11 +2450,11 @@ function figure_2_conductance()
 //	string colours = "0,0,65535;29524,1,58982;65535,0,0"
 
 	///// Asymmetric
-	string datnums = "1171;1195;1189;1183;1177"; string gamma_type = "mid" // mid gamma - 1040 1uV
-//	string datnums = "1197;1191;1185;1179;1179"; string gamma_type = "mid" // mid gamma - 1040 1uV
-//	string datnums = "1175;1199;1193;1187;1181"; string gamma_type = "mid" // mid gamma - 1040 1uV
-
-	string e_temps = "22.5;90;175;275;400"
+//	string datnums = "1171;1195;1189;1183;1177"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//	string datnums = "1173;1197;1191;1185;1179"; string gamma_type = "mid" // mid gamma - 1040 1uV
+	string datnums = "1175;1199;1193;1187;1181"; string gamma_type = "mid" // mid gamma - 1040 1uV
+//
+	string e_temps = "22.5;50;90;275;400"
 	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
 
 
@@ -2563,7 +2563,7 @@ function figure_2_conductance()
 		//////////////////////////////////////////
 		///// Appending traces to panel ca /////
 		AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg; AppendToGraph /W=figure_ca /L=l2/B=b2 $trans_avg_fit;
-		ModifyGraph /W=figure_ca mode($trans_avg)=2, lsize($trans_avg)=1, rgb($trans_avg)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($trans_avg)=2, lsize($trans_avg)=2, rgb($trans_avg)=(red,green,blue)
 		ModifyGraph /W=figure_ca mode($trans_avg_fit)=0, lsize($trans_avg_fit)=2, rgb($trans_avg_fit)=(0,0,0)
 		
 		///// Appending traces to panel cb /////
@@ -2583,7 +2583,7 @@ function figure_2_conductance()
 		///// interpolating data waves /////
 		////////////////////////////////////
 		variable minx, maxx
-		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(occ_avg+"_mask"))	
+		[minx, maxx] = find_overlap_mask($(trans_avg+"_mask"), $(cond_avg+"_mask"))	
 			
 		// interpolating occupation to have higher density of points
 		string cond_vs_occ_data_wave_name_x = occ_avg + "_interp"
@@ -2624,7 +2624,7 @@ function figure_2_conductance()
 		
 		////// plotting
 		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
-		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=1, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
+		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
 		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(0,0,0)
 	endfor
 	

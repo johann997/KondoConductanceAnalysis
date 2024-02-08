@@ -241,6 +241,33 @@ function prune_waves(wave1, wave2)
 end
 
 
+
+function reduce_matrix_set_scale(wave_name, x_points)
+	// reduce the 2d wave as the 'fastdac lockin' method does
+	// and set the same scaling as the x-scaling the lockin-method does
+	string wave_name
+	variable x_points
+	
+	wave base_wave = $wave_name
+	string reduced_name = wave_name + "_reduced"
+
+	int num_rows = dimsize($wave_name, 1)
+	
+	// find start and end x values
+	create_x_wave($wave_name)
+	wave x_wave
+	variable start_x = x_wave[0]
+	variable end_x = x_wave[inf]
+	
+	// reduce the 2d matrix
+	ReduceMatrixSize($wave_name, 0, -1, x_points, 0, -1, num_rows, 1, reduced_name)
+	
+	// set the scale
+	setscale /I x, start_x,  end_x, $reduced_name
+end
+
+
+
 function crop_waves_by_x_scaling(wave1, wave2)
 	// this function removes points from both waves if x point is not equal
 	// assumes each wave has the same length
@@ -1432,6 +1459,7 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 	wave new2dwave=$centered_wave_name
 	copyscales wave_not_centered new2dwave
 	variable mean_mid = mean(mids)
+	print "Mean_mid", (mean_mid)
 	new2dwave=interp2d(wave_not_centered,(x + mids[q] - mean_mid),(y)) // mids is the shift in x
 end
 
