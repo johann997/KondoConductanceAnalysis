@@ -704,19 +704,19 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		
 		// Set index 1 == 1 to hold the value  
 		for(i=0; i<numwvs; i++)
-			FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
-			
-			coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX//+300 // x offset
 			coefwave[3 + i*(numcoefs-numlinks)][0] = ln(data.temps[0]/data.temps[i]) // lnTbase/T offest for various T's
 			coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnTbase/T offsets
 			
 			if (global_fit_conductance == 1)
+				FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
+				coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX //+300 // x offset
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
 				coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // const offset
 				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
 				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // linear
 			else
+				coefwave[2 + i*(numcoefs-numlinks)][0] = 0 
 				coefwave[4 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // linear
 				coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // linear
@@ -830,7 +830,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 
 	//////////////////////////////////////////
 	int auto_mask_wave = 1
-	variable auto_percent_mask = 0.15
+	variable auto_percent_mask = 0.1
 	/////////////////////////////////////////
 	
 	string dot_wave_name, dot_mask_wave_name
@@ -1163,85 +1163,71 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //	////// -1040 mid gamma /////
 	elseif (cmpstr(datnum, "810") == 0)
 		 dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		cs_min_val = 0; cs_max_val = 2400
 	elseif (cmpstr(datnum, "826") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		cs_min_val = -600; cs_max_val = 2400
 	elseif (cmpstr(datnum, "822") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		cs_min_val = -600; cs_max_val = 2400
 	elseif (cmpstr(datnum, "818") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
+		cs_min_val = -600; cs_max_val = 2400
 	elseif (cmpstr(datnum, "814") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = 0; cs_max_val = 2000
-//	elseif (cmpstr(datnum, "810") == 0)
-//		 dot_min_val = 700; dot_max_val = 1500
-//		cs_min_val = 0; cs_max_val = 3000
-//	elseif (cmpstr(datnum, "826") == 0)
-//		dot_min_val = 250; dot_max_val = 1200
-//		cs_min_val = 0; cs_max_val = 3000
-//	elseif (cmpstr(datnum, "822") == 0)
-//		dot_min_val = 250; dot_max_val = 1200
-//		cs_min_val = 0; cs_max_val = 3000
-//	elseif (cmpstr(datnum, "818") == 0)
-//		dot_min_val = 250; dot_max_val = 1200
-//		cs_min_val = 0; cs_max_val = 3000
-//	elseif (cmpstr(datnum, "814") == 0)
-//		dot_min_val = 250; dot_max_val = 1250
-//		cs_min_val = 0; cs_max_val = 3000
+		cs_min_val = -600; cs_max_val = 2400
+
 
 //	////// -1040 mid-stong gamma /////
 	elseif (cmpstr(datnum, "811") == 0)
 		 dot_min_val = -1000; dot_max_val = 2000
-		cs_min_val = -1000; cs_max_val = 2000
+		cs_min_val = -1000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "827") == 0)
 		dot_min_val = -1000; dot_max_val = 2000
-		cs_min_val = -1000; cs_max_val = 2000
+		cs_min_val = -1000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "823") == 0)
 		dot_min_val = -1000; dot_max_val = 2000
-		cs_min_val = -1000; cs_max_val = 2000
+		cs_min_val = -1000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "819") == 0)
 		dot_min_val = -1000; dot_max_val = 2000
-		cs_min_val = -1000; cs_max_val = 2000
+		cs_min_val = -1000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "815") == 0)
 		dot_min_val = -1000; dot_max_val = 2000
-		cs_min_val = -1000; cs_max_val = 2000
+		cs_min_val = -1000; cs_max_val = 3000
 		
 //	////// -1040 stong gamma /////
 	elseif (cmpstr(datnum, "812") == 0)
 		 dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -1400; cs_max_val = 2200
 	elseif (cmpstr(datnum, "828") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -1300; cs_max_val = 1700
 	elseif (cmpstr(datnum, "824") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2500; cs_max_val = 2200
 	elseif (cmpstr(datnum, "820") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2500; cs_max_val = 2200
 	elseif (cmpstr(datnum, "816") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2500; cs_max_val = 2200
 
 //	////// -1040 very-stong gamma /////
 	elseif (cmpstr(datnum, "813") == 0)
 		 dot_min_val = 2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 1600
 	elseif (cmpstr(datnum, "829") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "825") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "821") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "817") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -2000; cs_max_val = 3000
 		
 //	////// asymmetric mid-weak gamma /////
 	elseif (cmpstr(datnum, "1171") == 0)
@@ -1293,10 +1279,95 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	elseif (cmpstr(datnum, "1181") == 0)
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
+		
+//	////// setpoints mid-strong gamma /////
+	elseif (cmpstr(datnum, "1239") == 0)
+		cs_min_val = -1200; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1240") == 0)
+		cs_min_val = -1200; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1241") == 0)
+		cs_min_val = -1200; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1242") == 0)
+		cs_min_val = -1200; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1243") == 0)
+		cs_min_val = -1200; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1244") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1245") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1246") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1247") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1248") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1249") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1250") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1251") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1252") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1253") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1254") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1255") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1256") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1257") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1258") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1259") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1260") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1261") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1262") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1263") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1264") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1265") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1266") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1267") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1268") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1269") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1270") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1271") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1272") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1273") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1274") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1275") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1276") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1277") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1278") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1279") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
 	else
 		datnum_declared = 0
 	endif
 	
+	datnum_declared = 1	
 
 	
 //	make /o/N=(dimsize($dot_wave_name, 0)) $dot_mask_wave_name = 1
@@ -1330,7 +1401,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 				FindLevels/Q/D=risingEdges/EDGE=1 $dot_wave_name, max_dot*auto_percent_mask;  
 				FindLevels/Q/D=fallingEdges/EDGE=2 $dot_wave_name, max_dot*auto_percent_mask
 				dot_min_index = x2pnt($dot_wave_name, risingEdges[0])
-				dot_max_index = x2pnt($dot_wave_name, fallingEdges[0])
+				dot_max_index = x2pnt($dot_wave_name, fallingEdges[inf])
 			endif
 			
 			dot_mask_wave[0, dot_min_index] = 0
@@ -1492,7 +1563,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	///// hard coding 4 colours from blue to red
 //	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
-	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
+//	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
+	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 	string colour
 	variable red, green, blue
 	//////////////////////////////////////////////////////////////////////
@@ -1631,8 +1703,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		appendtograph /W=global_fit /r $occ_fit_name
 		ModifyGraph /W=global_fit mode($occ_fit_name)=0, lsize($occ_fit_name)=2, rgb($occ_fit_name)=(0,0,0)//(red,green,blue)
 		
-		ModifyGraph offset($occ_data_name)={0,0.2*i}
-		ModifyGraph offset($occ_fit_name)={0,0.2*i}
+		variable occ_offset = 0.2
+		ModifyGraph /W=global_fit offset($occ_data_name)={0,occ_offset*i}
+		ModifyGraph /W=global_fit offset($occ_fit_name)={0,occ_offset*i}
 		
 		////////////////////////////////////////
 		/////// Creating Conductance fit ///////
