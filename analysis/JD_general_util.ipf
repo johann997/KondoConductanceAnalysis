@@ -907,9 +907,9 @@ function plot_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, of
 end
 
 
-function Display2DWaterfall(w, [offset, x_label, y_label, plot_every_n, y_min, y_max, plot_contour])
+function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_every_n, y_min, y_max, plot_contour])
 	wave w
-	variable offset
+	variable offset, offset_traces
 	string x_label, y_label
 	int plot_every_n, y_min, y_max, plot_contour
 	
@@ -947,6 +947,10 @@ function Display2DWaterfall(w, [offset, x_label, y_label, plot_every_n, y_min, y
 			offset_to_apply = i * offset
 		else
 			offset_to_apply = 0
+		endif
+		
+		if (offset_traces == 1)
+			offset_to_apply -= wave_2d[round(dimsize(wave_2d, 0)/2)][i]
 		endif
 		
 		wave_2d[][i] = wave_2d[p][i] + offset_to_apply
