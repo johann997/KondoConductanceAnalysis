@@ -2569,14 +2569,14 @@ function figure_2_conductance()
 
 ///// (base, 90, 275, 400). 
 // assymetric 
-	string datnums = "1747;1771;1763;1755"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1747;1771;1763;1755"; string gamma_type = "mid" // 0.4nA
 //	string datnums = "1748;1772;1764;1756"; string gamma_type = "mid" // 0.8nA
-//	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
+	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
 
 //// symmetric
 //	string datnums = "1751;1775;1767;1759"; string gamma_type = "mid" // 0.4nA
 //	string datnums = "1752;1776;1768;1760"; string gamma_type = "mid" // 0.8nA
-//	string datnums = "1753;1777;1769;1761"; string gamma_type = "mid" // 1.2nA
+//	string datnums = "1753;1778;1769;1761"; string gamma_type = "mid" // 1.2nA
 
 	string e_temps = "22.5;90;275;400"
 	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
