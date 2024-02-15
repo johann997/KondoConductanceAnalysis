@@ -473,8 +473,39 @@ function /wave fit_single_peak(wave current_array)
 	//////////////////////
 	///// OLD METHOD /////
 	//////////////////////
-//	temp=abs(current_array)
-//	make/o/n=4 W_coef
+	duplicate /o current_array temp_smooth
+	smooth 800, temp_smooth
+	
+	variable amplitude, fwhm
+
+	amplitude = (wavemin(temp_smooth) - wavemin(temp_smooth))
+	
+	FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth, amplitude*0.5;  
+	FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth, amplitude*0.5
+	
+	fwhm = fallingEdges[inf] - risingEdges[0]
+
+
+	make/o/n=4 W_coef
+	
+	// W_coef[0] = y0 = y-offset
+	// W_coef[1] = A = amplitude
+	// W_coef[2] = x0 = x-offset
+	// W_coef[3] = B = 'gamma'
+	
+	// offset
+	W_coef[0] = wavemin(temp_smooth)
+	
+	
+	// amplitude
+	W_coef[1] =  amplitude*fwhm^2
+	
+	// x - offset
+	FindLevel /Q temp, wavemax(temp_smooth)
+	W_coef[2] = V_LevelX 
+
+	// 'gamma'
+	W_coef[3] = fwhm^2 		
 //	wavestats/q temp
 //	
 //	CurveFit/q lor current_array[round(V_maxrowloc-V_npnts/20), round(V_maxrowloc+V_npnts/20)] /D 
@@ -512,7 +543,11 @@ function /wave fit_single_peak(wave current_array)
 		max_fit_index = V_npnts - 1
 	endif
 	
-	CurveFit/q lor current_array[min_fit_index, max_fit_index] /D // fit with lor (Lorentzian) :: /q = quiet :: /D = destwaveName
+//	closeallgraphs()
+//	display current_array
+	CurveFit/q  lor current_array[min_fit_index, max_fit_index] /D // fit with lor (Lorentzian) :: /q = quiet :: /D = destwaveName
+//	ModifyGraph rgb(fit_temp_wave)=(0,0,0)
+	
 end
 
 
