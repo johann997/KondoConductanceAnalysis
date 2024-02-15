@@ -708,11 +708,16 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 			coefwave[3 + i*(numcoefs-numlinks)][1] = 1 // hold the lnTbase/T offsets
 			
 			if (global_fit_conductance == 1)
-				FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
+				wave global_cond = $(GFin.fitdata[i][0])
+				duplicate /o global_cond temp_smooth
+				smooth 800, temp_smooth
+				FindLevel /Q temp_smooth, wavemax(temp_smooth)
+				
+//				FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
 				coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX //+300 // x offset
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
-				coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // const offset
+				coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // const offset
 				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
 				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // linear
 			else
@@ -830,7 +835,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 
 	//////////////////////////////////////////
 	int auto_mask_wave = 1
-	variable auto_percent_mask = 0.1
+	variable auto_percent_mask = 0.3
 	/////////////////////////////////////////
 	
 	string dot_wave_name, dot_mask_wave_name
@@ -1280,7 +1285,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		dot_min_val = -2000; dot_max_val = 2000
 		cs_min_val = -2000; cs_max_val = 2000
 		
-//	////// setpoints mid-strong gamma /////
+//	////// setpoints symmetric mid-strong gamma /////
 	elseif (cmpstr(datnum, "1239") == 0)
 		cs_min_val = -1200; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1240") == 0)
@@ -1363,8 +1368,104 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1279") == 0)
 		cs_min_val = -2000; cs_max_val = 2000
+	
+	elseif (cmpstr(datnum, "1333") == 0)
+		cs_min_val = -1500; cs_max_val = 1076
+	elseif (cmpstr(datnum, "1341") == 0)
+		cs_min_val = -2500; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1349") == 0)
+		cs_min_val = -2500; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1357") == 0)
+		cs_min_val = -2500; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1365") == 0)
+		cs_min_val = -2500; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1373") == 0)
+		cs_min_val = -2500; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1381") == 0)
+		cs_min_val = -2500; cs_max_val = 2000
+		
+//	////// setpoints asymmetric mid-strong gamma /////
+	elseif (cmpstr(datnum, "1327") == 0)
+		cs_min_val = -3000; cs_max_val = 622
+	elseif (cmpstr(datnum, "1328") == 0)
+		cs_min_val = -3000; cs_max_val = 1700
+	elseif (cmpstr(datnum, "1329") == 0)
+		cs_min_val = -3000; cs_max_val = 860
+	elseif (cmpstr(datnum, "1330") == 0)
+		cs_min_val = -3000; cs_max_val = 860
+	elseif (cmpstr(datnum, "1331") == 0)
+		cs_min_val = -3000; cs_max_val = 860
+	elseif (cmpstr(datnum, "1335") == 0)
+		cs_min_val = -3000; cs_max_val = 1700		
+	elseif (cmpstr(datnum, "1336") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1337") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1338") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1339") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1343") == 0)
+		cs_min_val = -3000; cs_max_val = 1930
+	elseif (cmpstr(datnum, "1344") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1345") == 0)
+		cs_min_val = -3000; cs_max_val = 2000		
+	elseif (cmpstr(datnum, "1346") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1347") == 0)
+		cs_min_val = -3000; cs_max_val = 2000			
+	elseif (cmpstr(datnum, "1351") == 0)
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1352") == 0)
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1353") == 0)
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1354") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1355") == 0)
+		cs_min_val = -3000; cs_max_val = 2000			
+	elseif (cmpstr(datnum, "1359") == 0)
+		cs_min_val = -3000; cs_max_val = 1950	
+	elseif (cmpstr(datnum, "1360") == 0)
+		cs_min_val = -3000; cs_max_val = 1360
+	elseif (cmpstr(datnum, "1361") == 0)
+		cs_min_val = -3000; cs_max_val = 1657
+	elseif (cmpstr(datnum, "1362") == 0)
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1363") == 0)
+		cs_min_val = -3000; cs_max_val = 2000			
+	elseif (cmpstr(datnum, "1367") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1368") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1369") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1370") == 0)
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1371") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1375") == 0)
+		cs_min_val = -3000; cs_max_val = 2000		
+	elseif (cmpstr(datnum, "1376") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1377") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1378") == 0)
+		cs_min_val = -3000; cs_max_val = 2000	
+	elseif (cmpstr(datnum, "1379") == 0)
+		cs_min_val = -3000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "1570") == 0)
+		cs_min_val = -3000; cs_max_val = 2750
+	elseif (cmpstr(datnum, "1512") == 0)
+		cs_min_val = -3500; cs_max_val = 2750
+	elseif (cmpstr(datnum, "1470") == 0)
+		cs_min_val = -3500; cs_max_val = 2750
+		
 	else
-		datnum_declared = 0
+//		datnum_declared = 0
+		cs_min_val = -4990; cs_max_val = 2750
+		
 	endif
 	
 	datnum_declared = 1	
@@ -1397,9 +1498,13 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 			endif
 			
 			if (auto_mask_wave == 1)
-				variable max_dot = wavemax($dot_wave_name)
-				FindLevels/Q/D=risingEdges/EDGE=1 $dot_wave_name, max_dot*auto_percent_mask;  
-				FindLevels/Q/D=fallingEdges/EDGE=2 $dot_wave_name, max_dot*auto_percent_mask
+				wave global_cond = $dot_wave_name
+				duplicate /o global_cond temp_smooth
+				smooth 800, temp_smooth
+				
+				variable max_dot = wavemax(temp_smooth)
+				FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth, max_dot*auto_percent_mask;  
+				FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth, max_dot*auto_percent_mask
 				dot_min_index = x2pnt($dot_wave_name, risingEdges[0])
 				dot_max_index = x2pnt($dot_wave_name, fallingEdges[inf])
 			endif
@@ -1562,9 +1667,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 	
 	///// hard coding 4 colours from blue to red
-//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 //	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
-	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 	string colour
 	variable red, green, blue
 	//////////////////////////////////////////////////////////////////////
@@ -2060,9 +2165,14 @@ Function fitfunc_ct_to_occ(pw, yw, xw) : FitFunc
 //	yw = pw[7]*interp2d(nrg, (pw[1]*(xw-pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3
 // 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
 	
-	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2 + pw[8]*xw[p]^3)
-	yw[] = yw[p]/(pw[7] + pw[9]*xw[p])
+	// version 1 (assuming data is in shape of occupation)
+//	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2 + pw[8]*xw[p]^3)
+//	yw[] = yw[p]/(pw[7] + pw[9]*xw[p])
 	
+	// version 2 (using NRG to subtract occupation linear term)
+	wave nrg=occ_nrg
+	yw[] = yw[p] - (pw[4] + pw[5]*xw[p] + pw[6]*xw[p]^2 + pw[8]*xw[p]^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])))
+	yw[] = yw[p]/(pw[7])
 end
 
 
