@@ -714,7 +714,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 				FindLevel /Q temp_smooth, wavemax(temp_smooth)
 				
 //				FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
-				coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX //+300 // x offset
+				coefwave[2 + i*(numcoefs-numlinks)][0] = 0//V_LevelX //+300 // x offset
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
 				coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // const offset
@@ -835,7 +835,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 
 	//////////////////////////////////////////
 	int auto_mask_wave = 1
-	variable auto_percent_mask = 0.3
+	variable auto_percent_mask = 0.1
 	/////////////////////////////////////////
 	
 	string dot_wave_name, dot_mask_wave_name
@@ -1461,10 +1461,20 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -3500; cs_max_val = 2750
 	elseif (cmpstr(datnum, "1470") == 0)
 		cs_min_val = -3500; cs_max_val = 2750
-		
+	elseif (cmpstr(datnum, "1749") == 0)
+		cs_min_val = -4370; cs_max_val = 1200
+	elseif (cmpstr(datnum, "1757") == 0)
+		cs_min_val = -4370; cs_max_val = 1200
+	elseif (cmpstr(datnum, "1757") == 0)
+		cs_min_val = -4370; cs_max_val = 1200
 	else
 //		datnum_declared = 0
-		cs_min_val = -4990; cs_max_val = 2750
+//		cs_min_val = -4990; cs_max_val = 2750
+//		cs_min_val = -4370; cs_max_val = 5000; 	dot_min_val = -2000; dot_max_val = 1500 // symmetric
+		
+		cs_min_val = -4000; cs_max_val = 3090; 	dot_min_val = -2000; dot_max_val = 1500 //asymmetric
+
+
 		
 	endif
 	
@@ -1497,17 +1507,17 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 				dot_max_index = dimsize($dot_wave_name, 0)
 			endif
 			
-			if (auto_mask_wave == 1)
-				wave global_cond = $dot_wave_name
-				duplicate /o global_cond temp_smooth
-				smooth 800, temp_smooth
-				
-				variable max_dot = wavemax(temp_smooth)
-				FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth, max_dot*auto_percent_mask;  
-				FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth, max_dot*auto_percent_mask
-				dot_min_index = x2pnt($dot_wave_name, risingEdges[0])
-				dot_max_index = x2pnt($dot_wave_name, fallingEdges[inf])
-			endif
+//			if (auto_mask_wave == 1)
+//				wave global_cond = $dot_wave_name
+//				duplicate /o global_cond temp_smooth
+//				smooth 800, temp_smooth
+//				
+//				variable max_dot = wavemax(temp_smooth)
+//				FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth, max_dot*auto_percent_mask;  
+//				FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth, max_dot*auto_percent_mask
+//				dot_min_index = x2pnt($dot_wave_name, risingEdges[0])
+//				dot_max_index = x2pnt($dot_wave_name, fallingEdges[inf])
+//			endif
 			
 			dot_mask_wave[0, dot_min_index] = 0
 			dot_mask_wave[dot_max_index, dimsize($dot_wave_name, 0) - 1] = 0

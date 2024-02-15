@@ -2412,8 +2412,8 @@ endmacro
 
 
 function figure_2_conductance()
-	variable gamma_value =  3.2
-	variable leverarm_value = -0.1
+	variable gamma_value =  3.9
+	variable leverarm_value = 0.005
 //	variable gamma_value =  2.5
 //	variable leverarm_value = -0.1
 
@@ -2573,7 +2573,7 @@ function figure_2_conductance()
 //	string datnums = "1748;1772;1764;1756"; string gamma_type = "mid" // 0.8nA
 //	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
 
-// symmetric
+//// symmetric
 //	string datnums = "1751;1775;1767;1759"; string gamma_type = "mid" // 0.4nA
 //	string datnums = "1752;1776;1768;1760"; string gamma_type = "mid" // 0.8nA
 //	string datnums = "1753;1777;1769;1761"; string gamma_type = "mid" // 1.2nA
@@ -2656,7 +2656,8 @@ function figure_2_conductance()
 	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=1, fit_entropy=0, fit_entropy_dats="", gamma_value=gamma_value, leverarm_value=leverarm_value)	
 	
 	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
-
+	Display; KillWindow /Z figure_cond_vs_occ; DoWindow/C/O figure_cond_vs_occ 
+	
 	string cond_avg, cond_avg_fit, coef_cond
 	string trans_avg, trans_avg_fit, coef_trans
 	string occ_avg, occ_avg_fit
@@ -2772,6 +2773,12 @@ function figure_2_conductance()
 		AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_ca /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
 		ModifyGraph /W=figure_ca mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
 		ModifyGraph /W=figure_ca mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(0,0,0)
+		
+		
+		////// plotting
+		AppendToGraph /W=figure_cond_vs_occ /L=left/B=bottom $cond_vs_occ_data_wave_name_y vs $cond_vs_occ_data_wave_name_x; AppendToGraph /W=figure_cond_vs_occ /L=left/B=bottom $cond_vs_occ_fit_wave_name_y vs $cond_vs_occ_fit_wave_name_x;
+		ModifyGraph /W=figure_cond_vs_occ mode($cond_vs_occ_data_wave_name_y)=2, lsize($cond_vs_occ_data_wave_name_y)=2, rgb($cond_vs_occ_data_wave_name_y)=(red,green,blue)
+		ModifyGraph /W=figure_cond_vs_occ mode($cond_vs_occ_fit_wave_name_y)=0, lsize($cond_vs_occ_fit_wave_name_y)=2, rgb($cond_vs_occ_fit_wave_name_y)=(0,0,0)
 	endfor
 	
 	///// axis labelling goes from top plot to bottom plot
@@ -2811,6 +2818,12 @@ function figure_2_conductance()
 	
 	Label /W=figure_ca bottom "Occupation (.arb)"
 	Label /W=figure_ca b2 "Sweep Gate (mV)"
+	
+	
+	Label /W=figure_cond_vs_occ left "Conductance (\\$WMTEX$ 2e^2  \\$/WMTEX$/ h)"
+	Label /W=figure_cond_vs_occ bottom "Occupation (.arb)"
+	SetAxis /W=figure_cond_vs_occ left 0,*
+	SetAxis /W=figure_cond_vs_occ bottom 0,1
 	
 	///// off-setting labels from the axis /////
 	ModifyGraph /W=figure_ca lblPos(l2)=150
