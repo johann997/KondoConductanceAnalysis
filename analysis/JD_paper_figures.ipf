@@ -2412,12 +2412,15 @@ endmacro
 
 
 function figure_2_conductance()
-	variable gamma_value =  2.71992
-	variable leverarm_value = 0.01
+	variable gamma_value =  3.2
+	variable leverarm_value = -0.1
+//	variable gamma_value =  2.5
+//	variable leverarm_value = -0.1
 
-	
-//	///// SPRING CONDUCTANCE 2024 AND TRANSITION DATA ///// 
-
+///////////////////////////////////////////////////////////////////////////////
+////////////// SPRING CONDUCTANCE 2024 AND TRANSITION DATA //////////////////// 
+///////////////////////////////////////////////////////////////////////////////
+// (more weakly coupled datasets)
 //	string datnums = "681;699;693;687"; string gamma_type = "mid" // low gamma - 640 2uV
 //	string datnums = "682;700;694;688"; string gamma_type = "mid" // mid gamma - 640 2uV
 //	string datnums = "683;701;695;689"; string gamma_type = "mid" // high gamma - 640 2uV
@@ -2433,15 +2436,17 @@ function figure_2_conductance()
 //	string e_temps = "22.5;90;275;400"
 //	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 //	
-	///// P = -1040 Symmetric
+
+
+	///// P = -1040 Symmetric (more strongly coupled)
 //	string datnums = "810;826;822;818;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
 //	string datnums = "811;827;823;819;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
 //	string datnums = "812;828;824;820;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
-	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
-//
-	string e_temps = "22.5;90;175;275;400"
-	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
-	
+//	string datnums = "813;829;825;821;817"; string gamma_type = "strong" // strong gamma - 1040 1uV
+////
+//	string e_temps = "22.5;90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
+//	
 //	string datnums = "810;826;814"; string gamma_type = "mid" // mid gamma - 1040 1uV
 //	string datnums = "811;827;815"; string gamma_type = "mid" // mid-strong gamma - 1040 1uV
 //	string datnums = "812;828;816"; string gamma_type = "strong" // strong gamma - 1040 1uV
@@ -2449,7 +2454,8 @@ function figure_2_conductance()
 //	string e_temps = "22.5;90;400"
 //	string colours = "0,0,65535;29524,1,58982;65535,0,0"
 
-//	///// Asymmetric
+
+//	///// Asymmetric attempt 1
 ////	string datnums = "1171;1195;1189;1183;1177"; string gamma_type = "mid" // mid gamma - 1040 1uV
 ////	string datnums = "1173;1197;1191;1185;1179"; string gamma_type = "mid" // mid gamma - 1040 1uV
 //	string datnums = "1175;1199;1193;1187;1181"; string gamma_type = "mid" // mid gamma - 1040 1uV
@@ -2457,59 +2463,179 @@ function figure_2_conductance()
 //	string e_temps = "22.5;50;90;275;400"
 //	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
 
-	///// Setpoints
-//	string datnums = "1239;1275;1269;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
-//	string datnums = "1240;1276;1270;1264;1258;1252;1246"; string gamma_type = "mid" // 0.7nA
-//	string datnums = "1241;1277;1271;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
-////	string datnums = "1242;1278;1272;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
-//	string datnums = "1243;1279;1273;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
-//////
+
+//	///// Asymmetric attempt 2 (all temperatures)
+//	string datnums = "1327;1375;1367;1359;1351;1343;1335"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1328;1376;1368;1360;1352;1344;1336"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1329;1377;1369;1361;1353;1345;1337"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1330;1378;1370;1362;1354;1346;1338"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1331;1379;1371;1363;1355;1347;1339"; string gamma_type = "mid" // 1.6nA
+
 //	string e_temps = "22.5;30;50;90;175;275;400"
 //	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 
-	///// Setpoints
+
+//	///// Asymmetric attempt 2 (base and 90mK up)
+//	string datnums = "1327;1359;1351;1343;1335"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1328;1360;1352;1344;1336"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1329;1361;1353;1345;1337"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1330;1362;1354;1346;1338"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1331;1363;1355;1347;1339"; string gamma_type = "mid" // 1.6nA
+//
+//	string e_temps = "22.5;90;175;275;400"
+//	string colours = "0,0,6553565535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+	
+	
+//	///// Asymmetric attempt 2 v2 (base and 90mK up)
+	///// set point 1 /////
+//	string datnums = "1412;1536;1496;1454"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1413;1537;1497;1455"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1414;1538;1498;1456"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1415;1539;1499;1457"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1416;1540;1500;1458"; string gamma_type = "mid" // 1.6nA
+	
+	///// set point 2 /////
+//	string datnums = "1418;1542;1502;1460"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1419;1543;1503;1461"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1420;1544;1504;1462"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1421;1545;1505;1463"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1422;1546;1506;1464"; string gamma_type = "mid" // 1.6nA
+
+	///// set point 3 /////
+//	string datnums = "1424;1548;1508;1466"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1425;1549;1509;1467"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1426;1550;1510;1468"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1427;1551;1511;1469"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1428;1552;1512;1470"; string gamma_type = "mid" // 1.6nA
+	
+	///// set point 4 /////
+//	string datnums = "1430;1554;1514;1472"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1431;1555;1515;1473"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1432;1556;1516;1474"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1433;1557;1517;1475"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1434;1558;1518;1476"; string gamma_type = "mid" // 1.6nA
+	
+	///// set point 5 /////
+//	string datnums = "1436;1560;1520;1478"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1437;1561;1521;1479"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1438;1562;1522;1480"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1439;1563;1523;1481"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1440;1564;1524;1482"; string gamma_type = "mid" // 1.6nA
+
+
+	///// set point 6 /////
+//	string datnums = "1442;1566;1526;1484"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1443;1567;1527;1485"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1444;1568;1528;1486"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1445;1569;1529;1487"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1446;1570;1530;1488"; string gamma_type = "mid" // 1.6nA
+	
+	
+	///// set point 7 /////
+//	string datnums = "1448;1572;1532;1490"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1449;1573;1533;1491"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1450;1574;1534;1492"; string gamma_type = "mid" // 1.0nA dont have 275 mK data
+//	string datnums = "1451;1575;1535;1493"; string gamma_type = "mid" // 1.3nA dont have 275 mK data
+//	string datnums = "1452;1576;1536;1494"; string gamma_type = "mid" // 1.6nA dont have 275 mK data
+	
+//	string e_temps = "22.5;90;275;400"
+//	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
+
+	///// Setpoints (all temperatures)
+//	string datnums = "1239;1275;1269;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1240;1276;1270;1264;1258;1252;1246"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1241;1277;1271;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1242;1278;1272;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1243;1279;1273;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
+
+//	string datnums = "1333;1381;1373;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
+
+//	string e_temps = "22.5;30;50;90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+
+	///// Setpoint  (base and 90mK up)
 //	string datnums = "1239;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
-////	string datnums = "1240;1264;1258;1252;1246"; string gamma_type = "mid" // 0.7nA
-////	string datnums = "1241;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
-////	string datnums = "1242;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
-////	string datnums = "1243;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
-////
+//	string datnums = "1240;1264;1258;1252;1246"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1241;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
+//	string datnums = "1242;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1243;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
+
+//	string datnums = "1333;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
+//
+//
 //	string e_temps = "22.5;90;175;275;400"
 //	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 
 
+///// (base, 90, 275, 400). 
+// assymetric 
+	string datnums = "1747;1771;1763;1755"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1748;1772;1764;1756"; string gamma_type = "mid" // 0.8nA
+//	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
+
+// symmetric
+//	string datnums = "1751;1775;1767;1759"; string gamma_type = "mid" // 0.4nA
+//	string datnums = "1752;1776;1768;1760"; string gamma_type = "mid" // 0.8nA
+//	string datnums = "1753;1777;1769;1761"; string gamma_type = "mid" // 1.2nA
+
+	string e_temps = "22.5;90;275;400"
+	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
+	
+	
+	
+// 1st and 2nd plateau CS setpoint
+//Setpoint 1
+//	string datnums = "1612;1642;1632;1622"; string gamma_type = "mid" // 3.0nA
+//	string datnums = "1613;1643;1633;1623"; string gamma_type = "mid" // 3.1nA
+//	string datnums = "1614;1644;1634;1624"; string gamma_type = "mid" // 3.3nA
+//	string datnums = "1615;1645;1635;1625"; string gamma_type = "mid" // 3.5nA
+
+//Setpoint 7
+//	string datnums = "1617;1647;1637;1627"; string gamma_type = "mid" // 3.0nA
+//	string datnums = "1618;1648;1638;1628"; string gamma_type = "mid" // 3.1nA
+//	string datnums = "1619;1649;1639;1629"; string gamma_type = "mid" // 3.3nA
+//	string datnums = "1620;1650;1640;1630"; string gamma_type = "mid" // 3.5nA
+
+//	string e_temps = "22.5;90;275;400"
+//	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
 
 
-//	///// SPRING CONDUCTANCE 2023 AND TRANSITION DATA ///// 
-////	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
-////	string datnums = "6386;6088;6085;6082"; string gamma_type = "high"// high gamma (just before entropy scan 22.5 fits well 15mK fits best)
-////	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
+///////////////////////////////////////////////////////////////////////////////
+//////////// SPRING CONDUCTANCE 2023 AND TRANSITION DATA ////////////////////// 
+///////////////////////////////////////////////////////////////////////////////
+//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
+//	string datnums = "6386;6088;6085;6082"; string gamma_type = "high"// high gamma (just before entropy scan 22.5 fits well 15mK fits best)
+//	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
 //	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
-//	
-////	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
-//	
-////	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
-////	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
+
+//	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
+
+//	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
+//	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
+
 //	string e_temps = "12;100;300;500"
 //	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
-//	// 0.765173 7.2439 19.3344 :: SUMMER
+// 0.765173 7.2439 19.3344 :: SPRING 2023
 
-////
-////////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
-//	string e_temps = "12;275;500"
-////	string e_temps = "15;275;500"
-//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
-////	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
-////	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
-////	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////// AUTUMN CONDUCTANCE AND TRANSITION DATA //////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
+//	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
+//	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
 //	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
-//	
-	//3.30077  7.09738  19.7605  27.6116 :: AUTUMN
 	
+//	string e_temps = "12;275;500"
+//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+// 3.30077  7.09738  19.7605  27.6116 :: AUTUMN 2023
+
+
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 0
+	int global_fit_conductance = 1
 	
 	
 	
@@ -2988,11 +3114,15 @@ function etemp_test_global()
 //
 ////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
 //	string datnums = "696;692;688"; //string gamma_over_temp_type = "low"; // low gamma
-	string datnums = "697;693;689"; cold_gt = 2.0; hot_gt = 2.0; cold_leverarm = 0.2; hot_leverarm = 0.2;string gamma_over_temp_type = "mid"; // mid-low gamma
+//	string datnums = "697;693;689"; cold_gt = 2.0; hot_gt = 2.0; cold_leverarm = 0.2; hot_leverarm = 0.2;string gamma_over_temp_type = "mid"; // mid-low gamma
 //	string datnums = "698;694;690"; cold_gt = 3.0; hot_gt = 3.0; cold_leverarm = 0.2; hot_leverarm = 0.2; string gamma_over_temp_type = "mid"; // mid-high gamma
 //	string datnums = "699;695;691"; cold_gt = 3.5; hot_gt = 3.5; cold_leverarm = 0.2; hot_leverarm = 0.2; string gamma_over_temp_type = "high"; // high gamma
-	string base_temps = ";275;500"
-
+//	string base_temps = ";275;500"
+	
+	string datnums = "1241;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
+	cold_gt = 2.71992; hot_gt = 2.71992; cold_leverarm = 0.01; hot_leverarm = 0.01;string gamma_over_temp_type = "mid";
+	string base_temps = ";90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 	
 	closeallGraphs()
 	
@@ -3000,7 +3130,7 @@ function etemp_test_global()
 	string global_temps
 	
 	variable num_temperatures = 30
-	int min_temp = 12
+	int min_temp = 15
 	int max_temp = 100
 	
 	make /o/n=(num_temperatures) e_temps
@@ -3027,10 +3157,12 @@ function etemp_test_global()
 				
 		global_temps = num2str(e_temps[i]) + base_temps
 		if (i == 0)
-			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, gamma_value=gamma_value, leverarm_value=leverarm_value)
+			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, gamma_value=2.71992, leverarm_value=0.01)
 			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, load_previous_fit=1)
 		else
 			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, load_previous_fit=1)
+			wave globalfitcoefficients
+//			print globalfitcoefficients
 		endif
 		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 		
