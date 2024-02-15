@@ -1462,9 +1462,104 @@ function centering(wave wave_not_centered, string centered_wave_name, wave mids)
 	duplicate/o wave_not_centered $centered_wave_name
 	wave new2dwave=$centered_wave_name
 	copyscales wave_not_centered new2dwave
-	variable mean_mid = mean(mids)
+	
+	variable mean_mid = median(mids)
 	print "Mean_mid", (mean_mid)
 	new2dwave=interp2d(wave_not_centered,(x + mids[q] - mean_mid),(y)) // mids is the shift in x
 end
 
 
+function plot_waterfall(w, x_label, y_label, [y_spacing, offset, datnum,subtract_line])
+	wave w
+	string x_label, y_label
+	variable y_spacing, offset, datnum, subtract_line
+	
+	datnum = paramisdefault(datnum) ? 0 : datnum // alternate_bias OFF is default
+	subtract_line = paramisdefault(subtract_line) ? 0 : subtract_line
+	
+	variable offset_val
+	string legend_text = ""
+	string legend_check = ""
+	
+	display
+	setWindow kwTopWin, graphicsTech=0		
+	duplicate/o w tempwave
+	int num_rows = dimsize(tempwave, 0)
+	variable i
+	for (i=0; i<dimsize(w, 1); i++)
+		if (offset != 0 || subtract_line != 0)
+			
+			offset_val = tempwave[round(num_rows/2)][i]
+			if(offset != 0)
+				tempwave[][i] -= offset_val
+			endif
+			
+			if(subtract_line != 0)
+			
+				variable start_value = tempwave[0][i]
+				variable end_value = tempwave[num_rows-1][i]
+				
+				int k
+				for (k=0; k<num_rows; k++)
+					tempwave[k][i] -= start_value + (end_value-start_value)*k/num_rows
+				endfor 
+			endif
+			
+			if (i==0)
+				legend_check = ""
+			else
+				legend_check = "#" + num2str(i)
+			endif
+			
+			legend_text =  legend_text + "\s(tempwave" + legend_check + ") Current = " +  num2str(offset_val) + " nA\r"
+			
+		endif
+		tempwave[][i] = tempwave[p][i] + y_spacing*i + offset_val
+		AppendToGraph tempwave[][i]
+	endfor
+	scg_setupGraph1D(WinName(0,1), x_label, y_label=y_label, datnum=datnum)
+	
+	if (offset != 0 || subtract_line != 0)
+		legend/C/N=text0/J/B=1 legend_text
+		makecolorful()
+	endif
+End
+
+
+
+function scg_setupGraph1D(graphID, x_label, [y_label, datnum])
+    // Sets up the axis labels, and datnum for a 1D graph
+    string graphID, x_label, y_label
+    variable datnum
+    
+    datnum = paramisdefault(datnum) ? 0 : datnum // alternate_bias OFF is default
+
+    
+    // Handle Defaults
+    y_label = selectString(paramIsDefault(y_label), y_label, "")
+    
+    
+    // Sets axis labels, datnum etc
+    setaxis/w=$graphID /a
+    Label /W=$graphID bottom, x_label
+
+    Label /W=$graphID left, y_label
+
+	nvar filenum
+	
+	if (datnum == 0)
+		datnum = filenum - 1
+	endif
+	
+    TextBox /W=$graphID/C/N=datnum/A=LT/X=1.0/Y=1.0/E=2 "Dat"+num2str(datnum)
+end
+
+
+function quick_conductance_plot_jumps(int datnum)
+	udh5(dat_num=num2str(datnum))
+	string suffex = "cscurrent_2d";
+	string data_name = "dat" + num2str(datnum) + suffex;
+	ReduceMatrixSize($(data_name), 0, -1, dimsize($(data_name), 0), 0, -1, 10, 1, data_name+"_avg")
+	plot_waterfall($(data_name+"_avg"), "P*200, CSQ*20 (mV)", "Current (nA)", datnum=datnum, offset=0,y_spacing=0.05,subtract_line=1)
+	//duplicate/o 
+end
