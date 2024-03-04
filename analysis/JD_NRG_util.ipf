@@ -690,7 +690,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 		coefwave = 0
 		// For fitfunc_nrgcondAAO with N input waves these are:
 		if (cmpstr(gamma_over_temp_type, "high") == 0)
-			coefwave[0][0] = 3.3 // 3.3 // 3.0 // lnG/T for Tbase (linked)
+			coefwave[0][0] = 3.9 // 3.3 // 3.0 // lnG/T for Tbase (linked)
 			coefwave[1][0] = 0.02 //0.02 // 0.00373536 // 0.01 // 0.0045 // x scaling (linked)
 
 		elseif (cmpstr(gamma_over_temp_type, "mid") == 0)
@@ -971,53 +971,53 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		
 	///// high gamma /////
 	elseif (cmpstr(datnum, "1284") == 0)
-		cs_min_val = -3000; cs_max_val = 2900
+		cs_min_val = -3000; cs_max_val = 3000
 //		cs_min_val = -3000; cs_max_val = 2900
 	elseif (cmpstr(datnum, "1288") == 0)
-		cs_min_val = -2000; cs_max_val = 2000
+		cs_min_val = -3000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "1300") == 0)
-		cs_min_val = -2250; cs_max_val = 2250
+		cs_min_val = -3000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "1296") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		cs_min_val = -3000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "1292") == 0)
-		cs_min_val = -2500; cs_max_val = 2500
+		cs_min_val = -3000; cs_max_val = 3000
 		
 	///// mid-high gamma /////
 	elseif (cmpstr(datnum, "1283") == 0)
-		cs_min_val = -1800; cs_max_val = 1450
+		cs_min_val = -2000; cs_max_val = 1450
 	elseif (cmpstr(datnum, "1287") == 0)
-		cs_min_val = -1500;  cs_max_val = 1451
+		cs_min_val = -2000;  cs_max_val = 1451
 	elseif (cmpstr(datnum, "1299") == 0)
-		cs_min_val = -1500; cs_max_val = 1451
+		cs_min_val = -2000; cs_max_val = 1451
 	elseif (cmpstr(datnum, "1295") == 0)
-		cs_min_val = -1500; cs_max_val = 1451
+		cs_min_val = -2000; cs_max_val = 1451
 	elseif (cmpstr(datnum, "1291") == 0)
-		cs_min_val = -1500; cs_max_val = 1451
+		cs_min_val = -2000; cs_max_val = 1451
 
 		
 	///// mid-low gamma /////
 	elseif (cmpstr(datnum, "1282") == 0)
-		cs_min_val = -500; cs_max_val = 500
+		cs_min_val = -1000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "1286") == 0)
-		cs_min_val = -750;  cs_max_val = 750
+		cs_min_val = -1000;  cs_max_val = 1000
 	elseif (cmpstr(datnum, "1298") == 0)
-		cs_min_val = -750; cs_max_val = 750
+		cs_min_val = -1000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "1294") == 0)
-		cs_min_val = -750; cs_max_val = 750
+		cs_min_val = -1000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "1290") == 0)
-		cs_min_val = -750; cs_max_val = 750
+		cs_min_val = -1000; cs_max_val = 1000
 		
 	///// low gamma /////
 	elseif (cmpstr(datnum, "1281") == 0)
-		cs_min_val = -400; cs_max_val = 250
+		cs_min_val = -700; cs_max_val = 300
 	elseif (cmpstr(datnum, "1285") == 0)
-		cs_min_val = -300; cs_max_val = 300
+		cs_min_val = -700; cs_max_val = 300
 	elseif (cmpstr(datnum, "1297") == 0)
-		cs_min_val = -300; cs_max_val = 300
+		cs_min_val = -700; cs_max_val = 500
 	elseif (cmpstr(datnum, "1293") == 0)
-		cs_min_val = -300; cs_max_val = 300
+		cs_min_val = -700; cs_max_val = 500
 	elseif (cmpstr(datnum, "1289") == 0)
-		cs_min_val = -400; cs_max_val = 400
+		cs_min_val = -700; cs_max_val = 500
 
 		
 	/////
@@ -1071,6 +1071,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //	elseif (cmpstr(datnum, "688") == 0)
 //		dot_min_val = -800; dot_max_val = 300
 //		cs_min_val = -800; cs_max_val = 300
+
 //////////////////////////////////////////////////////////////
 
 ///// SPRING EXPERIMENT 2024 /////
@@ -1563,7 +1564,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 																							variable leverarm_value, 
 																							variable load_previous_fit
 																							])
-		
+	
 	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 	fit_entropy = paramisdefault(fit_entropy) ? 0 : fit_entropy // default is to not fit to entropy
 	fit_entropy_dats = selectString(paramisdefault(fit_entropy_dats), fit_entropy_dats, datnums) // fit to datnums if fit_entropy_dats not specified
@@ -1626,9 +1627,24 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	if (load_previous_fit == 1)
 		wave GlobalFitCoefficients
 		GFin.coefwave[][0] = GlobalFitCoefficients[p]
-		GFin.coefwave[8][0] = ln(data.temps[0]/data.temps[1])
-		GFin.coefwave[13][0] = ln(data.temps[0]/data.temps[2])
-//		GFin.coefwave[18][0] = ln(data.temps[0]/data.temps[3])
+		
+		if (global_fit_conductance == 1)
+			GFin.coefwave[8][0] = ln(data.temps[0]/data.temps[1])
+			GFin.coefwave[13][0] = ln(data.temps[0]/data.temps[2])
+	//		GFin.coefwave[18][0] = ln(data.temps[0]/data.temps[3])
+		else
+			GFin.coefwave[11][0] = ln(data.temps[0]/data.temps[1])
+			GFin.coefwave[19][0] = ln(data.temps[0]/data.temps[2])
+	//		GFin.coefwave[27][0] = ln(data.temps[0]/data.temps[3])
+			// allow linear to vary
+			GFin.coefwave[5][1] = 0
+			GFin.coefwave[13][1] = 0
+			GFin.coefwave[21][1] = 0
+			// allow occ-linear to vary
+			GFin.coefwave[9][1] = 0
+			GFin.coefwave[17][1] = 0
+			GFin.coefwave[25][1] = 0
+		endif
 	endif
 	
 	
@@ -1638,7 +1654,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	// if fitting charge transitions :: let linear and then quadratic term go free.
 	// set linear_term or quadratic_term to 0 to keep them at zero and hold them 
 	int linear_term = 1, quadratic_term = 1, crosscapacitive_term = 1
-	if (global_fit_conductance == 0)
+	if ((global_fit_conductance == 0) && (load_previous_fit == 0))
 		if (linear_term != 0)
 			build_GFinputs_struct(GFin, data, gamma_over_temp_type = gamma_over_temp_type, global_fit_conductance=global_fit_conductance, use_previous_coef=1, linear_term=linear_term, quadratic_term=0, crosscapacitive_term=0)
 			options = NewGFOptionFIT_GRAPH + NewGFOptionMAKE_FIT_WAVES + NewGFOptionQUIET + NewGFOptionGLOBALFITVARS
@@ -1673,11 +1689,14 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	ModifyGraph lsize=2,rgb(FitY)=(65535,16385,55749),rgb(FitY#1)=(65535,16385,55749),rgb(FitY#2)=(65535,16385,55749),rgb(FitY#3)=(65535,16385,55749),rgb(FitY#4)=(65535,16385,55749)
 
 	print "Base T = ",(data.temps[0]),"mK :: Gamma/T = ", (exp(GFin.CoefWave[0][0]))
-
-	variable /g GF_chisq
-//	print "Chisqr on conductance fit is",GF_chisq
-	cond_chisq = GF_chisq
 	
+	variable total_cs_chisq
+	variable /g GF_chisq
+	if (global_fit_conductance == 1)
+		cond_chisq = GF_chisq
+	else
+		total_cs_chisq = GF_chisq
+	endif
 	
 	///// hard coding 4 colours from blue to red
 	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
@@ -1701,7 +1720,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	string hot_entropy_base_name, hot_entropy_coef_name, hot_entropy_data_name, hot_entropy_fit_name
 	string int_entropy_data_name, int_entropy_fit_name
 	
-	variable total_cs_chisq, entropy_y_offset
+	variable entropy_y_offset
 	variable scaling_dt, scaling_amplitude, scaling_factor
 	variable minx, maxx
 	
@@ -1711,6 +1730,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	if (fit_entropy == 1)
 		Display; KillWindow /Z global_fit_entropy; DoWindow/C/O global_fit_entropy
 		Display; KillWindow /Z entropy_hot_cold; DoWindow/C/O entropy_hot_cold
+		variable dndt_chisq
 	endif
 	
 	for(i=0; i<numwvs; i++)
@@ -1745,23 +1765,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 			cs_fit_name = "fit_" + cs_data_name
 			duplicate /o $cs_data_name $cs_fit_name
 
-//
-//			if (i==0)
-////				cs_coef = {1.9339,0.0038416,-700.86,0,1.0716,6.3449e-06,-1.0044e-10,-0.058078,0}
-//				cs_coef = {3.3215,0.0037424,-630.45,0,1.088,1.9768e-05,-1.5522e-09,-0.08436,-3.4161e-12}
-//				FuncFit/Q/H="111111111" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//
-//				
-//			else
-//				FuncFit/Q/H="110101101" fitfunc_nrgctAAO cs_coef cs_data   /D
-//				FuncFit/Q/H="110100101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//				FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			endif
-////
-//			FuncFit/Q/H="110101101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="110100101" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="110100001" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-//			FuncFit/Q/H="110100000" fitfunc_nrgctAAO cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 			
 			///// with capacitance change
 			FuncFit/Q/H="1101011011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
@@ -1775,7 +1778,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //			FuncFit/Q/H="1101001011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 //			FuncFit/Q/H="1101000011" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
 //			FuncFit/Q/H="1101000001" fitfunc_nrgctAA1 cs_coef cs_data   /M=$(stringfromlist(i,data.occ_maskwvlist)) /D
-			
+			total_cs_chisq += V_chisq // sum the chisq from each fit
 		else 
 			wave cs_coef = $("coef_" + stringfromlist(i,data.occ_wvlist))
 			cs_data_name = stringfromlist(i,data.occ_wvlist)
@@ -1792,7 +1795,6 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //		ModifyGraph offset($occ_data_name)={0,0.2*i}
 //		ModifyGraph offset($occ_fit_name)={0,0.2*i}
 			///// add charge transition ot the graph /////
-		total_cs_chisq += V_chisq // sum the chisq from each fit
 			
 		
 		////////////////////////////////////
@@ -1852,7 +1854,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 				// coef[6]: linear
 				
 //				FuncFit/Q/TBOX=768/H="1101011" fitfunc_nrgcondAAO cond_coef $cond_data_name /D=$cond_fit_name 
-				FuncFit/Q/TBOX=768/H="1101011" fitfunc_nrgcondAAO cond_coef $cond_data_name /D /M=$(stringfromlist(i,data.g_maskwvlist))
+				FuncFit/Q/TBOX=768/H="1101001" fitfunc_nrgcondAAO cond_coef $cond_data_name /D /M=$(stringfromlist(i,data.g_maskwvlist))
+				
+				cond_chisq += V_chisq 
 
 			else
 				cond_fit_name = "Gfit_" + cond_data_name
@@ -1864,6 +1868,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //			appendtograph /W=global_fit /l $cond_fit_name
 //			ModifyGraph /W=global_fit mode($cond_fit_name)=0, lsize($cond_fit_name)=2, rgb($cond_fit_name)=(red,green,blue)
 		endif
+		
 		
 		////////////////////////////////////
 		/////// Creating Entropy fit ///////
@@ -2032,6 +2037,8 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 //			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /D=entropy_fit  ///M=$(stringfromlist(i,data.occ_maskwvlist)) 
 			FuncFit/Q/H="11110110" fitfunc_nrgentropyAAO entropy_coef $entropy_data_name /M=cold_entropy_mask_wave /D
 			
+			dndt_chisq += V_chisq
+			
 			AppendToGraph /W=global_fit_entropy $entropy_fit_name
 			ModifyGraph /W=global_fit_entropy mode($entropy_fit_name)=0, lsize($entropy_fit_name)=2//,rgb($entropy_fit_name)=(0,0,0)
 			
@@ -2088,8 +2095,11 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	
 //	print "Chisqr on occupation fit is " + num2str(total_cs_chisq/4)
 	occ_chisq = total_cs_chisq/4 /// NOTE: Poorly named variable, this should be cs 
-
-	return [cond_chisq, occ_chisq, condocc_chisq/4]
+	if (global_fit_conductance == 0)
+		cond_chisq /= 4
+	endif
+		
+	return [cond_chisq, occ_chisq, dndt_chisq/4]
 end
 
 

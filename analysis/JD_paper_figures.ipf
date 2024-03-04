@@ -2417,6 +2417,7 @@ function figure_2_conductance()
 //	variable gamma_value =  2.5
 //	variable leverarm_value = -0.1
 
+
 ///////////////////////////////////////////////////////////////////////////////
 ////////////// SPRING CONDUCTANCE 2024 AND TRANSITION DATA //////////////////// 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2626,7 +2627,8 @@ function figure_2_conductance()
 //	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
 //	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
 //	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
-	
+
+
 //	string e_temps = "12;275;500"
 //	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
 // 3.30077  7.09738  19.7605  27.6116 :: AUTUMN 2023
@@ -2652,8 +2654,8 @@ function figure_2_conductance()
 	endfor
 	
 	///// RUN GLOBAL FIT /////
-	variable cond_chisq, occ_chisq, condocc_chisq
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=1, fit_entropy=0, fit_entropy_dats="", gamma_value=gamma_value, leverarm_value=leverarm_value)	
+	variable cond_chisq, occ_chisq, dndt_chisq
+	[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=1, fit_entropy=0, fit_entropy_dats="", gamma_value=gamma_value, leverarm_value=leverarm_value)	
 	
 	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
 	Display; KillWindow /Z figure_cond_vs_occ; DoWindow/C/O figure_cond_vs_occ 
@@ -3117,25 +3119,61 @@ function etemp_test_global()
 	variable cold_gt = 0, hot_gt = 0
 	variable cold_leverarm = 0, hot_leverarm = 0
 	variable gamma_value, leverarm_value
+	int global_fit_conductance, fit_conductance = 0, fit_entropy = 0
+	string entropy_datnums = "", gamma_over_temp_type
+	
 		///// SPRING CONDUCTANCE ///// 
-////	string datnums = "6079;6088;6085;6082"; cold_gt = 3.5; hot_gt = 3.5; cold_leverarm = 0.02; hot_leverarm = 0.02; string gamma_over_temp_type = "high"// high gamma
-////	string datnums = "6386;6088;6085;6082"; cold_gt = 0; hot_gt = 0; cold_leverarm = 0; hot_leverarm = 0; string gamma_over_temp_type = "high"// high gamma 
-////	string datnums = "6080;6089;6086;6083"; cold_gt = 2.62239; hot_gt = 0.0880556; cold_leverarm = 0.0165262; hot_leverarm = 0.023509; string gamma_over_temp_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; cold_gt = 1.3; hot_gt = -2.66677; cold_leverarm = 0.2; hot_leverarm = 0.993224; string gamma_over_temp_type = "low" // low gamma
+////	string datnums = "6079;6088;6085;6082"; cold_gt = 3.5; hot_gt = 3.5; cold_leverarm = 0.02; hot_leverarm = 0.02;  gamma_over_temp_type = "high"// high gamma
+////	string datnums = "6386;6088;6085;6082"; cold_gt = 0; hot_gt = 0; cold_leverarm = 0; hot_leverarm = 0;  gamma_over_temp_type = "high"// high gamma 
+////	string datnums = "6080;6089;6086;6083"; cold_gt = 2.62239; hot_gt = 0.0880556; cold_leverarm = 0.0165262; hot_leverarm = 0.023509;  gamma_over_temp_type = "mid" // mid gamma
+//	string datnums = "6081;6090;6087;6084"; cold_gt = 1.3; hot_gt = -2.66677; cold_leverarm = 0.2; hot_leverarm = 0.993224;  gamma_over_temp_type = "low" // low gamma
 //	string base_temps = ";100;300;500"
+//	fit_conductance = 1
 
 //
 ////	///// AUTUMN CONDUCTANCE AND TRANSITION DATA ///// 
-//	string datnums = "696;692;688"; //string gamma_over_temp_type = "low"; // low gamma
-//	string datnums = "697;693;689"; cold_gt = 2.0; hot_gt = 2.0; cold_leverarm = 0.2; hot_leverarm = 0.2;string gamma_over_temp_type = "mid"; // mid-low gamma
-//	string datnums = "698;694;690"; cold_gt = 3.0; hot_gt = 3.0; cold_leverarm = 0.2; hot_leverarm = 0.2; string gamma_over_temp_type = "mid"; // mid-high gamma
-//	string datnums = "699;695;691"; cold_gt = 3.5; hot_gt = 3.5; cold_leverarm = 0.2; hot_leverarm = 0.2; string gamma_over_temp_type = "high"; // high gamma
+
+//	string datnums = "696;692;688"; cold_gt = 1.0; hot_gt = 1.0; cold_leverarm = 0.02; hot_leverarm = 0.02;  gamma_over_temp_type = "low"; // low gamma
+////	string datnums = "697;693;689"; cold_gt = 2.0; hot_gt = 2.0; cold_leverarm = 0.2; hot_leverarm = 0.2;  gamma_over_temp_type = "mid"; // mid-low gamma
+////	string datnums = "698;694;690"; cold_gt = 3.5; hot_gt = 3.5; cold_leverarm = 1e-2; hot_leverarm = 1e-2;  gamma_over_temp_type = "mid"; // mid-high gamma
+////	string datnums = "699;695;691"; cold_gt = 3.9; hot_gt = 3.9; cold_leverarm = 1e-2; hot_leverarm = 1e-2;  gamma_over_temp_type = "high"; // high gamma
 //	string base_temps = ";275;500"
+//	fit_conductance = 1
+
+
+	///// SPRING ENTROPY ///// 
+////	string datnums = "6079;6088;6085;6082";  gamma_over_temp_type = "high"// high gamma
+////	string datnums = "6080;6089;6086;6083";  gamma_over_temp_type = "mid" // mid gamma
+////	string datnums = "6081;6090;6087;6084";  gamma_over_temp_type = "low" // low gamma
+//
+//	string entropy_datnums = "6388"; string datnums = "6079;6088;6085;6082"; gamma_over_temp_type = "high"; info_mask_waves("6388", base_wave_name="_cs_cleaned_avg")
+////	string entropy_datnums = "6385"; string datnums = "6079;6088;6085;6082"; gamma_over_temp_type = "high"; info_mask_waves("6385", base_wave_name="_cs_cleaned_avg")
+//	
+//	string datnums = "6100;6097;6094;6091";  gamma_over_temp_type = "high" // high gamma :: high field
+//	string datnums = "6225;6234;6231;6228";  gamma_over_temp_type = "high" // high gamma :: 2-3 transition
+//	string datnums = "6226;6235;6232;6229";  gamma_over_temp_type = "high" // high gamma :: 2-3 transition
+//  string base_temps = ";100;300;500"
+//	fit_entropy = 1
 	
-	string datnums = "1241;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
-	cold_gt = 2.71992; hot_gt = 2.71992; cold_leverarm = 0.01; hot_leverarm = 0.01;string gamma_over_temp_type = "mid";
-	string base_temps = ";90;175;275;400"
-//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+//	///// AUTUMN ENTROPY /////
+//	entropy_datnums = "1281"; string datnums = "1285;1297;1293;1289"; gamma_over_temp_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
+//    entropy_datnums = "1282"; string datnums = "1286;1298;1294;1290"; gamma_over_temp_type = "low"; info_mask_waves("1282", base_wave_name="_cs_cleaned_avg")
+//	entropy_datnums = "1283"; string datnums = "1287;1299;1295;1291"; gamma_over_temp_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
+	entropy_datnums = "1284"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
+
+//	string entropy_datnums = "1372"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1372", base_wave_name="_cs_cleaned_avg") // 50uV bias
+//	string entropy_datnums = "1373"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1373", base_wave_name="_cs_cleaned_avg") // 250uV bias
+//	string entropy_datnums = "1374"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1374", base_wave_name="_cs_cleaned_avg") // 500uV bias
+//	string entropy_datnums = "1439"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1439", base_wave_name="_cs_cleaned_avg") // 1000uV bias
+	
+//	string entropy_datnums = "1473"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1473", base_wave_name="_cs_cleaned_avg") // 50uV bias :: symmetric
+	string base_temps = ";90;275;400"
+	fit_entropy = 1
+
+
+
+	global_fit_conductance = 0
+	
 	
 	closeallGraphs()
 	
@@ -3143,8 +3181,9 @@ function etemp_test_global()
 	string global_temps
 	
 	variable num_temperatures = 30
-	int min_temp = 15
-	int max_temp = 100
+
+	int min_temp = 8
+	int max_temp = 90
 	
 	make /o/n=(num_temperatures) e_temps
 	wave e_temps
@@ -3156,12 +3195,12 @@ function etemp_test_global()
 	
 	make /o/n=(num_temperatures) cond_chisq_wave; wave cond_chisq_wave
 	make /o/n=(num_temperatures) occ_chisq_wave; wave occ_chisq_wave	
-	make /o/n=(num_temperatures) condocc_chisq_wave; wave condocc_chisq_wave
+	make /o/n=(num_temperatures) dndt_chisq_wave; wave dndt_chisq_wave
 	
 	make /o/n=(num_temperatures) calc_gt; wave calc_gt
 	make /o/n=(num_temperatures) calc_leverarm; wave calc_leverarm	
 	
-	variable cond_chisq, occ_chisq, condocc_chisq
+	variable cond_chisq, occ_chisq, dndt_chisq
 	
 	variable i
 	for (i=0; i < num_temperatures; i++)
@@ -3169,19 +3208,23 @@ function etemp_test_global()
 		leverarm_value = cold_leverarm + (hot_leverarm - cold_leverarm)/num_temperatures*i
 				
 		global_temps = num2str(e_temps[i]) + base_temps
+		
+
 		if (i == 0)
-			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, gamma_value=2.71992, leverarm_value=0.01)
-			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, load_previous_fit=1)
+			[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, gamma_value=gamma_value, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums, leverarm_value=leverarm_value)
+			[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums, load_previous_fit=1)
 		else
-			[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, load_previous_fit=1)
+			[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums, load_previous_fit=1)
 			wave globalfitcoefficients
-//			print globalfitcoefficients
 		endif
+		
+//		[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(global_temps, datnums, gamma_over_temp_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, gamma_value=gamma_value, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums, leverarm_value=leverarm_value)
+
 		closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
 		
 		cond_chisq_wave[i] = cond_chisq
 		occ_chisq_wave[i] = occ_chisq
-		condocc_chisq_wave[i] = condocc_chisq
+		dndt_chisq_wave[i] = dndt_chisq
 		
 		wave globalfitcoefficients
 		calc_gt[i] = globalfitcoefficients[0]
@@ -3191,12 +3234,21 @@ function etemp_test_global()
 	endfor
 	
 	display
-	AppendToGraph/L cond_chisq_wave vs e_temps
+	if (fit_conductance == 1)
+		AppendToGraph/L cond_chisq_wave vs e_temps
+	endif
+	if (fit_entropy == 1)
+		AppendToGraph/L dndt_chisq_wave vs e_temps
+	endif
 	AppendToGraph/R occ_chisq_wave vs e_temps
-//	AppendToGraph/R /L=l2, condocc_chisq_wave vs e_temps
 	
 	Label bottom "Electron Temp (mK)"
-	Label left "Chi Squared Conductance"
+	if (fit_conductance == 1)
+		Label left "Chi Squared Conductance"
+	endif
+	if (fit_entropy == 1)
+		Label left "Chi Squared Entropy"
+	endif
 	Label right "Chi Squared Occupation"
 	ModifyGraph axRGB(left)=(65535,0,0),tlblRGB(left)=(65535,0,0),alblRGB(left)=(65535,0,0)
 	
@@ -3218,12 +3270,12 @@ end
 
 
 //function run_global_fit_wrapper(variable baset, string datnums, string gamma_over_temp_type, [variable global_fit_conductance])
-//	variable cond_chisq, occ_chisq, condocc_chisq
+//	variable cond_chisq, occ_chisq, dndt_chisq
 //	
 //	global_fit_conductance = paramisdefault(global_fit_conductance) ? 1 : global_fit_conductance // default is to fit to conductance data
 ////	run_clean_average_procedure(datnums=datnums)
 ////	closeallGraphs(no_close_graphs = "conductance_vs_sweep;transition_vs_sweep")
-//	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type, global_fit_conductance = global_fit_conductance)
+//	[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(baset, datnums, gamma_over_temp_type, global_fit_conductance = global_fit_conductance)
 //	
 //	print "Conduction chisq = " + num2str(cond_chisq)
 //	print "Occupation chisq = " + num2str(occ_chisq)
@@ -3250,7 +3302,7 @@ function figure_2_entropy()
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
 	
 //	///// AUTUMN EXPERIMENT /////
-	string e_temps = "22.5;90;275;400"
+	string e_temps = "90;90;275;400"
 //	string entropy_datnums = "1281"; string global_datnums = "1285;1297;1293;1289"; gamma_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1282"; string global_datnums = "1286;1298;1294;1290"; gamma_type = "low"; info_mask_waves("1282", base_wave_name="_cs_cleaned_avg")
 //	string entropy_datnums = "1283"; string global_datnums = "1287;1299;1295;1291"; gamma_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
@@ -3285,8 +3337,8 @@ function figure_2_entropy()
 	endfor
 	
 	///// RUN GLOBAL FIT /////
-	variable cond_chisq, occ_chisq, condocc_chisq
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(e_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums)	
+	variable cond_chisq, occ_chisq, dndt_chisq
+	[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(e_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=fit_conductance, fit_entropy=fit_entropy, fit_entropy_dats=entropy_datnums)	
 	
 	Display; KillWindow /Z figure_2a; DoWindow/C/O figure_2a
 	Display; KillWindow /Z figure_2b; DoWindow/C/O figure_2b
@@ -3665,8 +3717,8 @@ function fit_charge_transition_entropy([global_temps, gamma_type])
 	
 	
 	///// RUN GLOBAL FIT /////
-	variable cond_chisq, occ_chisq, condocc_chisq
-	[cond_chisq, occ_chisq, condocc_chisq] = run_global_fit(global_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_entropy=0, fit_entropy_dats=entropy_datnums)
+	variable cond_chisq, occ_chisq, dndt_chisq
+	[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(global_temps, global_datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_entropy=0, fit_entropy_dats=entropy_datnums)
 	
 	
 	///// SETTING UP GRAAPHS TO PLOT TEMPERATURE DEPENDANCE /////
