@@ -2226,6 +2226,77 @@ Function fitfunc_nrgctAA1(pw, yw, xw) : FitFunc
 	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
 end
 
+Function fitfunc_tanh(pw,yw,xw) : FitFunc
+	WAVE pw, yw, xw
+	//coef[0]: A
+	//coef[1]: B
+	//coef[2]  x0
+	//coef[3]: m
+	//coef[4]: b
+	// (A/2)*tanh( (B*2/A)*(x-x0) ) + m*x + b
+	yw = (pw[0]/2)*tanh( (pw[1]*2/abs(pw[0]))*(xw-pw[2]) ) + pw[3]*(xw-pw[2]) + pw[4]
+end
+
+Function fitfunc_tanh_2(pw,yw,xw) : FitFunc
+	WAVE pw, yw, xw
+	//coef[0]: A
+	//coef[1]: B
+	//coef[2]  x0
+	//coef[3]: m
+	//coef[4]: b
+	// (A/2)*tanh( (B*2/A)*(x-x0) ) + m*x + b
+	yw = (pw[0]/2)*tanh( (pw[1]*2/abs(pw[0]))*(xw-pw[2]) )+ (pw[3]/2)*tanh( (pw[4]*2/abs(pw[3]))*(xw-pw[5]) ) + pw[6]*(xw-pw[2]) + pw[7]
+end
+
+Function fitfunc_nrgctAA2(pw, yw, xw) : FitFunc
+	WAVE pw, yw, xw
+	wave nrg = occ_nrg
+	// coef[0]: lnG/T for Tbase -- linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: ln(T/Tbase) for different waves
+	// coef[4]: const offset
+	// coef[5]: linear
+	// coef[6]: quadratic
+	// coef[7]: amplitude
+	// coef[8]: cubic
+	// coef[9]: capacitance change
+	int num_jump = 3
+	int start_coeff_index = 10//one larger than the man fucntion index
+	
+	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
+	
+	yw += (pw[10]/2)*tanh( (pw[11]*2/abs(pw[10]))*(xw-pw[12]) )
+	yw += (pw[13]/2)*tanh( (pw[14]*2/abs(pw[13]))*(xw-pw[15]) )
+	yw += (pw[16]/2)*tanh( (pw[17]*2/abs(pw[16]))*(xw-pw[18]) )
+end
+
+Function fitfunc_nrgctAA3(pw, yw, xw) : FitFunc
+	WAVE pw, yw, xw
+	wave nrg = occ_nrg
+	// coef[0]: lnG/T for Tbase -- linked
+	// coef[1]: x-scaling -- linked
+	// coef[2]: x-offset
+	// coef[3]: ln(T/Tbase) for different waves
+	// coef[4]: const offset
+	// coef[5]: linear
+	// coef[6]: quadratic
+	// coef[7]: amplitude
+	// coef[8]: cubic
+	// coef[9]: capacitance change
+	int num_jump = 3
+	int start_coeff_index = 10//one larger than the man fucntion index
+	
+	yw = pw[7]*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3])) + pw[4] + pw[5]*xw + pw[6]*xw^2 + pw[8]*xw^3 + pw[9]*xw*interp2d(nrg, (pw[1] * (xw - pw[2])), (pw[0] + pw[3]))
+	
+	int i
+	for(i=0;i<num_jump;i++)
+	
+		yw += (pw[3*i+start_coeff_index]/2)*tanh( (pw[3*i+start_coeff_index+1]*2/abs(pw[start_coeff_index]))*(xw-pw[3*i+start_coeff_index+2]) )
+	
+	endfor
+end
+
 
 
 /////////////////////////////
