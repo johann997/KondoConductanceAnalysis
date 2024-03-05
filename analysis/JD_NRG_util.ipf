@@ -2150,7 +2150,7 @@ End
 Function fitfunc_nrgcondAAO(pw, yw, xw) : FitFunc // original negative
 	WAVE pw, yw, xw
 	wave nrg = g_nrg
-	// coef[0]: lnG/T for Tbase -- linked
+	// coef[0]: lnG/Tbase for Tbase -- linked
 	// coef[1]: x-scaling -- linked
 	// coef[2]: x-offset
 	// coef[3]: ln(T/Tbase) for different waves
