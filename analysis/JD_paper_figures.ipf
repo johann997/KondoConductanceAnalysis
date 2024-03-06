@@ -2413,7 +2413,7 @@ endmacro
 
 function figure_2_conductance()
 	variable gamma_value =  3.9
-	variable leverarm_value = 0.005
+	variable leverarm_value = 0.01
 //	variable gamma_value =  2.5
 //	variable leverarm_value = -0.1
 
@@ -2549,10 +2549,10 @@ function figure_2_conductance()
 //	string datnums = "1242;1278;1272;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
 //	string datnums = "1243;1279;1273;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
 
-//	string datnums = "1333;1381;1373;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
+	string datnums = "1333;1381;1373;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
 
-//	string e_temps = "22.5;30;50;90;175;275;400"
-//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+	string e_temps = "30;30;50;90;175;275;400"
+	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 
 	///// Setpoint  (base and 90mK up)
 //	string datnums = "1239;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
@@ -2571,17 +2571,17 @@ function figure_2_conductance()
 ///// (base, 90, 275, 400). 
 // assymetric 
 //	string datnums = "1747;1771;1763;1755"; string gamma_type = "mid" // 0.4nA
-//	string datnums = "1748;1772;1764;1756"; string gamma_type = "mid" // 0.8nA
-	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
-
-//// symmetric
-//	string datnums = "1751;1775;1767;1759"; string gamma_type = "mid" // 0.4nA
-//	string datnums = "1752;1776;1768;1760"; string gamma_type = "mid" // 0.8nA
-//	string datnums = "1753;1778;1769;1761"; string gamma_type = "mid" // 1.2nA
-
-	string e_temps = "22.5;90;275;400"
-	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
-	
+////	string datnums = "1748;1772;1764;1756"; string gamma_type = "mid" // 0.8nA
+//	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
+//
+////// symmetric
+////	string datnums = "1751;1775;1767;1759"; string gamma_type = "mid" // 0.4nA
+////	string datnums = "1752;1776;1768;1760"; string gamma_type = "mid" // 0.8nA
+////	string datnums = "1753;1778;1769;1761"; string gamma_type = "mid" // 1.2nA
+//
+//	string e_temps = "22.5;90;275;400"
+//	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
+//	
 	
 	
 // 1st and 2nd plateau CS setpoint
@@ -3140,6 +3140,9 @@ function etemp_test_global()
 //	string base_temps = ";275;500"
 //	fit_conductance = 1
 
+	string datnums = "1333;1365;1357;1349;1341"; cold_gt = 3.9; hot_gt = 3.9; cold_leverarm = 0.007; hot_leverarm = 0.007;  gamma_over_temp_type = "mid" // 0.4nA REDO
+	string base_temps = ";90;175;275;400"
+	fit_conductance = 1
 
 	///// SPRING ENTROPY ///// 
 ////	string datnums = "6079;6088;6085;6082";  gamma_over_temp_type = "high"// high gamma
@@ -3159,7 +3162,7 @@ function etemp_test_global()
 //	entropy_datnums = "1281"; string datnums = "1285;1297;1293;1289"; gamma_over_temp_type = "low"; info_mask_waves("1281", base_wave_name="_cs_cleaned_avg")
 //    entropy_datnums = "1282"; string datnums = "1286;1298;1294;1290"; gamma_over_temp_type = "low"; info_mask_waves("1282", base_wave_name="_cs_cleaned_avg")
 //	entropy_datnums = "1283"; string datnums = "1287;1299;1295;1291"; gamma_over_temp_type = "high"; info_mask_waves("1283", base_wave_name="_cs_cleaned_avg")
-	entropy_datnums = "1284"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
+//	entropy_datnums = "1284"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1284", base_wave_name="_cs_cleaned_avg") // 100uV bias
 
 //	string entropy_datnums = "1372"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1372", base_wave_name="_cs_cleaned_avg") // 50uV bias
 //	string entropy_datnums = "1373"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1373", base_wave_name="_cs_cleaned_avg") // 250uV bias
@@ -3167,12 +3170,10 @@ function etemp_test_global()
 //	string entropy_datnums = "1439"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1439", base_wave_name="_cs_cleaned_avg") // 1000uV bias
 	
 //	string entropy_datnums = "1473"; string datnums = "1288;1300;1296;1292"; gamma_over_temp_type = "high"; info_mask_waves("1473", base_wave_name="_cs_cleaned_avg") // 50uV bias :: symmetric
-	string base_temps = ";90;275;400"
-	fit_entropy = 1
-
-
-
-	global_fit_conductance = 0
+//	string base_temps = ";90;275;400"
+//	fit_entropy = 1
+	
+	global_fit_conductance = 1
 	
 	
 	closeallGraphs()

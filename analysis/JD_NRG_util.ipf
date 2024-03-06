@@ -714,10 +714,10 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 				FindLevel /Q temp_smooth, wavemax(temp_smooth)
 				
 //				FindLevel /Q $(GFin.fitdata[i][0]), wavemax($(GFin.fitdata[i][0]))
-				coefwave[2 + i*(numcoefs-numlinks)][0] = 0//V_LevelX //+300 // x offset
+				coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX //+300 // x offset
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
-				coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // const offset
+				coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // const offset
 				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
 				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // linear
 			else
@@ -1371,7 +1371,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -2000; cs_max_val = 2000
 	
 	elseif (cmpstr(datnum, "1333") == 0)
-		cs_min_val = -1500; cs_max_val = 1076
+		cs_min_val = -2500; cs_max_val = 1076
 	elseif (cmpstr(datnum, "1341") == 0)
 		cs_min_val = -2500; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1349") == 0)
@@ -1699,9 +1699,9 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 	endif
 	
 	///// hard coding 4 colours from blue to red
-	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 //	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
-//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 	string colour
 	variable red, green, blue
 	//////////////////////////////////////////////////////////////////////
