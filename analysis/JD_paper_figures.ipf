@@ -2551,7 +2551,7 @@ function figure_2_conductance()
 
 	string datnums = "1333;1381;1373;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
 
-	string e_temps = "30;30;50;90;175;275;400"
+	string e_temps = "22.5;30;50;90;175;275;400"
 	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 
 	///// Setpoint  (base and 90mK up)

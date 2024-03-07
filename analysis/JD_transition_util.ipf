@@ -130,7 +130,9 @@ function master_ct_clean_average(wav, refit, dotcondcentering, kenner_out, [cond
 	plot_ct_figs(wavenum, N, kenner, kenner_out, minx, maxx, fit_width = fit_width, repeats_on = repeats_on, average = average, zap_params = zap_params)
 
 	ms=stopmstimer(refnum)
-//	print "CT: time taken = " + num2str(ms/1e6) + "s"
+	
+	variable temp = fd_gettemperature(wavenum, which_plate="MC K")
+	print "MC = " + num2str(temp*1000) + " mK"
 end
 
 
