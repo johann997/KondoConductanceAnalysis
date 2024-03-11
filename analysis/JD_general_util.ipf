@@ -1514,7 +1514,7 @@ function plot_waterfall(w, x_label, y_label, [y_spacing, offset, datnum,subtract
 			legend_text =  legend_text + "\s(tempwave" + legend_check + ") Current = " +  num2str(offset_val) + " nA\r"
 			
 		endif
-		tempwave[][i] = tempwave[p][i] + y_spacing*i + offset_val
+		tempwave[][i] = tempwave[p][i] + y_spacing*i //+ offset_val
 		AppendToGraph tempwave[][i]
 	endfor
 	scg_setupGraph1D(WinName(0,1), x_label, y_label=y_label, datnum=datnum)
