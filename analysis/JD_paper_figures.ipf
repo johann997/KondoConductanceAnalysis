@@ -2902,7 +2902,7 @@ function fit_leverarm_temp_depend()
 	string gamma_type = "mid"
 	
 	string mega_datnums = "3089;3221;3199;3177;3155;3133;3111,3090;3222;3200;3178;3156;3134;3112,3091;3223;3201;3179;3157;3135;3113,3092;3224;3202;3180;3158;3136;3114,3093;3225;3203;3181;3159;3137;3115,3094;3226;3204;3182;3160;3138;3116,3095;3227;3205;3183;3161;3139;3117,3096;3228;3206;3184;3162;3140;3118,3097;3229;3207;3185;3163;3141;3119,3098;3230;3208;3186;3164;3142;3120,3099;3231;3209;3187;3165;3143;3121,3100;3232;3210;3188;3166;3144;3122,3101;3233;3211;3189;3167;3145;3123,3102;3234;3212;3190;3168;3146;3124,3103;3235;3213;3191;3169;3147;3125,3104;3236;3214;3192;3170;3148;3126,3105;3237;3215;3193;3171;3149;3127,3106;3238;3216;3194;3172;3150;3128,3107;3239;3217;3195;3173;3151;3129,3108;3240;3218;3196;3174;3152;3130,3109;3241;3219;3197;3175;3153;3131,3110;3242;3220;3198;3176;3154;3132"
-//	string mega_datnums = "3089;3221;3199;3177;3155;3133;3111,3090;3222;3200;3178;3156;3134;3112,3091;3223;3201;3179;3157;3135;3113,3092;3224;3202;3180;3158;3136;3114"
+//	string mega_datnums = "3089;3221;3199;3177;3155;3133;3111,3090;3222;3200;3178;3156;3134;3112"
 	
 	
 	make/o N_Var = {-591.433,-572.346,-555.646,-530.197,-496.795,-473.732,-450.669,-428.402,-409.315,-387.047,-371.142,-353.646,-332.173,-313.882,-294.795,-278.89,-262.984,-243.898,-230.378,-220.039,-205.724,-193.795}
@@ -2919,23 +2919,16 @@ function fit_leverarm_temp_depend()
 	
 	
 	
-	variable num_dat_groups = ItemsInList(mega_datnums, ",")
-	variable num_dat_per_group = ItemsInList(stringfromlist(0, mega_datnums, ","), ";")
+	variable num_dat_groups = ItemsInList(mega_datnums, ","); print "Num dat groups = ",  num_dat_groups
+	variable num_dat_per_group = ItemsInList(stringfromlist(0, mega_datnums, ","), ";"); ; print "Num dat per group = ",  num_dat_per_group
 	
-	variable num_dats = num_dat_groups*num_dat_per_group
+	variable num_dats = num_dat_groups*num_dat_per_group; print "Num dats in toal = ", num_dats
 	
 	make /o /n=(40, num_dats) leverarm_fit_info
 	wave leverarm_fit_info
 	variable mc_temperature
 	
-//	///// ZAP NANs /////
-//	string ct_datnum, ct_wavename
-//	int i 
-//	for (i=0; i<num_dats; i++)
-//		ct_datnum = stringfromlist(i, datnums)
-//		ct_wavename = "dat" + ct_datnum + "_cs_cleaned_avg"
-//		zap_NaNs($ct_wavename, overwrite=1)
-//	endfor
+	Make/O/N=(num_dats,3) zW=0
 
 	variable cond_chisq, occ_chisq, dndt_chisq
 	
@@ -2984,11 +2977,19 @@ function fit_leverarm_temp_depend()
 			green = str2num(stringfromlist(1, colour, ","))
 			blue = str2num(stringfromlist(2, colour, ","))
 			
+//			zW[i+j*num_dat_per_group][0] = round(red/65535*255)
+//			zW[i+j*num_dat_per_group][2] = round(green/65535*255)
+//			zW[i+j*num_dat_per_group][1] = round(blue/65535*255)
+			
+			zW[i+j*num_dat_per_group][0] = red
+			zW[i+j*num_dat_per_group][2] = green
+			zW[i+j*num_dat_per_group][1] = blue
+			
 			
 			get_initial_params($trans_avg)
 			fit_transition($trans_avg, 0, (dimsize($trans_avg, 0) - 1)); // print W_coef
 			wave W_coef
-			leverarm_fit_info[3,8][i+j*num_dat_groups] = W_coef[p-3]
+			leverarm_fit_info[3,8][i+j*num_dat_per_group] = W_coef[p-3]
 			
 			if (show_weak_fits_only == 1)
 				display $trans_avg
@@ -3003,11 +3004,11 @@ function fit_leverarm_temp_depend()
 			endif
 			
 			
-			leverarm_fit_info[0][i+j*num_dat_groups] = datnum
+			leverarm_fit_info[0][i+j*num_dat_per_group] = datnum
 			mc_temperature = fd_gettemperature(datnum, which_plate="MC K")
-			leverarm_fit_info[1][i+j*num_dat_groups] = mc_temperature
-			leverarm_fit_info[1][i+j*num_dat_groups] = N_Var[j]
-			leverarm_fit_info[9,39][i + j*num_dat_groups] = globalfitcoefficients[p-8]
+			leverarm_fit_info[1][i+j*num_dat_per_group] = mc_temperature
+			leverarm_fit_info[2][i+j*num_dat_per_group] = N_Var[j]
+			leverarm_fit_info[9,39][i + j*num_dat_per_group] = globalfitcoefficients[p-9]
 			
 		endfor
 
@@ -3016,11 +3017,28 @@ function fit_leverarm_temp_depend()
 	endfor
 
 
+	// display weak theta 
+	display leverarm_fit_info[5][] vs leverarm_fit_info[2][]
+	ModifyGraph rgb=(0,0,0)
+	ModifyGraph mode=3
+	Label bottom "N (mV)"
+	Label left "Weak Theta"
+	ModifyGraph zColor(leverarm_fit_info)={zw,*,*,directRGB}
 	
-	///// adding legend /////
-//	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
+	// display global GT
+	display leverarm_fit_info[9][] vs leverarm_fit_info[2][]
+	ModifyGraph rgb=(0,0,0)
+	ModifyGraph mode=3
+	Label bottom "N (mV)"
+	Label left "ln(GT)"
 
-//	beautify_figure("figure_ca")
+	
+	// display global GT
+	display leverarm_fit_info[10][] vs leverarm_fit_info[2][]
+	ModifyGraph rgb=(0,0,0)
+	ModifyGraph mode=3
+	Label bottom "N (mV)"
+	Label left "Global Leverarm"
 	
 	TileWindows/O=1/C/P
 end
