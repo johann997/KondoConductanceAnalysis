@@ -2412,8 +2412,8 @@ endmacro
 
 
 function figure_2_conductance()
-	variable gamma_value =  3.9
-	variable leverarm_value = 0.01
+	variable gamma_value =  2.5
+	variable leverarm_value = 1e-3
 //	variable gamma_value =  2.5
 //	variable leverarm_value = -0.1
 
@@ -2549,10 +2549,10 @@ function figure_2_conductance()
 //	string datnums = "1242;1278;1272;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
 //	string datnums = "1243;1279;1273;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
 
-	string datnums = "1333;1381;1373;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
-
-	string e_temps = "22.5;30;50;90;175;275;400"
-	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+//	string datnums = "1333;1381;1373;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
+//
+//	string e_temps = "22.5;30;50;90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 
 	///// Setpoint  (base and 90mK up)
 //	string datnums = "1239;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
@@ -2600,6 +2600,53 @@ function figure_2_conductance()
 //	string e_temps = "22.5;90;275;400"
 //	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
 
+///////////////////////////////////////////////////////////////////////////////
+////////////// SUMMER CONDUCTANCE 2024 AND TRANSITION DATA //////////////////// 
+///////////////////////////////////////////////////////////////////////////////
+///ALL TEMPS
+//Setpoint 1
+//	string datnums = "2901;2961;2946;2931;2916"; string gamma_type = "mid" // 0.4nA REDO
+//	string datnums = "2902;2962;2947;2932;2917"; string gamma_type = "mid" // 0.7nA REDO
+//	string datnums = "2903;2963;2948;2933;2918"; string gamma_type = "mid" // 1.0nA REDO
+//
+////Setpoint 2
+//	string datnums = "2906;2966;2951;2936;2921"; string gamma_type = "mid" // 0.4nA REDO
+//	string datnums = "2907;2967;2952;2937;2922"; string gamma_type = "mid" // 0.7nA REDO
+//	string datnums = "2908;2968;2953;2938;2923"; string gamma_type = "mid" // 1.0nA REDO
+//
+////Setpoint 3
+//	string datnums = "2911;2971;2956;2941;2926"; string gamma_type = "mid" // 0.4nA REDO
+//	string datnums = "2912;2972;2957;2942;2927"; string gamma_type = "mid" // 0.7nA REDO
+//	string datnums = "2913;2973;2958;2943;2928"; string gamma_type = "mid" // 1.0nA REDO
+
+
+//	string e_temps = "22.5;50;90;275;400"
+//	string colours = "0,0,65535;16385,49025,65535;65535,65535,0;65535,21845,0;65535,0,0"
+	
+	
+// 2T
+///ALL TEMPS
+//Setpoint 1
+//	string datnums = "2997;3047;3037;3027;3017;3007"; string gamma_type = "mid" // 0.4nA REDO
+//	string datnums = "2998;3048;3038;3028;3018;3008"; string gamma_type = "mid" // 0.7nA REDO
+//	string datnums = "2999;3049;3039;3029;3019;3009"; string gamma_type = "mid" // 1.0nA REDO
+//
+////Setpoint 2
+//	string datnums = "3002;3052;3042;3032;3022;3012"; string gamma_type = "mid" // 0.4nA REDO
+//	string datnums = "3003;3053;3043;3033;3023;3013"; string gamma_type = "mid" // 0.7nA REDO
+//	string datnums = "3004;3054;3044;3034;3024;3014"; string gamma_type = "mid" // 1.0nA REDO
+//
+
+
+
+//	string e_temps = "22.5;30;50;90;275;400"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,21845,0;65535,0,0"
+	
+	string datnums = "3089;3221;3199;3177;3155;3133;3111"; string gamma_type = "mid" // 1.0nA REDO
+	string e_temps = "22.5;30;50;90;175;275;400"
+	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,21845,0;65535,0,0"
+
+	
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////// SPRING CONDUCTANCE 2023 AND TRANSITION DATA ////////////////////// 
@@ -2637,7 +2684,7 @@ function figure_2_conductance()
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 1
+	int global_fit_conductance = 0
 	
 	
 	
@@ -2843,6 +2890,140 @@ function figure_2_conductance()
 	TileWindows/O=1/C/P
 end
 
+
+
+
+function fit_leverarm_temp_depend()
+	variable gamma_value =  2.5
+	variable leverarm_value = 1e-3
+	int show_weak_fits_only = 0
+
+	
+	string gamma_type = "mid"
+	
+	string mega_datnums = "3089;3221;3199;3177;3155;3133;3111,3090;3222;3200;3178;3156;3134;3112,3091;3223;3201;3179;3157;3135;3113,3092;3224;3202;3180;3158;3136;3114,3093;3225;3203;3181;3159;3137;3115,3094;3226;3204;3182;3160;3138;3116,3095;3227;3205;3183;3161;3139;3117,3096;3228;3206;3184;3162;3140;3118,3097;3229;3207;3185;3163;3141;3119,3098;3230;3208;3186;3164;3142;3120,3099;3231;3209;3187;3165;3143;3121,3100;3232;3210;3188;3166;3144;3122,3101;3233;3211;3189;3167;3145;3123,3102;3234;3212;3190;3168;3146;3124,3103;3235;3213;3191;3169;3147;3125,3104;3236;3214;3192;3170;3148;3126,3105;3237;3215;3193;3171;3149;3127,3106;3238;3216;3194;3172;3150;3128,3107;3239;3217;3195;3173;3151;3129,3108;3240;3218;3196;3174;3152;3130,3109;3241;3219;3197;3175;3153;3131,3110;3242;3220;3198;3176;3154;3132"
+//	string mega_datnums = "3089;3221;3199;3177;3155;3133;3111,3090;3222;3200;3178;3156;3134;3112,3091;3223;3201;3179;3157;3135;3113,3092;3224;3202;3180;3158;3136;3114"
+	
+	
+	make/o N_Var = {-591.433,-572.346,-555.646,-530.197,-496.795,-473.732,-450.669,-428.402,-409.315,-387.047,-371.142,-353.646,-332.173,-313.882,-294.795,-278.89,-262.984,-243.898,-230.378,-220.039,-205.724,-193.795}
+
+
+	string e_temps = "22.5;30;50;90;175;275;400"
+	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+	
+
+	string colour, e_temp
+	variable red, green, blue
+	
+	int global_fit_conductance = 0
+	
+	
+	
+	variable num_dat_groups = ItemsInList(mega_datnums, ",")
+	variable num_dat_per_group = ItemsInList(stringfromlist(0, mega_datnums, ","), ";")
+	
+	variable num_dats = num_dat_groups*num_dat_per_group
+	
+	make /o /n=(40, num_dats) leverarm_fit_info
+	wave leverarm_fit_info
+	variable mc_temperature
+	
+//	///// ZAP NANs /////
+//	string ct_datnum, ct_wavename
+//	int i 
+//	for (i=0; i<num_dats; i++)
+//		ct_datnum = stringfromlist(i, datnums)
+//		ct_wavename = "dat" + ct_datnum + "_cs_cleaned_avg"
+//		zap_NaNs($ct_wavename, overwrite=1)
+//	endfor
+
+	variable cond_chisq, occ_chisq, dndt_chisq
+	
+//	Display; KillWindow /Z figure_ca; DoWindow/C/O figure_ca 
+//	Display; KillWindow /Z figure_cond_vs_occ; DoWindow/C/O figure_cond_vs_occ 
+	
+	string cond_avg, cond_avg_fit, coef_cond
+	string trans_avg, trans_avg_fit, coef_trans
+	string occ_avg, occ_avg_fit
+	string occupation_coef_name
+	string legend_text = ""
+	
+	variable datnum
+	string datnums
+	int j, i
+	for (j=0;j<num_dat_groups;j+=1)
+		datnums = stringfromlist(j, mega_datnums, ",")
+	
+		for (i=0;i<num_dat_per_group;i+=1)
+			datnum = str2num(stringfromlist(i, datnums))
+			e_temp = stringfromlist(i, e_temps)
+			cond_avg = "dat" + num2str(datnum) + "_dot_cleaned_avg"
+			coef_cond = "coef_" + cond_avg
+			if (global_fit_conductance == 1)
+				cond_avg_fit = "GFit_" + cond_avg
+			else
+				cond_avg_fit = "fit_" + cond_avg
+			endif
+			
+			trans_avg = "dat" + num2str(datnum) + "_cs_cleaned_avg"
+			coef_trans = "coef_" + trans_avg
+			if (global_fit_conductance == 1)
+				trans_avg_fit = "fit_" + trans_avg
+			else
+				trans_avg_fit = "GFit_" + trans_avg
+			endif
+			
+			occ_avg = trans_avg + "_occ"
+			occ_avg_fit = trans_avg_fit + "_occ"
+			
+			legend_text = legend_text + "\\s(" + trans_avg_fit +  ") " +  e_temp + "mK\r"
+			
+			///// getting correct colour for plot /////
+			colour = stringfromlist(i, colours, ";")
+			red = str2num(stringfromlist(0, colour, ","))
+			green = str2num(stringfromlist(1, colour, ","))
+			blue = str2num(stringfromlist(2, colour, ","))
+			
+			
+			get_initial_params($trans_avg)
+			fit_transition($trans_avg, 0, (dimsize($trans_avg, 0) - 1)); // print W_coef
+			wave W_coef
+			leverarm_fit_info[3,8][i+j*num_dat_groups] = W_coef[p-3]
+			
+			if (show_weak_fits_only == 1)
+				display $trans_avg
+				appendtograph $("fit_" + trans_avg)
+				ModifyGraph rgb($("fit_" + trans_avg))=(0,0,0)
+			endif
+			
+			if ((show_weak_fits_only == 0) && (i == 0))
+				[cond_chisq, occ_chisq, dndt_chisq] = run_global_fit(e_temps, datnums, gamma_type, global_fit_conductance=global_fit_conductance, fit_conductance=0, fit_entropy=0, fit_entropy_dats="", gamma_value=gamma_value, leverarm_value=leverarm_value)
+				closeallgraphs()
+				wave globalfitcoefficients
+			endif
+			
+			
+			leverarm_fit_info[0][i+j*num_dat_groups] = datnum
+			mc_temperature = fd_gettemperature(datnum, which_plate="MC K")
+			leverarm_fit_info[1][i+j*num_dat_groups] = mc_temperature
+			leverarm_fit_info[1][i+j*num_dat_groups] = N_Var[j]
+			leverarm_fit_info[9,39][i + j*num_dat_groups] = globalfitcoefficients[p-8]
+			
+		endfor
+
+	
+	
+	endfor
+
+
+	
+	///// adding legend /////
+//	Legend/W=figure_ca/C/N=legend_figc/J/A=LT legend_text
+
+//	beautify_figure("figure_ca")
+	
+	TileWindows/O=1/C/P
+end
 
 
 function figure_3_conductance()

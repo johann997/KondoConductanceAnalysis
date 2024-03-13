@@ -666,7 +666,7 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 				endif
 			else
 				if (linear_term != 0)
-					coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // 1e-6 // linear
+					coefwave[5 + i*(numcoefs-numlinks)][0] = -1e-4 // 1e-6 // linear
 					coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // 1e-6 // linear
 				endif
 				
@@ -717,17 +717,22 @@ function build_GFinputs_struct(GFin, data, [gamma_over_temp_type, global_fit_con
 				coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX //+300 // x offset
 				coefwave[4 + i*(numcoefs-numlinks)][0] = wavemax($(GFin.fitdata[i][0])) // peak height
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // const offset
-				coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // const offset
+				coefwave[5 + i*(numcoefs-numlinks)][1] = 0 // const offset
 				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // linear
 				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // linear
 			else
-				coefwave[2 + i*(numcoefs-numlinks)][0] = 0 
+				wave global_ct = $(GFin.fitdata[i][0])
+				duplicate /o global_ct temp_smooth
+				smooth 800, temp_smooth
+				differentiate temp_smooth
+				FindLevel /Q temp_smooth, wavemin(temp_smooth)
+				coefwave[2 + i*(numcoefs-numlinks)][0] = V_LevelX
 				coefwave[4 + i*(numcoefs-numlinks)][0] = mean($(GFin.fitdata[i][0])) // y offset
 				coefwave[5 + i*(numcoefs-numlinks)][0] = 0 // linear
 				coefwave[5 + i*(numcoefs-numlinks)][1] = 1 // linear
 				coefwave[6 + i*(numcoefs-numlinks)][0] = 0 // quadtratic
 				coefwave[6 + i*(numcoefs-numlinks)][1] = 1 // quadratic
-				coefwave[7 + i*(numcoefs-numlinks)][0] = -(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/1 // amplitude
+				coefwave[7 + i*(numcoefs-numlinks)][0] = -0.1//-(wavemax($(GFin.fitdata[i][0])) - wavemin($(GFin.fitdata[i][0])))/2 // amplitude
 				coefwave[8 + i*(numcoefs-numlinks)][0] = 0 // cubic
 				coefwave[8 + i*(numcoefs-numlinks)][1] = 1 // cubic
 				coefwave[9 + i*(numcoefs-numlinks)][0] = 0 // cross-capacitive
@@ -835,7 +840,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 
 	//////////////////////////////////////////
 	int auto_mask_wave = 1
-	variable auto_percent_mask = 0.1
+	variable auto_percent_mask = 0.25
 	/////////////////////////////////////////
 	
 	string dot_wave_name, dot_mask_wave_name
@@ -1468,15 +1473,31 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_min_val = -4370; cs_max_val = 1200
 	elseif (cmpstr(datnum, "1757") == 0)
 		cs_min_val = -4370; cs_max_val = 1200
+	elseif (cmpstr(datnum, "2901") == 0)
+		cs_min_val = -4640; cs_max_val = 3300
+	elseif (cmpstr(datnum, "2946") == 0)
+		cs_min_val = -4100; cs_max_val = 1618
+	elseif (cmpstr(datnum, "2918") == 0)
+		cs_min_val = -4360; cs_max_val = 2760
+	elseif (cmpstr(datnum, "2906") == 0)
+		cs_min_val = -2908; cs_max_val = 3120
+	elseif (cmpstr(datnum, "2928") == 0)
+		cs_min_val = -8000; cs_max_val = 8000
+	elseif (cmpstr(datnum, "2943") == 0)
+		cs_min_val = -8000; cs_max_val = 8000
+	elseif (cmpstr(datnum, "2193") == 0)
+		cs_min_val = -8000; cs_max_val = 4500
+	elseif (cmpstr(datnum, "2958") == 0)
+		cs_min_val = -8000; cs_max_val = 4500
 	else
 //		datnum_declared = 0
 //		cs_min_val = -4990; cs_max_val = 2750
 //		cs_min_val = -4370; cs_max_val = 5000; 	dot_min_val = -2000; dot_max_val = 1500 // symmetric
 		
 //		cs_min_val = -4000; cs_max_val = 3090; 	dot_min_val = -2000; dot_max_val = 1500 //asymmetric
-		cs_min_val = -3800; cs_max_val = 4800; 	dot_min_val = -2000; dot_max_val = 1500 //asymmetric
+//		cs_min_val = -3800; cs_max_val = 4800; 	dot_min_val = -2000; dot_max_val = 1500 //asymmetric
 
-//		cs_min_val = -2100; cs_max_val = 1000; 	dot_min_val = -2000; dot_max_val = 1500 //asymmetric
+		cs_min_val = -1999; cs_max_val = 1999; 	dot_min_val = -2000; dot_max_val = 1500 //asymmetric
 
 		
 	endif
@@ -1698,7 +1719,7 @@ function [variable cond_chisq, variable occ_chisq, variable condocc_chisq] run_g
 		total_cs_chisq = GF_chisq
 	endif
 	
-	///// hard coding 4 colours from blue to red
+//	///// hard coding 4 colours from blue to red
 //	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 //	string colours = "0,0,65535;29524,1,58982;65535,65535,0;64981,37624,14500;65535,0,0"
 	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
