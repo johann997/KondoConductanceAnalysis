@@ -281,3 +281,134 @@ end
 //end
 
 
+
+
+////////////////////////////
+///// WORKING WITH NRG /////
+////////////////////////////
+function create_nrg_cond_vs_occ()
+	variable gt_min = -4.4, gt_max = 3.9, gt_val
+	variable numptsy = 50
+	variable numptsx = 1000
+	
+	// creating gamma array
+	variable gt_index, interp_index
+	wave occ_nrg, g_nrg
+	create_y_wave(occ_nrg)
+	wave y_wave
+	redimension /n=-1 y_wave
+	
+	// creating dummy 1d slices
+	duplicate /o /RMD=[][0] occ_nrg occ_nrg_single
+	duplicate /o /RMD=[][0] g_nrg g_nrg_single
+	wave occ_nrg_single, g_nrg_single
+	
+	// creating interp cond vs occ wave
+	make /o/n=(numptsx,numptsy) g_nrg_interp
+	setscale /I x, 0, 1, g_nrg_interp
+	setscale /I y, gt_min, gt_max, g_nrg_interp
+	wave g_nrg_interp
+	
+	int i, j
+	for (i = 0; i < numptsy; i++)
+		gt_val = gt_min + ((gt_max - gt_min)/numptsy)*i
+	
+		findlevel /q y_wave, gt_val
+		gt_index = x2pnt(y_wave, V_LevelX)
+		
+		
+		occ_nrg_single = occ_nrg[p][gt_index]
+		g_nrg_single = g_nrg[p][gt_index]
+		
+		for (j=0; j < numptsx; j++)
+			findlevel /q occ_nrg_single, j/numptsx
+			interp_index = x2pnt(occ_nrg_single, V_LevelX)
+			g_nrg_interp[j][i] = g_nrg_single[interp_index]
+		
+		endfor
+		print i
+
+	endfor
+	
+	plot_waterfall(g_nrg_interp, "Occupation", "Conductance", offset=0)
+	plot_waterfall(g_nrg_interp, "Occupation", "Conductance", offset=1)
+	plot_waterfall(g_nrg_interp, "Occupation", "Conductance", offset=0)
+	
+end
+
+
+
+
+
+function plot_conductance_vs_temp_at_occupation()
+	variable occ_numpts = 20
+	variable occ_start = 0
+	
+	wave g_nrg_interp // asuume this has been created
+	variable temp_numpts = dimsize(g_nrg_interp, 1)
+	
+	// make wave to hold redimensioned data
+	make /o /n=(temp_numpts, occ_numpts) nrg_g_vs_temp
+	wave nrg_g_vs_temp
+	// scale x
+	setscale /I y, occ_start, 1, nrg_g_vs_temp 
+	// scale y
+	create_y_wave(g_nrg_interp)
+	wave y_wave
+	setscale /I x, 1/exp(y_wave[0]), 1/exp(y_wave[inf]), nrg_g_vs_temp
+	
+	create_x_wave(g_nrg_interp)
+	wave x_wave
+	
+	duplicate /o y_wave gamma_vals
+	
+	variable occ_val, g_nrg_interp_xindex
+	
+	int i
+	for (i=0; i<occ_numpts; i++)
+		occ_val = occ_start + ((1-occ_start)/occ_numpts)*i
+		
+		findlevel /q x_wave, occ_val
+		g_nrg_interp_xindex = x2pnt(x_wave, V_LevelX)
+		
+//		print g_nrg_interp//g_nrg_interp[g_nrg_interp_xindex]
+		nrg_g_vs_temp[][i] = g_nrg_interp[g_nrg_interp_xindex][p]
+		
+	endfor
+end
+
+
+Function kondotemp_fit_function(w, ys, xs) : FitFunc
+	Wave w, xs, ys
+	// f(x) = Amp*tanh((x - Mid)/(2*theta)) + Linear*x + Const+Quad*x^2
+	// w[0] = G0
+	// w[1] = Tk
+	// w[2] = s
+
+
+	ys= w[0] * ( (w[1]^2/(2^(1/w[2]) - 1)) / (xs^2 + (w[1]^2/(2^(1/w[2]) - 1))) ) ^ w[2]
+End
+
+
+function find_tk_from_nrg()
+
+	wave nrg_g_vs_temp
+	variable occ_numpts = dimsize(nrg_g_vs_temp, 1)
+	
+	create_x_wave(nrg_g_vs_temp)
+	wave x_wave
+	duplicate /o x_wave slice
+	wave slice
+	
+	make /o/n=3 W_coef = {1, 1, 0.5}
+	
+	display
+	int i
+	for (i=0; i<occ_numpts; i++)
+		slice = nrg_g_vs_temp[p][i]	
+		redimension /n=-1 slice
+		appendtograph slice
+		FuncFit /TBOX=768 kondotemp_fit_function W_coef slice /D
+		print W_coef
+	endfor 
+end
