@@ -68,7 +68,7 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out, [int 
 		zap_NaNs($avg_wave_name, overwrite=1)
 	endif
 	
-	plot_cond_figs(wavenum, N, kenner, kenner_out, refit=refit)
+	plot_cond_figs(wavenum, N, kenner, kenner_out, refit=refit, alternate_bias=alternate_bias)
 
 	ms=stopmstimer(refnum)
 	print "Cond: time taken = " + num2str(ms/1e6) + "s"
@@ -438,21 +438,21 @@ function/wave get_conductance_from_current(wave pos, wave neg, string newname)
 	
 	duplicate/o pos, $newname
 	wave cond_wave = $newname;
-	cond_wave = (pos-neg)
-	cond_wave *= 1e-9 // units of A
-	
-	duplicate/o cond_wave current // keeping copy of current
-	duplicate/o cond_wave temp 
-	
-	variable bias = (514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
-	cond_wave = bias/temp
-	
-	cond_wave -= 21150
-	duplicate/o cond_wave temp 
-	
-	cond_wave = 1/temp
-	
-	cond_wave /= 7.7483e-05 
+	cond_wave = -(pos-neg)
+//	cond_wave *= 1e-9 // units of A
+//	
+//	duplicate/o cond_wave current // keeping copy of current
+//	duplicate/o cond_wave temp 
+//	
+//	variable bias = (514.95-495.05)/9950000; // divider is 9950 and 1000 is for V instead of mV
+//	cond_wave = bias/temp
+//	
+//	cond_wave -= 21150
+//	duplicate/o cond_wave temp 
+//	
+//	cond_wave = 1/temp
+//	
+//	cond_wave /= 7.7483e-05 
 	
 //	temp = cond/(bias - cond * 21150)
 //	temp /= 7.7483e-05
@@ -474,14 +474,33 @@ function /wave fit_single_peak(wave current_array)
 	///// OLD METHOD /////
 	//////////////////////
 	duplicate /o current_array temp_smooth
-	smooth 800, temp_smooth
+//	smooth 2000, temp_smooth
+	
+	variable pos_slice = 1
+	variable temp_offset = temp_smooth[0]
+	if (abs(wavemin(temp_smooth) - temp_offset) > abs(wavemax(temp_smooth) - temp_offset))
+		pos_slice = 0
+	endif
+	
 	
 	variable amplitude, fwhm
 
-	amplitude = (wavemin(temp_smooth) - wavemin(temp_smooth))
+	amplitude = (wavemax(temp_smooth) - wavemin(temp_smooth))
+	if (pos_slice == 0)
+		amplitude *= -1
+	endif
 	
-	FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth, amplitude*0.5;  
-	FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth, amplitude*0.5
+	
+	if (pos_slice == 1)
+		FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth, amplitude*0.5;  
+		FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth, amplitude*0.5
+	else
+		duplicate /o temp_smooth temp_smooth_neg
+		temp_smooth_neg *= -1
+		FindLevels/Q/D=risingEdges/EDGE=1 temp_smooth_neg, amplitude*-0.5;  
+		FindLevels/Q/D=fallingEdges/EDGE=2 temp_smooth_neg, amplitude*-0.5
+	endif
+	
 	
 	fwhm = fallingEdges[inf] - risingEdges[0]
 
@@ -494,14 +513,22 @@ function /wave fit_single_peak(wave current_array)
 	// W_coef[3] = B = 'gamma'
 	
 	// offset
-	W_coef[0] = wavemin(temp_smooth)
+	if (pos_slice == 1)
+		W_coef[0] = wavemin(temp_smooth)
+	else
+		W_coef[0] = wavemax(temp_smooth)
+	endif
 	
 	
 	// amplitude
 	W_coef[1] =  amplitude*fwhm^2
 	
 	// x - offset
-	FindLevel /Q temp, wavemax(temp_smooth)
+	if (pos_slice == 1)
+		FindLevel /Q temp, wavemax(temp_smooth)
+	else
+		FindLevel /Q temp, wavemin(temp_smooth)
+	endif
 	W_coef[2] = V_LevelX 
 
 	// 'gamma'
@@ -545,7 +572,9 @@ function /wave fit_single_peak(wave current_array)
 	
 //	closeallgraphs()
 //	display current_array
-	CurveFit/q  lor current_array[min_fit_index, max_fit_index] /D // fit with lor (Lorentzian) :: /q = quiet :: /D = destwaveName
+//	CurveFit/q  lor current_array[min_fit_index, max_fit_index] /D // fit with lor (Lorentzian) :: /q = quiet :: /D = destwaveName
+	CurveFit/q  lor current_array /D // fit with lor (Lorentzian) :: /q = quiet :: /D = destwaveName
+
 //	ModifyGraph rgb(fit_temp_wave)=(0,0,0)
 	
 end
@@ -591,16 +620,16 @@ end
 
 
 
-function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out, [int refit])	
+function plot_cond_figs(variable wavenum, variable N, string kenner, string kenner_out, [int refit, int alternate_bias])	
 	string dataset = "dat" + num2str(wavenum) + kenner
 	string centered_wave_name = kenner_out + num2str(wavenum) + "_dot_centered"
 	string cleaned_wave_name = kenner_out + num2str(wavenum) + "_dot_cleaned"
 	string avg_wave_name = cleaned_wave_name + "_avg"
 
-//	string split_pos = cleaned_wave_name + "_pos"
-//	string split_neg = cleaned_wave_name + "_neg"
-//	string pos_avg = split_pos + "_avg"
-//	string neg_avg = split_neg + "_avg"
+	string split_pos = cleaned_wave_name + "_pos"
+	string split_neg = cleaned_wave_name + "_neg"
+	string pos_avg = split_pos + "_avg"
+	string neg_avg = split_neg + "_avg"
 	string fit_params_name = kenner_out + num2str(wavenum) + "_dot_fit_params" 
 //	closeallgraphs()
 
@@ -608,8 +637,10 @@ function plot_cond_figs(variable wavenum, variable N, string kenner, string kenn
 
 	plot2d_heatmap($dataset); // raw data
 	
-//	plot2d_heatmap($split_pos) // positive bias
-//	plot2d_heatmap($split_neg) // negative bias
+	if (alternate_bias == 1)
+		plot2d_heatmap($split_pos) // positive bias
+		plot2d_heatmap($split_neg) // negative bias
+	endif
 	
 	if (refit == 1)
 		plot2d_heatmap($centered_wave_name) // plot centered traces
