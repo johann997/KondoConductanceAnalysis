@@ -493,6 +493,24 @@ function notch_filters(wave wav, [string Hzs, string Qs, string notch_name, vari
 end
 
 
+function/wave DiffWave(w, [numpts])
+	wave w
+	variable numpts
+	
+	numpts = paramisdefault(numpts) ? 150 : numpts
+	string wn=nameOfWave(w)
+	string new_wn=wn + "_diff"
+
+	duplicate/o w, $new_wn
+	wave tempwave = $new_wn
+
+	resample/DIM=0 /down=(ceil(dimsize(w,0)/numpts)) tempwave
+	differentiate/DIM=0 tempwave	
+	return tempwave
+end
+
+
+
 function resampleWave(wave wav, variable targetFreq, [variable measure_freq])
 	// resamples wave w from measureFreq
 	// to targetFreq (which should be lower than measureFreq)	
