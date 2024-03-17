@@ -22,9 +22,9 @@
 
 function beautify_figure(figure_name)
 	string figure_name
-	int font_size = 8
+	int font_size = 15
 //	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
-	ModifyGraph /W=$figure_name mirror=1, nticks=3, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01//, width=1*200, height=1*200/1.6180339887
+	ModifyGraph /W=$figure_name mirror=1, nticks=5, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01//, width=1*200, height=1*200/1.6180339887
 end
 
 macro default_layout(layout_name)
@@ -67,7 +67,7 @@ function save_figure(figure_name)
 //	string file_path = ParseFilePath(1, S_path, ":", 1, 0) + "Figures:"
 	string file_path = "Macintosh HD:Users:johanndrayne:Documents:Work:QDEV:_EntropyConductancePaper:IGORAnalysis:IGOR_Figures:"
 	
-	SavePICT/P=figure_folder/E=-5/RES=1000/o as png_name
+	SavePICT/P=figure_folder/E=-5/RES=1000/o/Q=1 as png_name
 end
 
 
@@ -2412,10 +2412,10 @@ endmacro
 
 
 function figure_2_conductance()
-	variable gamma_value =  2.5
-	variable leverarm_value = 1e-3
 //	variable gamma_value =  2.5
-//	variable leverarm_value = -0.1
+//	variable leverarm_value = 1e-3
+	variable gamma_value =  3.8
+	variable leverarm_value =  0.00587914
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2433,8 +2433,8 @@ function figure_2_conductance()
 //	string datnums = "684;702;696;690"; string gamma_type = "mid" // low gamma - 840 2uV
 //	string datnums = "685;703;697;691"; string gamma_type = "mid" // mid gamma - 840 2uV
 //	string datnums = "686;704;698;692"; string gamma_type = "mid" // high gamma - 840 2uV
-
-//	string e_temps = "22.5;90;275;400"
+//
+//	string e_temps = "22;90;275;400"
 //	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 //	
 
@@ -2539,8 +2539,21 @@ function figure_2_conductance()
 //	string datnums = "1451;1575;1535;1493"; string gamma_type = "mid" // 1.3nA dont have 275 mK data
 //	string datnums = "1452;1576;1536;1494"; string gamma_type = "mid" // 1.6nA dont have 275 mK data
 	
-//	string e_temps = "22.5;90;275;400"
-//	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
+	///// set point 1 /////
+//	string datnums = "1412;1536;1496;1454"; string gamma_type = "mid" // 0.4nA
+
+	///// set point 3 /////
+//	string datnums = "1424;1548;1508;1466"; string gamma_type = "mid" // 0.4nA
+
+	///// set point 5 /////
+//	string datnums = "1436;1560;1520;1478"; string gamma_type = "mid" // 0.4nA
+	
+	///// set point 7 /////
+	string datnums = "1448;1572;1532;1490"; string gamma_type = "mid" // 0.4nA
+
+
+	string e_temps = "20;90;275;400"
+	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
 
 	///// Setpoints (all temperatures)
 //	string datnums = "1239;1275;1269;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
@@ -2563,24 +2576,22 @@ function figure_2_conductance()
 
 //	string datnums = "1333;1365;1357;1349;1341"; string gamma_type = "mid" // 0.4nA REDO
 //
+
+//	string e_temps = "20;90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
+
+//	///// Setpoint  (base and 90mK up)
+//	string datnums = "1239;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
+////////	string datnums = "1240;1264;1258;1252;1246"; string gamma_type = "mid" // 0.7nA
+//	string datnums = "1241;1265;1259;1253;1247"; string gamma_type = "mid" // 1.0nA
+//////////	string datnums = "1242;1266;1260;1254;1248"; string gamma_type = "mid" // 1.3nA
+//	string datnums = "1243;1267;1261;1255;1249"; string gamma_type = "mid" // 1.6nA
 //
-//	string e_temps = "22.5;90;175;275;400"
+//	string e_temps = "20;90;187;275;400"
 //	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,43690,0;65535,21845,0;65535,0,0"
 
 
-///// (base, 90, 275, 400). 
-// assymetric 
-//	string datnums = "1747;1771;1763;1755"; string gamma_type = "mid" // 0.4nA
-////	string datnums = "1748;1772;1764;1756"; string gamma_type = "mid" // 0.8nA
-//	string datnums = "1749;1773;1765;1757"; string gamma_type = "mid" // 1.2nA
-//
-////// symmetric
-////	string datnums = "1751;1775;1767;1759"; string gamma_type = "mid" // 0.4nA
-////	string datnums = "1752;1776;1768;1760"; string gamma_type = "mid" // 0.8nA
-////	string datnums = "1753;1778;1769;1761"; string gamma_type = "mid" // 1.2nA
-//
-//	string e_temps = "22.5;90;275;400"
-//	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
+
 //	
 	
 	
@@ -2642,9 +2653,9 @@ function figure_2_conductance()
 //	string e_temps = "22.5;30;50;90;275;400"
 //	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,21845,0;65535,0,0"
 	
-	string datnums = "3089;3221;3199;3177;3155;3133;3111"; string gamma_type = "mid" // 1.0nA REDO
-	string e_temps = "22.5;30;50;90;175;275;400"
-	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,21845,0;65535,0,0"
+//	string datnums = "3089;3221;3199;3177;3155;3133;3111"; string gamma_type = "mid" // 1.0nA REDO
+//	string e_temps = "22.5;30;50;90;175;275;400"
+//	string colours = "0,0,65535;29524,1,58982;16385,49025,65535;65535,65535,0;65535,21845,0;65535,0,0"
 
 	
 
@@ -2684,7 +2695,7 @@ function figure_2_conductance()
 	string colour, e_temp
 	variable red, green, blue
 	
-	int global_fit_conductance = 0
+	int global_fit_conductance = 1
 	
 	
 	

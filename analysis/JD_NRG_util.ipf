@@ -840,7 +840,7 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 
 	//////////////////////////////////////////
 	int auto_mask_wave = 1
-	variable auto_percent_mask = 0.25
+	variable auto_percent_mask = 0.1
 	/////////////////////////////////////////
 	
 	string dot_wave_name, dot_mask_wave_name
@@ -1146,30 +1146,30 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 //	////// -840 mid gamma /////
 	elseif (cmpstr(datnum, "685") == 0)
 		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "703") == 0)
 		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "697") == 0)
 		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 0; cs_max_val = 2000
 	elseif (cmpstr(datnum, "691") == 0)
 		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 0; cs_max_val = 2000
 		
 //	////// -840 weak gamma /////
 	elseif (cmpstr(datnum, "684") == 0)
 		 dot_max_val = 2000
-//		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 1000; cs_max_val = 1300
 	elseif (cmpstr(datnum, "702") == 0)
 		dot_max_val = 2000
-//		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 500; cs_max_val = 1500
 	elseif (cmpstr(datnum, "696") == 0)
 		dot_max_val = 2000
-//		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 500; cs_max_val = 1500
 	elseif (cmpstr(datnum, "690") == 0)
 		dot_max_val = 2000
-//		cs_min_val = 500; cs_max_val = 1500
+		cs_min_val = 500; cs_max_val = 1500
 
 //	////// -1040 mid gamma /////
 	elseif (cmpstr(datnum, "810") == 0)
@@ -1293,15 +1293,15 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		
 //	////// setpoints symmetric mid-strong gamma /////
 	elseif (cmpstr(datnum, "1239") == 0)
-		cs_min_val = -1200; cs_max_val = 2000
+		cs_min_val = -1300; cs_max_val = 2600
 	elseif (cmpstr(datnum, "1240") == 0)
 		cs_min_val = -1200; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1241") == 0)
-		cs_min_val = -1200; cs_max_val = 2000
+		cs_min_val = -1400; cs_max_val = 2600
 	elseif (cmpstr(datnum, "1242") == 0)
-		cs_min_val = -1200; cs_max_val = 2000
+		cs_min_val = -1200; cs_max_val = 2500
 	elseif (cmpstr(datnum, "1243") == 0)
-		cs_min_val = -1200; cs_max_val = 2000
+		cs_min_val = -1300; cs_max_val = 2700
 	elseif (cmpstr(datnum, "1244") == 0)
 		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1245") == 0)
@@ -1486,9 +1486,42 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	elseif (cmpstr(datnum, "2943") == 0)
 		cs_min_val = -8000; cs_max_val = 8000
 	elseif (cmpstr(datnum, "2193") == 0)
-		cs_min_val = -8000; cs_max_val = 4500
+		cs_min_val = -8000; cs_max_val = 4500 
 	elseif (cmpstr(datnum, "2958") == 0)
 		cs_min_val = -8000; cs_max_val = 4500
+	elseif (cmpstr(datnum, "1412") == 0)  //"1412;1536;1496;1454"
+		cs_min_val = -3200; cs_max_val = 3200
+	elseif (cmpstr(datnum, "1536") == 0)  //"1412;1536;1496;1454"
+		cs_min_val = -3200; cs_max_val = 3200
+	elseif (cmpstr(datnum, "1496") == 0)  //"1412;1536;1496;1454"
+		cs_min_val = -3200; cs_max_val = 3200
+	elseif (cmpstr(datnum, "1454") == 0)  //"1412;1536;1496;1454" //1436;1560;1520;1478
+		cs_min_val = -3200; cs_max_val = 3200
+	elseif (cmpstr(datnum, "1424") == 0)  
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1548") == 0) 
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1508") == 0)  
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1466") == 0)  
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1436") == 0)  
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1560") == 0) 
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1520") == 0)  
+		cs_min_val = -3200; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1478") == 0)  
+		cs_min_val = -3200; cs_max_val = 2700//1448;1572;1532;1490
+	elseif (cmpstr(datnum, "1448") == 0)  
+		cs_min_val = -2800; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1572") == 0) 
+		cs_min_val = -2800; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1532") == 0)  
+		cs_min_val = -2800; cs_max_val = 2700
+	elseif (cmpstr(datnum, "1490") == 0)  
+		cs_min_val = -2700; cs_max_val = 2700//1448;1572;1532;1490
+	
 	else
 //		datnum_declared = 0
 //		cs_min_val = -4990; cs_max_val = 2750

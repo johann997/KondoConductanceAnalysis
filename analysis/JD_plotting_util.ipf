@@ -415,4 +415,8 @@ function create_marker_size(wave1d, every_n_max, [min_marker, max_marker])
 			wave_marker[i] = min_marker
 		endif
 	endfor
+	
+	if (every_n_max == 1)
+		wave_marker[0] = min_marker
+	endif
 end
