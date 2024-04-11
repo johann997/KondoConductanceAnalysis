@@ -258,12 +258,13 @@ function reduce_matrix_set_scale(wave_name, x_points)
 	wave x_wave
 	variable start_x = x_wave[0]
 	variable end_x = x_wave[inf]
+	int delta = (dimsize($wave_name, 0)/x_points)/2
 	
 	// reduce the 2d matrix
 	ReduceMatrixSize($wave_name, 0, -1, x_points, 0, -1, num_rows, 1, reduced_name)
 	
 	// set the scale
-	setscale /I x, start_x,  end_x, $reduced_name
+//	setscale /I x, start_x + delta,  end_x - delta, $reduced_name
 end
 
 
@@ -838,14 +839,15 @@ end
 
 
 
-function get_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, num_traces])
+function get_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, num_traces, plot_vs_x])
 	wave wave_2d, y_wave, x_wave
 	variable width_y, width_x
-	int num_traces
+	int num_traces, plot_vs_x
 	
 	width_y = paramisdefault(width_y) ? 10 : width_y
 	width_x = paramisdefault(width_y) ? 0 : width_x
 	num_traces = paramisdefault(width_y) ? 10 : num_traces
+	plot_vs_x = paramisdefault(plot_vs_x) ? 1 : plot_vs_x
 	
 	///// create empty 2d wave to store multiple rows of the line paths
 	variable num_vals = dimsize(y_wave, 0)
@@ -881,13 +883,21 @@ function get_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, num
 		line_path_2d_x[][i] = x_wave_offset[p]
 	
 	endfor
+	
+	if (plot_vs_x == 1)
+		setscale  /I x, line_path_2d_x[0], line_path_2d_x[inf], line_path_2d_z
+		setscale  /I y, line_path_2d_y[0], line_path_2d_y[inf], line_path_2d_z
+	else
+		setscale  /I y, line_path_2d_x[0], line_path_2d_x[inf], line_path_2d_z
+		setscale  /I x, line_path_2d_y[0], line_path_2d_y[inf], line_path_2d_z
+	endif
 end
 
 
-function plot_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, offset, num_traces, plot_contour, make_markers])
+function plot_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, offset, num_traces, plot_contour, make_markers, smooth_on, plot_vs_x])
 	wave wave_2d, y_wave, x_wave
 	variable width_y, width_x, offset
-	int num_traces, plot_contour, make_markers
+	int num_traces, plot_contour, make_markers, smooth_on, plot_vs_x
 	
 	width_y = paramisdefault(width_y) ? 10 : width_y
 	width_x = paramisdefault(width_y) ? 0 : width_x
@@ -895,8 +905,12 @@ function plot_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, of
 	num_traces = paramisdefault(width_y) ? 10 : num_traces
 	plot_contour = paramisdefault(plot_contour) ? 1 : plot_contour
 	make_markers = paramisdefault(make_markers) ? 0 : make_markers
+	smooth_on = paramisdefault(smooth_on) ? 0 : smooth_on
+	plot_vs_x = paramisdefault(plot_vs_x) ? 1 : plot_vs_x
+
+
 	
-	get_multiple_line_paths(wave_2d, y_wave, x_wave, width_y = width_y, width_x = width_x, num_traces = num_traces)
+	get_multiple_line_paths(wave_2d, y_wave, x_wave, width_y = width_y, width_x = width_x, num_traces = num_traces, plot_vs_x=plot_vs_x)
 	
 	wave line_path_2d_z, line_path_2d_y, line_path_2d_x
 	
@@ -914,7 +928,7 @@ function plot_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, of
 		endif
 	endfor
 	
-//	Display2DWaterfall(line_path_2d_z, offset = offset, plot_every_n = 1, plot_contour = plot_contour)
+	Display2DWaterfall(line_path_2d_z, offset = offset, plot_every_n = 1, plot_contour = plot_contour, smooth_on=smooth_on)
 	
 	// display integrated line traces
 	window_name = "line_path_traces_z"
@@ -925,19 +939,27 @@ function plot_multiple_line_paths(wave_2d, y_wave, x_wave, [width_y, width_x, of
 end
 
 
-function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_every_n, y_min, y_max, plot_contour])
+function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_every_n, y_min, y_max, plot_contour, smooth_on, plot_vs_x])
 	wave w
 	variable offset, offset_traces
 	string x_label, y_label
-	int plot_every_n, y_min, y_max, plot_contour
+	int plot_every_n, y_min, y_max, plot_contour, smooth_on, plot_vs_x
 	
-	variable num_repeats = DimSize(w, 1)
+	variable num_repeats
+	if (plot_vs_x == 1)
+		num_repeats = DimSize(w, 1)
+	else
+		num_repeats = DimSize(w, 0)
+	endif
+	
 	int apply_offset = paramisdefault(offset) ? 0 : 1 // forcing theta OFF is default
 	plot_every_n = paramisdefault(plot_every_n) ? 1 : plot_every_n // plotting every trace is default
 	y_min = paramisdefault(y_min) ? 0 : y_min // y_min index 0 is default
 	y_max = paramisdefault(y_max) ? dimsize(w, 1) : y_max // y_max index 0 is default
 	plot_contour = paramisdefault(plot_contour) ? 0 : plot_contour // plotting contour OFF is default
-	
+	smooth_on = paramisdefault(smooth_on) ? 0 : smooth_on // smoothing data OFF is default
+	plot_vs_x = paramisdefault(plot_vs_x) ? 1 : plot_vs_x // plotting vs. x-axis is default
+
 	
 	x_label = selectstring(paramisdefault(x_label), x_label, "")
 	y_label = selectstring(paramisdefault(y_label), y_label, "")
@@ -954,6 +976,10 @@ function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_ev
 	duplicate  /o w wave_2d
 	wave wave_2d
 	
+	if (smooth_on == 1)
+		smooth /E=3 100, wave_2d
+	endif
+	
 	duplicate  /o w wave_2d_contour
 	wave wave_2d_contour
 	
@@ -968,14 +994,26 @@ function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_ev
 		endif
 		
 		if (offset_traces == 1)
-			offset_to_apply -= wave_2d[round(dimsize(wave_2d, 0)/2)][i]
+			if (plot_vs_x == 1)
+				offset_to_apply -= wave_2d[round(dimsize(wave_2d, 0)/2)][i]
+			else
+				offset_to_apply -= wave_2d[i][round(dimsize(wave_2d, 1)/2)]
+			endif
 		endif
 		
-		wave_2d[][i] = wave_2d[p][i] + offset_to_apply
+		if (plot_vs_x == 1)
+			wave_2d[][i] = wave_2d[p][i] + offset_to_apply
+		else
+			wave_2d[i][] = wave_2d[i][q] + offset_to_apply
+		endif
 		
 		
 		if ((mod(i, plot_every_n) == 0) && (i >= y_min) && (i < y_max))
-   		AppendToGraph/W=$name wave_2d[][i]
+			if (plot_vs_x == 1)
+   				AppendToGraph/W=$name wave_2d[][i]
+   			else
+   				AppendToGraph/W=$name wave_2d[i][]
+   			endif
    	endif
    	
 	endfor
@@ -997,8 +1035,13 @@ function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_ev
    	if ((mod(i, plot_every_n) == 0) && (i >= y_min) && (i < y_max) && (plot_contour == 1))
    	
 //   		wave_2d_contour[][i] = wave_2d_contour[p][i]*0  + wave_2d_contour[0][i] + offset_to_apply
-   		wave_2d_contour[][i] = wave_2d[0][i]
-   		AppendToGraph/W=$name wave_2d_contour[][i]
+		if (plot_vs_x == 1)
+   			wave_2d_contour[][i] = wave_2d[0][i]
+   			AppendToGraph/W=$name wave_2d_contour[][i]
+   		else
+   			wave_2d_contour[i][] = wave_2d[i][0]
+   			AppendToGraph/W=$name wave_2d_contour[i][]
+   		endif
    		
    		wavename_2d_contour = "wave_2d_contour#" + num2str(count)
    		
