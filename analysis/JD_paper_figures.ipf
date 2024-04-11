@@ -22,7 +22,7 @@
 
 function beautify_figure(figure_name)
 	string figure_name
-	int font_size = 15
+	int font_size = 16
 //	ModifyGraph /W=$figure_name mirror=1,nticks=3,axThick=0.5,btLen=3,stLen=2,fsize=14, tick=2, gFont="Calibri", gfSize=14
 	ModifyGraph /W=$figure_name mirror=1, nticks=5, axThick=0.5, btLen=3, stLen=2, fsize=font_size, tick=2, gFont="Calibri", gfSize=font_size, lowTrip(bottom)=0.0001, lowTrip(left)=0.01//, width=1*200, height=1*200/1.6180339887
 end
@@ -58,7 +58,8 @@ end
 function save_figure(figure_name)
 	string figure_name
 	
-	string png_name = figure_name + ".png"
+//	string png_name = figure_name + ".png"
+	string png_name = figure_name + ".svg"
 //	string data
 	
 //	PathInfo data
@@ -67,7 +68,8 @@ function save_figure(figure_name)
 //	string file_path = ParseFilePath(1, S_path, ":", 1, 0) + "Figures:"
 	string file_path = "Macintosh HD:Users:johanndrayne:Documents:Work:QDEV:_EntropyConductancePaper:IGORAnalysis:IGOR_Figures:"
 	
-	SavePICT/P=figure_folder/E=-5/RES=1000/o/Q=1 as png_name
+//	SavePICT/P=figure_folder/E=-5/RES=1000/o/Q=1 as png_name
+	SavePICT/P=figure_folder/E=-9/RES=1000/o/Q=1 as png_name
 end
 
 
@@ -2414,8 +2416,8 @@ endmacro
 function figure_2_conductance()
 //	variable gamma_value =  2.5
 //	variable leverarm_value = 1e-3
-	variable gamma_value =  3.8
-	variable leverarm_value =  0.00587914
+	variable gamma_value =  3
+	variable leverarm_value =  0.1
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2549,11 +2551,10 @@ function figure_2_conductance()
 //	string datnums = "1436;1560;1520;1478"; string gamma_type = "mid" // 0.4nA
 	
 	///// set point 7 /////
-	string datnums = "1448;1572;1532;1490"; string gamma_type = "mid" // 0.4nA
-
-
-	string e_temps = "20;90;275;400"
-	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
+//	string datnums = "1448;1572;1532;1490"; string gamma_type = "mid" // 0.4nA
+//
+//	string e_temps = "20;90;275;400"
+//	string colours = "0,0,65535;65535,65535,0;65535,21845,0;65535,0,0"
 
 	///// Setpoints (all temperatures)
 //	string datnums = "1239;1275;1269;1263;1257;1251;1245"; string gamma_type = "mid" // 0.4nA
@@ -2681,14 +2682,14 @@ function figure_2_conductance()
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// AUTUMN CONDUCTANCE AND TRANSITION DATA //////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//	string datnums = "696;692;688"; string gamma_type = "low"; //string e_temps = "23;275.61;494" // low gamma
-//	string datnums = "697;693;689"; string gamma_type = "mid"; //string e_temps = "23;274.504;501.439"// mid-low gamma
-//	string datnums = "698;694;690"; string gamma_type = "mid"; //string e_temps = "23;275.373;498.635"// mid-high gamma
-//	string datnums = "699;695;691"; string gamma_type = "high"; //string e_temps = "23;274.869;496.522"// high gamma
+	string datnums = "696;692;688"; string gamma_type = "low"; gamma_value =  1; leverarm_value =  0.062301 // low gamma
+//	string datnums = "697;693;689"; string gamma_type = "mid"; gamma_value =  1; leverarm_value =  0.05 // mid-low gamma
+//	string datnums = "698;694;690"; string gamma_type = "mid"; gamma_value =  3; leverarm_value =  -0.1 // mid-high gamma
+//	string datnums = "699;695;691"; string gamma_type = "high"; gamma_value =  1; leverarm_value =  -0.05 // high gamma
 
 
-//	string e_temps = "12;275;500"
-//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+	string e_temps = "35;275;500"
+	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
 // 3.30077  7.09738  19.7605  27.6116 :: AUTUMN 2023
 
 

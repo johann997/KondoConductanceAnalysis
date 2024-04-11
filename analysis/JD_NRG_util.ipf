@@ -977,7 +977,6 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 	///// high gamma /////
 	elseif (cmpstr(datnum, "1284") == 0)
 		cs_min_val = -3000; cs_max_val = 3000
-//		cs_min_val = -3000; cs_max_val = 2900
 	elseif (cmpstr(datnum, "1288") == 0)
 		cs_min_val = -3000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "1300") == 0)
@@ -989,15 +988,15 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		
 	///// mid-high gamma /////
 	elseif (cmpstr(datnum, "1283") == 0)
-		cs_min_val = -2000; cs_max_val = 1450
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1287") == 0)
-		cs_min_val = -2000;  cs_max_val = 1451
+		cs_min_val = -2000;  cs_max_val = 2000
 	elseif (cmpstr(datnum, "1299") == 0)
-		cs_min_val = -2000; cs_max_val = 1451
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1295") == 0)
-		cs_min_val = -2000; cs_max_val = 1451
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "1291") == 0)
-		cs_min_val = -2000; cs_max_val = 1451
+		cs_min_val = -2000; cs_max_val = 2000
 
 		
 	///// mid-low gamma /////
@@ -1030,146 +1029,128 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 		cs_max_val = 1496
 		
 //	///// CONDUCTANCE /////
-//	////// high gamma /////
-//	elseif (cmpstr(datnum, "699") == 0)
-//		dot_min_val = -1000; dot_max_val = 1000
-////		dot_min_val = -2000; dot_max_val = 1000
-////		cs_min_val = -1000; cs_max_val = 1100
-//		cs_min_val = -1500; cs_max_val = 1500
-////		cs_min_val = -1700; cs_max_val = 1700
-//	elseif (cmpstr(datnum, "695") == 0)
-////		dot_min_val = -2000; dot_max_val = 1000
-//		dot_min_val = -1000; dot_max_val = 1000
-//		cs_min_val = -1500; cs_max_val = 1500
-//	elseif (cmpstr(datnum, "691") == 0)
-//		dot_min_val = -1000; dot_max_val = 1000
-//		cs_min_val = -1500; cs_max_val = 1500
-//////// mid-high gamma /////
-//	elseif (cmpstr(datnum, "698") == 0)
-//		dot_min_val = -900; dot_max_val = 400
-//		cs_min_val = -800; cs_max_val = 900
-////		cs_min_val = -550; cs_max_val = 800
-//	elseif (cmpstr(datnum, "694") == 0)
-//		dot_min_val = -900; dot_max_val = 400
-//		cs_min_val = -1000; cs_max_val = 1000
-//	elseif (cmpstr(datnum, "690") == 0)
-//		dot_min_val = -900; dot_max_val = 400
-//		cs_min_val = -1000; cs_max_val = 1500
-//////// mid-weak gamma /////
-//	elseif (cmpstr(datnum, "697") == 0)
-//		dot_min_val = -550; dot_max_val = 250
-////		cs_min_val = -1300; cs_max_val = 1000
-//		cs_min_val = -350; cs_max_val = 400
-//	elseif (cmpstr(datnum, "693") == 0)
-//		dot_min_val = -550; dot_max_val = 300
-//		cs_min_val = -750; cs_max_val = 750
-//	elseif (cmpstr(datnum, "689") == 0)
-//		dot_min_val = -550; dot_max_val = 300
-//		cs_min_val = -1000; cs_max_val = 1000
-//////// weak gamma /////
-//	elseif (cmpstr(datnum, "696") == 0)
-//		dot_min_val = -800; dot_max_val = 300
-//		cs_min_val = -100; cs_max_val = 300
-//	elseif (cmpstr(datnum, "692") == 0)
-//		dot_min_val = -800; dot_max_val = 300
-//		cs_min_val = -600; cs_max_val = 300
-//	elseif (cmpstr(datnum, "688") == 0)
-//		dot_min_val = -800; dot_max_val = 300
-//		cs_min_val = -800; cs_max_val = 300
+	////// high gamma /////
+	elseif (cmpstr(datnum, "699") == 0)
+		cs_min_val = -1360; cs_max_val = 4000
+	elseif (cmpstr(datnum, "695") == 0)
+		cs_min_val = -2100; cs_max_val = 4000
+	elseif (cmpstr(datnum, "691") == 0)
+		cs_min_val = -3000; cs_max_val = 4000
+////// mid-high gamma /////
+	elseif (cmpstr(datnum, "698") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "694") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+	elseif (cmpstr(datnum, "690") == 0)
+		cs_min_val = -2000; cs_max_val = 2000
+////// mid-weak gamma /////
+	elseif (cmpstr(datnum, "697") == 0)
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "693") == 0)
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "689") == 0)
+		cs_min_val = -1000; cs_max_val = 1000
+////// weak gamma /////
+	elseif (cmpstr(datnum, "696") == 0)
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "692") == 0)
+		cs_min_val = -1000; cs_max_val = 1000
+	elseif (cmpstr(datnum, "688") == 0)
+		cs_min_val = -1000; cs_max_val = 1000
 
 //////////////////////////////////////////////////////////////
 
 ///// SPRING EXPERIMENT 2024 /////
 //	////// -640 high gamma /////
-	elseif (cmpstr(datnum, "683") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1100
-	elseif (cmpstr(datnum, "701") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1500; cs_max_val = 1500
-	elseif (cmpstr(datnum, "695") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1500; cs_max_val = 1500
-	elseif (cmpstr(datnum, "689") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1500; cs_max_val = 1500
-//	////// -640 mid gamma /////
-	elseif (cmpstr(datnum, "682") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1000; cs_max_val = 1100
-	elseif (cmpstr(datnum, "700") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1500; cs_max_val = 1500
-	elseif (cmpstr(datnum, "694") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1500; cs_max_val = 1500
-	elseif (cmpstr(datnum, "688") == 0)
-		dot_min_val = -1000; dot_max_val = 1000
-		cs_min_val = -1500; cs_max_val = 1500
-//	////// -640 low gamma /////
-	elseif (cmpstr(datnum, "681") == 0)
-		dot_min_val = -1000; dot_max_val = 800
-		cs_min_val = -1000; cs_max_val = 1100
-	elseif (cmpstr(datnum, "699") == 0)
-		dot_min_val = -1000; dot_max_val = 800
-		cs_min_val = -1100; cs_max_val = 1100
-	elseif (cmpstr(datnum, "693") == 0)
-		dot_min_val = -1000; dot_max_val = 800
-		cs_min_val = -1100; cs_max_val = 1100
-	elseif (cmpstr(datnum, "687") == 0)
-		dot_min_val = -1000; dot_max_val = 800
-		cs_min_val = -1100; cs_max_val = 1100
-	
-//	////// -840 high gamma /////
-	elseif (cmpstr(datnum, "686") == 0)
-		dot_min_val = -500; dot_max_val = 1300
-		cs_min_val = -700; cs_max_val = 1500
-	elseif (cmpstr(datnum, "704") == 0)
-		dot_min_val = -500; dot_max_val = 1300
-		cs_min_val = -700; cs_max_val = 1500
-	elseif (cmpstr(datnum, "698") == 0)
-		dot_min_val = -500; dot_max_val = 1300
-		cs_min_val = -700; cs_max_val = 1500
-	elseif (cmpstr(datnum, "692") == 0)
-		dot_min_val = -500; dot_max_val = 1300
-		cs_min_val = -700; cs_max_val = 1500
-	elseif (cmpstr(datnum, "737") == 0) // 1uV
-		dot_min_val = -1500; dot_max_val = 0
-		cs_min_val = -1500; cs_max_val = 0
-	elseif (cmpstr(datnum, "738") == 0) // 2uV
-		dot_min_val = -1500; dot_max_val = 0
-		cs_min_val = -1500; cs_max_val = 0
-	elseif (cmpstr(datnum, "739") == 0) // 5uV
-		dot_min_val = -1500; dot_max_val = 0
-		cs_min_val = -1500; cs_max_val = 0
-		
-//	////// -840 mid gamma /////
-	elseif (cmpstr(datnum, "685") == 0)
-		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 0; cs_max_val = 2000
-	elseif (cmpstr(datnum, "703") == 0)
-		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 0; cs_max_val = 2000
-	elseif (cmpstr(datnum, "697") == 0)
-		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 0; cs_max_val = 2000
-	elseif (cmpstr(datnum, "691") == 0)
-		dot_min_val = 500; dot_max_val = 1300
-		cs_min_val = 0; cs_max_val = 2000
-		
-//	////// -840 weak gamma /////
-	elseif (cmpstr(datnum, "684") == 0)
-		 dot_max_val = 2000
-		cs_min_val = 1000; cs_max_val = 1300
-	elseif (cmpstr(datnum, "702") == 0)
-		dot_max_val = 2000
-		cs_min_val = 500; cs_max_val = 1500
-	elseif (cmpstr(datnum, "696") == 0)
-		dot_max_val = 2000
-		cs_min_val = 500; cs_max_val = 1500
-	elseif (cmpstr(datnum, "690") == 0)
-		dot_max_val = 2000
-		cs_min_val = 500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "683") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1000; cs_max_val = 1100
+//	elseif (cmpstr(datnum, "701") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "695") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "689") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1500; cs_max_val = 1500
+////	////// -640 mid gamma /////
+//	elseif (cmpstr(datnum, "682") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1000; cs_max_val = 1100
+//	elseif (cmpstr(datnum, "700") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "694") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "688") == 0)
+//		dot_min_val = -1000; dot_max_val = 1000
+//		cs_min_val = -1500; cs_max_val = 1500
+////	////// -640 low gamma /////
+//	elseif (cmpstr(datnum, "681") == 0)
+//		dot_min_val = -1000; dot_max_val = 800
+//		cs_min_val = -1000; cs_max_val = 1100
+//	elseif (cmpstr(datnum, "699") == 0)
+//		dot_min_val = -1000; dot_max_val = 800
+//		cs_min_val = -1100; cs_max_val = 1100
+//	elseif (cmpstr(datnum, "693") == 0)
+//		dot_min_val = -1000; dot_max_val = 800
+//		cs_min_val = -1100; cs_max_val = 1100
+//	elseif (cmpstr(datnum, "687") == 0)
+//		dot_min_val = -1000; dot_max_val = 800
+//		cs_min_val = -1100; cs_max_val = 1100
+//	
+////	////// -840 high gamma /////
+//	elseif (cmpstr(datnum, "686") == 0)
+//		dot_min_val = -500; dot_max_val = 1300
+//		cs_min_val = -700; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "704") == 0)
+//		dot_min_val = -500; dot_max_val = 1300
+//		cs_min_val = -700; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "698") == 0)
+//		dot_min_val = -500; dot_max_val = 1300
+//		cs_min_val = -700; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "692") == 0)
+//		dot_min_val = -500; dot_max_val = 1300
+//		cs_min_val = -700; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "737") == 0) // 1uV
+//		dot_min_val = -1500; dot_max_val = 0
+//		cs_min_val = -1500; cs_max_val = 0
+//	elseif (cmpstr(datnum, "738") == 0) // 2uV
+//		dot_min_val = -1500; dot_max_val = 0
+//		cs_min_val = -1500; cs_max_val = 0
+//	elseif (cmpstr(datnum, "739") == 0) // 5uV
+//		dot_min_val = -1500; dot_max_val = 0
+//		cs_min_val = -1500; cs_max_val = 0
+//		
+////	////// -840 mid gamma /////
+//	elseif (cmpstr(datnum, "685") == 0)
+//		dot_min_val = 500; dot_max_val = 1300
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "703") == 0)
+//		dot_min_val = 500; dot_max_val = 1300
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "697") == 0)
+//		dot_min_val = 500; dot_max_val = 1300
+//		cs_min_val = 0; cs_max_val = 2000
+//	elseif (cmpstr(datnum, "691") == 0)
+//		dot_min_val = 500; dot_max_val = 1300
+//		cs_min_val = 0; cs_max_val = 2000
+//		
+////	////// -840 weak gamma /////
+//	elseif (cmpstr(datnum, "684") == 0)
+//		 dot_max_val = 2000
+//		cs_min_val = 1000; cs_max_val = 1300
+//	elseif (cmpstr(datnum, "702") == 0)
+//		dot_max_val = 2000
+//		cs_min_val = 500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "696") == 0)
+//		dot_max_val = 2000
+//		cs_min_val = 500; cs_max_val = 1500
+//	elseif (cmpstr(datnum, "690") == 0)
+//		dot_max_val = 2000
+//		cs_min_val = 500; cs_max_val = 1500
 
 //	////// -1040 mid gamma /////
 	elseif (cmpstr(datnum, "810") == 0)
