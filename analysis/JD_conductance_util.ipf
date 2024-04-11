@@ -40,19 +40,21 @@ function master_cond_clean_average(wave wav, int refit, string kenner_out, [int 
 
 //		remove_bad_gammas($centered_wave_name, cleaned_wave_name) // only need to clean after redoing fits; returns centered_wave_name
 		duplicate /o $centered_wave_name $cleaned_wave_name
-		
-		split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
-		split_pos = cleaned_wave_name + "_pos"
-		split_neg = cleaned_wave_name + "_neg"
-		
-	else
-		split_wave($datasetname, 0) //makes condxxxxcentered
-		split_pos = datasetname + "_pos"
-		split_neg = datasetname + "_neg"
 	endif
 
 	// commentating out the splitting if we reverse bias
 	if (alternate_bias == 1)
+	
+		if (refit==1)
+			split_wave($cleaned_wave_name, 0) //makes condxxxxcentered
+			split_pos = cleaned_wave_name + "_pos"
+			split_neg = cleaned_wave_name + "_neg"
+		else
+			split_wave($datasetname, 0) //makes condxxxxcentered
+			split_pos = datasetname + "_pos"
+			split_neg = datasetname + "_neg"
+		endif
+		
 		pos_avg = split_pos + "_avg"
 		neg_avg = split_neg + "_avg"
 		zap_NaN_rows($split_pos, overwrite = 1, percentage_cutoff_inf = 0.15)
