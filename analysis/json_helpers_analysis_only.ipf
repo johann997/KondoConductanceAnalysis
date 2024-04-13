@@ -14,16 +14,20 @@ function get_hdfid(datnum)
 	return fileid
 end
 
-function fd_getfield(datnum)
+function fd_getfield(datnum, [magnet_type])
 	// Function to get old h5 values for Lakeshore temperatures
 	variable datnum
+	string magnet_type
+	
+	magnet_type = selectString(paramisdefault(magnet_type), magnet_type, "IPS") // LS625 Magnet Supply
+
 	
 	variable sl_id, fd_id  //JSON ids
 	variable field
 
 	try
 		sl_id = get_sweeplogs(datnum)  // Get Sweep_logs JSON;
-		fd_id = getJSONXid(sl_id, "LS625 Magnet Supply") // Get FastDAC JSON from Sweeplogs
+		fd_id = getJSONXid(sl_id, magnet_type) // Get FastDAC JSON from Sweeplogs
 	
 		JSONXOP_GetValue/V fd_id, "field mT"
 		field = V_value
