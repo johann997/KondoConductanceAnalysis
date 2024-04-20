@@ -2663,18 +2663,18 @@ function figure_2_conductance()
 ///////////////////////////////////////////////////////////////////////////////
 //////////// SPRING CONDUCTANCE 2023 AND TRANSITION DATA ////////////////////// 
 ///////////////////////////////////////////////////////////////////////////////
-//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"// high gamma
-//	string datnums = "6386;6088;6085;6082"; string gamma_type = "high"// high gamma (just before entropy scan 22.5 fits well 15mK fits best)
-//	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid" // mid gamma
-//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low" // low gamma
+//	string datnums = "6079;6088;6085;6082"; string gamma_type = "high"; gamma_value =  3; leverarm_value =  0.01 // high gamma
+//	string datnums = "6386;6088;6085;6082"; string gamma_type = "high"; gamma_value =  3; leverarm_value =  0.01// high gamma (just before entropy scan 22.5 fits well 15mK fits best)
+//	string datnums = "6080;6089;6086;6083"; string gamma_type = "mid"; gamma_value =  1; leverarm_value =  0.1 // mid gamma
+//	string datnums = "6081;6090;6087;6084"; string gamma_type = "low"; gamma_value =  -0.5; leverarm_value =  0.1 // low gamma
 
-//	string datnums = "6100;6097;6094;6091"; string gamma_type = "high" // high gamma :: high field
+	string datnums = "6100;6097;6094;6091"; string gamma_type = "high"; gamma_value =  3; leverarm_value =  0.1 // high gamma :: high field
 
 //	string datnums = "6225;6234;6231;6228"; string gamma_type = "high" // high gamma :: 2-3 transition
 //	string datnums = "6226;6235;6232;6229"; string gamma_type = "high" // high gamma :: 2-3 transition
 
-//	string e_temps = "12;100;300;500"
-//	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
+	string e_temps = "22.5;100;300;500"
+	string colours = "0,0,65535;29524,1,58982;64981,37624,14500;65535,0,0"
 // 0.765173 7.2439 19.3344 :: SPRING 2023
 
 
@@ -2682,14 +2682,14 @@ function figure_2_conductance()
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// AUTUMN CONDUCTANCE AND TRANSITION DATA //////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-	string datnums = "696;692;688"; string gamma_type = "low"; gamma_value =  1; leverarm_value =  0.062301 // low gamma
+//	string datnums = "696;692;688"; string gamma_type = "low"; gamma_value =  1; leverarm_value =  0.062301 // low gamma
 //	string datnums = "697;693;689"; string gamma_type = "mid"; gamma_value =  1; leverarm_value =  0.05 // mid-low gamma
 //	string datnums = "698;694;690"; string gamma_type = "mid"; gamma_value =  3; leverarm_value =  -0.1 // mid-high gamma
 //	string datnums = "699;695;691"; string gamma_type = "high"; gamma_value =  1; leverarm_value =  -0.05 // high gamma
 
 
-	string e_temps = "35;275;500"
-	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
+//	string e_temps = "35;275;500"
+//	string colours = "0,0,65535;64981,37624,14500;65535,0,0"
 // 3.30077  7.09738  19.7605  27.6116 :: AUTUMN 2023
 
 

@@ -864,88 +864,59 @@ function info_mask_waves(datnum, [global_fit_conductance, base_wave_name])
 ///// SPRING EXPERIMENT 2023 /////
 ////////// high gamma low field ////////////////////////////////////////////////////
 	if (cmpstr(datnum, "6386") == 0)
-		dot_min_val = -1000; dot_max_val = 650
 		cs_min_val = -1000; cs_max_val = 690
-//		cs_min_val = -900; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6079") == 0)
-		dot_min_val = -1000; dot_max_val = 650
-		cs_min_val = -1000; cs_max_val = 1050
-//		cs_min_val = -900; cs_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 1446
 	elseif (cmpstr(datnum, "6088") == 0)
-		dot_min_val = -1000; dot_max_val = 650
-		cs_min_val = -1500; cs_max_val = 1050
+		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6085") == 0)
-		dot_min_val = -1000; dot_max_val = 650
-		cs_min_val = -1500; cs_max_val = 1050
+		cs_min_val = -3000; cs_max_val = 3000
 	elseif (cmpstr(datnum, "6082") == 0)
-		dot_min_val = -1000; dot_max_val = 650
-		cs_min_val = -1500; cs_max_val = 1050
+		cs_min_val = -3000; cs_max_val = 3000
 ////////// mid gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6080") == 0)
-		dot_min_val = -1400; dot_max_val = 500
 		cs_min_val = -1000; cs_max_val = 1430
-//		cs_min_val = -600; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6089") == 0)
-		dot_min_val = -1400; dot_max_val = 500
 		cs_min_val = -1873; cs_max_val = 980
 	elseif (cmpstr(datnum, "6086") == 0)
-		dot_min_val = -1400; dot_max_val = 600
 		cs_min_val = -2000; cs_max_val = 1286
 	elseif (cmpstr(datnum, "6083") == 0)
-		dot_min_val = -1400; dot_max_val = 600
 		cs_min_val = -1667; cs_max_val = 967
 ////////// low gamma low field  ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6081") == 0)
-		dot_min_val = -300; dot_max_val = 200
-//		cs_min_val = -2000; cs_max_val = 1000
-		cs_min_val = -400; cs_max_val = 400
+		cs_min_val = -1000; cs_max_val = 1000
 	elseif (cmpstr(datnum, "6090") == 0)
-		dot_min_val = -400; dot_max_val = 200
-		cs_min_val = -2000; cs_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6087") == 0)
-		dot_min_val = -500; dot_max_val = 500
-		cs_min_val = -2000; cs_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6084") == 0)
-		dot_min_val = -600; dot_max_val = 600
-		cs_min_val = -2000; cs_max_val = 1000
+		cs_min_val = -2000; cs_max_val = 2000
 ////////// high gamma high field ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6100") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -3000; cs_max_val = 1074
+		cs_min_val = -1200; cs_max_val = 1900
 	elseif (cmpstr(datnum, "6097") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
-		cs_min_val = -3000; cs_max_val = 2000
+		cs_min_val = -1200; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6094") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 2000
 	elseif (cmpstr(datnum, "6091") == 0)
-		dot_min_val = -2000; dot_max_val = 1000
 		cs_min_val = -3000; cs_max_val = 2000
 ////////// high gamma 2-3 transition ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6225") == 0)
-		dot_min_val = -6000; dot_max_val = -3200
 		cs_min_val = -7000; cs_max_val = -1425//-1425
 	elseif (cmpstr(datnum, "6234") == 0)
-		dot_min_val = -6000; dot_max_val = -3200
 		cs_min_val = -7000; cs_max_val = -1425//-1425
 	elseif (cmpstr(datnum, "6231") == 0)
-		dot_min_val = -6000; dot_max_val = -3200
 		cs_min_val = -7000; cs_max_val = -1425//-1425
 	elseif (cmpstr(datnum, "6228") == 0)
-		dot_min_val = -6000; dot_max_val = -3200
 		cs_min_val = -7000; cs_max_val = -1425// -1425
 ////////// mid gamma 2-3 transition ////////////////////////////////////////////////////
 	elseif (cmpstr(datnum, "6226") == 0)
-		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 	elseif (cmpstr(datnum, "6235") == 0)
-		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 	elseif (cmpstr(datnum, "6232") == 0)
-		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 	elseif (cmpstr(datnum, "6229") == 0)
-		dot_min_val = -6000; dot_max_val = -3000
 		cs_min_val = -7900; cs_max_val = -1425
 		
 		

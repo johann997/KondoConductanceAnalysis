@@ -440,7 +440,7 @@ function/wave get_conductance_from_current(wave pos, wave neg, string newname)
 	
 	duplicate/o pos, $newname
 	wave cond_wave = $newname;
-	cond_wave = -(pos-neg)
+	cond_wave = (pos-neg)
 //	cond_wave *= 1e-9 // units of A
 //	
 //	duplicate/o cond_wave current // keeping copy of current
