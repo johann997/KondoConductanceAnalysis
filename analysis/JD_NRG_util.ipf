@@ -398,9 +398,9 @@ function master_build_nrg_data()
 	killwaves /Z gammas_narrow
 	killwaves /Z g_n_wide
 	killwaves /Z g_n_narrow
-//	killwaves /Z gammas_wide_ln
+	killwaves /Z gammas_wide_ln
 	killwaves /Z fit_gammas_wide_ln
-//	killwaves /Z calc_gamma_narrow_wave
+	killwaves /Z calc_gamma_narrow_wave
 	
 	
 	// Temperature
