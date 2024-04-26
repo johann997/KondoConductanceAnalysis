@@ -949,7 +949,7 @@ function Display2DWaterfall(w, [offset, offset_traces, x_label, y_label, plot_ev
 	if (plot_vs_x == 1)
 		num_repeats = DimSize(w, 1)
 	else
-		num_repeats = DimSize(w, 0)
+		num_repeats = DimSize(w, 1)
 	endif
 	
 	int apply_offset = paramisdefault(offset) ? 0 : 1 // forcing theta OFF is default

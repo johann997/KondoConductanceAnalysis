@@ -262,11 +262,11 @@ end
 
 function makecolorful([rev, nlines])
 	variable rev, nlines
-	variable num=0, index=0,colorindex
+	variable num=0, index=0, colorindex
 	string tracename
 	string list=tracenamelist("",";",1)
 	colortab2wave rainbow
-	wave M_colors
+	wave M_colors = colour_fast
 	variable n=dimsize(M_colors,0), group
 	do
 		tracename=stringfromlist(index, list)
@@ -295,12 +295,13 @@ function makecolorful([rev, nlines])
 				colorindex=round(n*(group-ceil((index+1)/nlines))/group)
 			endif
 		endif
-		if(colorindex>99)
-			colorindex=99
-		endif
-		ModifyGraph rgb($tracename)=(M_colors[colorindex][0],M_colors[colorindex][1],M_colors[colorindex][2])
+//		if(colorindex>99)
+//			colorindex=99
+//		endif
+		variable colour_ratio = 1 //255/65535
+		ModifyGraph rgb($tracename)=(M_colors[colorindex][0]*colour_ratio,M_colors[colorindex][1]*colour_ratio,M_colors[colorindex][2]*colour_ratio)
 		index+=1
-	while(index<=num)
+	while(index<num)
 
 end
 
