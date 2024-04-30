@@ -69,7 +69,7 @@ function save_figure(figure_name)
 	string file_path = "Macintosh HD:Users:johanndrayne:Documents:Work:QDEV:_EntropyConductancePaper:IGORAnalysis:IGOR_Figures:"
 	
 //	SavePICT/P=figure_folder/E=-5/RES=1000/o/Q=1 as png_name
-	SavePICT/P=figure_folder/E=-9/RES=1000/o/Q=1 as png_name
+	SavePICT/WIN=$figure_name/P=figure_folder/E=-9/RES=1000/o/Q=1 as png_name
 end
 
 
